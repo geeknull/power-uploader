@@ -1,0 +1,294 @@
+/**
+ * Created by Weil on 2017/3/30.
+ */
+
+"use strict";
+
+import EventDelegate from './eventDelegate.js';
+import Util from './util.js';
+
+export default class {
+    constructor (config = {}, pushQueue, eventEmitter, eventDelegate) {
+        this.config = config;
+
+        this.inputId = 'fileUploadBtn-' + new Date().getTime();
+        this.eventEmitter = eventEmitter;
+        this.eventDelegate = eventDelegate;
+        this.globalEventDelegate = new EventDelegate(document); // 全局的事件代理
+
+        this._selectFileTransactionId = 0;
+        this.pushQueue = (file) => {
+            file = this.fileFilter(file);
+            if ( file ) {
+                file.selectFileTransactionId = this._selectFileTransactionId;
+                pushQueue(file);
+            }
+        };
+
+        if (Util.isPlainObject(this.config.accept)) {
+            this.config.accept = [ this.config.accept ];
+        }
+        if (this.config.accept) {
+            let arr = [];
+            for (let i = 0, len = this.config.accept.length; i < len; i++) {
+                let item = this.config.accept[ i ].extensions;
+                item && arr.push(item);
+            }
+            if (arr.length) {
+                this.accept = '\\.' + arr.join(',')
+                        .replace(/,/g, '$|\\.')
+                        .replace(/\*/g, '.*') + '$';
+            }
+            this.accept = new RegExp(this.accept, 'i');
+        }
+        this._pickOnChangeBindThis = this._pickOnChange.bind(this);
+        this._pickOnClickBindThis = this._pickOnClick.bind(this);
+        this._dndHandleDragenterBindThis = this._dndHandleDragenter.bind(this);
+        this._dndHandleDragoverBindThis = this._dndHandleDragover.bind(this);
+        this._dndHandleDragleaveBindThis = this._dndHandleDragleave.bind(this);
+        this._dndHandleDropBindThis = this._dndHandleDrop.bind(this);
+
+        this.init();
+    }
+
+    acceptFile(file) {
+        let invalid = !file || this.accept &&
+            // 如果名字中有后缀，才做后缀白名单处理。
+            /\.\w+$/.exec(file.name) && !this.accept.test(file.name);
+
+        return !invalid;
+    }
+
+    fileFilter(file) {
+        if(this.acceptFile(file)) {
+            return file;
+        } else {
+            this.eventEmitter.emit('uploadError', file,'不支持的文件格式');
+            return false;
+        }
+    }
+
+    init () {
+        let input = `<input type="file" id="${this.inputId}" size="30" name="fileselect[]" style="position:absolute;top:-100000px;">`;
+        let inputEle = Util.parseToDOM(input)[0];
+
+        if (this.config.accept && this.config.accept.length > 0) {
+            let arr = [];
+
+            for (let i = 0, len = this.config.accept.length; i < len; i++) {
+                arr.push(this.config.accept[ i ].mimeTypes);
+            }
+            inputEle.setAttribute('accept', arr.join(','));
+        }
+        if (!!this.config.multiple) {
+            inputEle.setAttribute('multiple','multiple');
+        }
+
+        Util.removeDOM(`#${this.inputId}`);
+        this.config.body.appendChild(inputEle);
+        this.reset();
+        if (this.config.pick) {
+            this._pickHandle();
+        }
+        if (this.config.dnd) {
+            this._dndHandle();
+        }
+        if (this.config.paste) {
+            this._pasteHandle();
+        }
+    }
+
+    _resetinput(ele) {
+        ele.value = null;
+        // $ele.wrap('<form>').closest('form').get(0).reset();
+        // $ele.unwrap();
+    }
+
+    reset() {
+        let inputEle = document.querySelector(`#${this.inputId}`);
+        this._resetinput(inputEle);
+    }
+
+    _pasteHandle() {
+        if (this.config.paste) {
+            this.eventDelegate.on('paste', this.config.paste, (event) => {
+                let clipboardData = event.clipboardData;
+
+                if (!!clipboardData) {
+                    let items = clipboardData.items;
+                    for (let i = 0; i < items.length; ++i) {
+                        let item = items[i];
+                        let blob = null;
+                        if (item.kind !== 'file' || !(blob = item.getAsFile())) {
+                            continue;
+                        }
+                        event.stopPropagation();
+                        event.preventDefault();
+                        this._selectFileTransactionId++;
+                        this.pushQueue(blob);
+                    }
+                }
+            });
+        }
+    }
+
+    _pickHandle() {
+        this.globalEventDelegate.on('change', `#${this.inputId}`, this._pickOnChangeBindThis);
+        if(this.config.pick) {
+            this.globalEventDelegate.on('click', this.config.pick, this._pickOnClickBindThis);
+        }
+    }
+
+    async _pickOnChange(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        await this.funGetFiles(event);
+        this.reset(); // 重复文件会不触发
+    }
+
+    async _pickOnClick (event) {
+        event.stopPropagation();
+        event.preventDefault();
+        document.querySelector(`#${this.inputId}`).click();
+    }
+
+    _dndHandle() {
+        if (this.config.dnd) {
+            this.eventDelegate.on('dragenter', this.config.dnd, this._dndHandleDragenterBindThis);
+            this.eventDelegate.on('dragover', this.config.dnd, this._dndHandleDragoverBindThis);
+            this.eventDelegate.on('dragleave', this.config.dnd, this._dndHandleDragleaveBindThis);
+            this.eventDelegate.on('drop', this.config.dnd, this._dndHandleDropBindThis);
+        }
+    }
+
+    async _dndHandleDragenter(event) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+    async _dndHandleDragover(event) {
+        event.dataTransfer.dropEffect = 'copy'; // 兼容圈点APP
+        event.stopPropagation();
+        event.preventDefault();
+        this.eventEmitter.emit('dragover');
+    }
+    async _dndHandleDragleave(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        this.eventEmitter.emit('dragleave');
+    }
+    async _dndHandleDrop(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        await this.funGetFiles(event);
+    }
+
+    //获取选择文件，file控件或拖放
+    async funGetFiles(e) {
+        this._selectFileTransactionId++;
+        let files = e.target.files || e.dataTransfer.files;
+        let items = e.target.items || (e.dataTransfer && e.dataTransfer.items);
+        let entrys = [];
+        for (let key in items) {
+            if (!!items[key] && items.hasOwnProperty(key)) {
+                if (items[key].getAsEntry) {
+                    entrys.push(items[key].getAsEntry());
+                } else if (items[key].webkitGetAsEntry) {
+                    entrys.push(items[key].webkitGetAsEntry());
+                } else {
+                    entrys.push({});
+                }
+            }
+        }
+        await this.eventEmitter.emit('beforeFilesQueued', files);
+        for (let index = 0, l = Object.keys(files).length; index < l; index++) {
+            let file = files[index];
+            if (!!file) {
+                if (entrys && entrys[index]) {
+                    let entry = entrys[index];
+                    if (entry !== null && entry.isDirectory) {
+                        await this.folderRead(entry);
+                        continue;
+                    }
+                }
+                // PC版上，path是只读属性，必须通过 Object.defineProperty来设置
+                // file.path = '/' + file.name;
+                // TODO 屏蔽大象PC差异
+                if (process && process.env && process.env.APP_ENV && process.env.APP_ENV.indexOf('pc') > -1) {
+                    Object.defineProperty(file,'path',{
+                        value:'/' + file.name
+                    })
+                } else {
+                    file.path = '/' + file.name;
+                }
+                if(!!this.config.multiple) {
+                    await this.pushQueue(file);
+                }else{
+                    await this.pushQueue(file);
+                    break;
+                }
+
+            }
+        }
+        // logger.log('files queued');
+        await this.eventEmitter.emit('filesQueued');
+    }
+
+    async folderRead(entry) {
+        entry.path = entry.fullPath;
+        entry.selectFileTransactionId = this._selectFileTransactionId;
+        let res = await this.eventEmitter.emit('selectDir', entry);
+        if (res.indexOf(false) === -1) {
+            await new Promise((res)=> {
+                entry.createReader().readEntries(async(entries) => {
+                    for (var i = 0; i < entries.length; i++) {
+                        let _entry = entries[i];
+                        if (_entry.isFile) {
+                            let file = await new Promise((res)=> {
+                                _entry.file(async(file) => {
+                                    if(process.env.APP_ENV.indexOf('pc') > -1) {
+                                        Object.defineProperty(file,'path',{
+                                            value:_entry.fullPath
+                                        })
+                                    }else{
+                                        file.path = _entry.fullPath;
+                                    }
+                                    res(file);
+                                });
+                            });
+                            await this.eventEmitter.emit('beforeChildFileQueued', file, entry);
+                            await this.pushQueue(file, entry);
+                            await this.eventEmitter.emit('childFileQueued', file);
+                        } else if (_entry.isDirectory) {
+                            await this.eventEmitter.emit('beforeChildDirQueued', _entry, entry);
+                            await this.folderRead(_entry, entry);
+                            await this.eventEmitter.emit('childDirQueued', _entry);
+                        }
+                    }
+                    res();
+                });
+            });
+        }
+    }
+
+    destory() {
+        this.eventEmitter.removeEvents();
+
+        if(this.config.dnd) {
+            this.eventDelegate.off('dragover');
+            this.eventDelegate.off('dragleave');
+            this.eventDelegate.off('drop');
+        }
+        if (this.config.paste) {
+            this.eventDelegate.off('paste');
+        }
+
+        this.globalEventDelegate.off('change');
+        if(this.config.pick) {
+            this.globalEventDelegate.off('click');
+        }
+    }
+
+    on(eventSource, fn) {
+        this.eventEmitter.on(eventSource, fn);
+    }
+}
