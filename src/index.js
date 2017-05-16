@@ -1,8 +1,3 @@
-/**
- * Author: ximing
- * Date: Mon, 02 Nov 2015 07:45:07 GMT
- */
-
 'use strict';
 
 import EventEmitter from './eventBus.js';
@@ -10,13 +5,14 @@ import EventDelegate from './eventDelegate.js';
 import {Transport} from './transport.js';
 import {WUFile} from './file.js';
 import FileGetter from './fileGetter.js';
+
 let _config = {
     timeout: 0,
-    accept:null,
-    auto: false,
+    accept: [],
+    auto: true,
     sameTimeUploadCount: 3, // 同时上传个数
     chunked: false,
-    chunkSize: 5242880,
+    chunkSize: 20971520,
     chunkRetry: 2,
     formData: {},
     headers: {},
@@ -33,18 +29,19 @@ let _config = {
     body: document.body,
     multiple: false,
     withCredentials: false,
-    setName: function (id) {
-        return new Date().getTime() + id;
-    }
+    setName: (id) => new Date().getTime() + id,
+    log: console.log,
+    _log: () => {},
+    logLevel: 1
 };
 
 // 分片状态
 let blobStatus = {
     WAIT: 'wait', // 已经进入队列等待上传
     PENDING: 'pending', // 正在上传中
-    ERROR: 'error', // 上传出错(网络错误等)
+    ERROR: 'error', // 上传出错(eg.网络错误等)
     SUCCESS: 'success', // 上传成功
-    CANCELLED: 'cancelled',  // 上传取消。
+    CANCELLED: 'cancelled',  // 上传取消
     INTERRUPT: 'interrupt', // 上传中断，可续传
 };
 
@@ -55,6 +52,12 @@ export class Uploader {
 
         this.eventEmitter = new EventEmitter();
         this.eventDelegate = new EventDelegate(this.config.listenerContainer);
+        this.log = function () {
+            let args = Array.prototype.slice.call(arguments, 0);
+            args = ['FILE', ...args];
+            this.config.log.apply(null, args)
+        }.bind(this);
+        this.config._log = this.log;
 
         this.fileGetter = new FileGetter(this.config, this.pushQueue.bind(this), this.eventEmitter, this.eventDelegate);
         this.fileProgressCalc(); // 全局文件进度监听
@@ -98,7 +101,9 @@ export class Uploader {
 
     // 业务方自己传进来的文件
     pushFile (file) {
-        file.selectFileTransactionId = this._selectFileTransactionId;
+        let id = 'initiative_' + new Date().getTime();
+        this.log('initiative_pushFile', id, file);
+        file.selectFileTransactionId = id;
         this.pushQueue(file);
     }
 
@@ -113,9 +118,11 @@ export class Uploader {
             loaded: 0,
             config: {
                 server: '',
-                headers: ''
+                headers: '',
+                formData: {}
             }
         };
+        this.log('pushBlobQueue', blobObj);
         this.blobsQueue.push(blobObj);
 
         // 正在上传的文件个数
@@ -134,7 +141,7 @@ export class Uploader {
 
         if ( currentUploadCount < this.config.sameTimeUploadCount ) {
             let blobObj = this.blobsQueue.find(item => item.status === blobStatus.WAIT);
-            if ( !blobObj ) { return; } // 只有一个分片的时候
+            if ( !blobObj ) { return void 0; } // 只有一个分片的时候
             blobObj.status = blobStatus.PENDING; // 由于是异步的关系 这个必须提前
 
             // 检测文件开始上传
@@ -151,27 +158,26 @@ export class Uploader {
                 currentShard: blobObj.shard.currentShard, // 当前片数
                 config: blobObj.config
             });
-            // if (this.config.server.trim() === '') {
-            //     throw new Error('server could not be empty');
-            // }
 
             // 真正的上传
             blobObj.file.statusText = WUFile.Status.PROGRESS;
             let uploadPromise = this._baseupload(blobObj.blob, blobObj.file.name, blobObj);
-            uploadPromise.then(async (res) => {
-                this._uploadSuccess(res, blobObj);
+            uploadPromise.then(async res => {
+                await this._uploadSuccess(res, blobObj);
+                this.runBlobQueue();
             }).catch(async err => {
                 await this._catchUpfileError(err, blobObj);
-                this.runBlobQueue(); // TODO then里面也执行 放一起好维护
+                this.runBlobQueue();
             });
         }
     }
 
     // 错误处理
     async _catchUpfileError(err, blobObj) {
+        this.log('in _catchUpfileError', blobObj.status, blobObj.file.id);
         // TODO 重置错误分片的loaded属性
-        console.log(this.blobsQueue, 'start');
 
+        blobObj.file.statusText = WUFile.Status.ERROR;
         // 已经错误处理过的文件就不需要处理了
         if (!(blobObj.status === blobStatus.CANCELLED
             || blobObj.status === blobStatus.INTERRUPT
@@ -179,16 +185,15 @@ export class Uploader {
 
             // 停止所有分片
             this.blobsQueue = this.blobsQueue.map(item => {
-                if ( item.file.id === blobObj.file.id ) {
-                    // TODO 成功状态的分片就不置为ERROR
+                // 是当前文件的分片并且该分片没有传输成功
+                if ( item.file.id === blobObj.file.id && item.status !== blobStatus.SUCCESS ) {
                     item.transport && item.transport.abort();
                     item.status = blobStatus.ERROR;
-                    item.file.statusText = WUFile.Status.ERROR;
+                    item.loaded = 0;
+                    this.log('[FILE]', '_catchUpfileError: ', item, item.file.id);
                 }
                 return item;
             });
-
-            console.log(this.blobsQueue, 'end');
 
             await this.eventEmitter.emit('uploadError', {
                 file: blobObj.file,
@@ -225,7 +230,8 @@ export class Uploader {
                 file.statusText = WUFile.Status.PROGRESS;
                 await this.eventEmitter.emit('uploadStart', {file: file, shardCount: shardCount, config: config}); // 导出wuFile对象
             } else {
-                // 一个从来都没有复现的bug可能是由于这个原因
+                this.log('检测第一次上传文件出错');
+                // 不应该出现这个debugger的
                 debugger
             }
         }
@@ -242,8 +248,6 @@ export class Uploader {
 
     // 文件上传成功之后
     async _uploadSuccess (res, blobObj) {
-        console.log(blobObj, blobObj.shard.currentShard);
-
         blobObj.status = blobStatus.SUCCESS;
         let isFileUploadEnd = this.checkFileUploadEnd(blobObj.file);
         if ( isFileUploadEnd ) {
@@ -277,8 +281,6 @@ export class Uploader {
             // 只能在成功的时候移除分片 如果提前移除分片会导致进度计算不准确
             this._removeFileFromQueue(blobObj.file.id);
         }
-
-        this.runBlobQueue();
     }
 
     _removeFileFromQueue(id) {
@@ -308,7 +310,6 @@ export class Uploader {
     reUpload (id) {
         // 重传的时候uploadStart事件不触发
         this.blobsQueue.forEach(item => {
-            // TODO 成功状态的文件分片就不管了
             if ( item.file.id === id &&
                 item.status !== blobStatus.WAIT &&
                 item.status !== blobStatus.PENDING &&
@@ -330,7 +331,8 @@ export class Uploader {
             timeout: this.config.timeout,    // 2分钟
             formData: this.config.formData,
             fileName: fileName,
-            withCredentials: this.config.withCredentials
+            withCredentials: this.config.withCredentials,
+            log: this.log
         };
         let res = null;
         for (let i = 0; i < this.config.chunkRetry; i++) {
@@ -340,8 +342,9 @@ export class Uploader {
                 res = await this.transport.send();
                 break;
             } catch (err) {
-                // TODO chunkRetry 判断
-                throw new Error(err);
+                if ( i >= this.config.chunkRetry-1 ) {
+                    throw new Error(err);
+                }
             }
         }
         this.transport = null;

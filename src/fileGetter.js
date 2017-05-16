@@ -1,7 +1,3 @@
-/**
- * Created by Weil on 2017/3/30.
- */
-
 "use strict";
 
 import EventDelegate from './eventDelegate.js';
@@ -15,6 +11,7 @@ export default class {
         this.eventEmitter = eventEmitter;
         this.eventDelegate = eventDelegate;
         this.globalEventDelegate = new EventDelegate(document); // 全局的事件代理
+        this.log = config.log;
 
         this._selectFileTransactionId = 0;
         this.pushQueue = (file) => {
@@ -31,7 +28,7 @@ export default class {
         if (this.config.accept) {
             let arr = [];
             for (let i = 0, len = this.config.accept.length; i < len; i++) {
-                let item = this.config.accept[ i ].extensions;
+                let item = this.config.accept[i].extensions;
                 item && arr.push(item);
             }
             if (arr.length) {
@@ -76,7 +73,7 @@ export default class {
             let arr = [];
 
             for (let i = 0, len = this.config.accept.length; i < len; i++) {
-                arr.push(this.config.accept[ i ].mimeTypes);
+                arr.push(this.config.accept[i].mimeTypes);
             }
             inputEle.setAttribute('accept', arr.join(','));
         }
@@ -100,8 +97,6 @@ export default class {
 
     _resetinput(ele) {
         ele.value = null;
-        // $ele.wrap('<form>').closest('form').get(0).reset();
-        // $ele.unwrap();
     }
 
     reset() {
@@ -213,13 +208,16 @@ export default class {
                 // PC版上，path是只读属性，必须通过 Object.defineProperty来设置
                 // file.path = '/' + file.name;
                 // TODO 屏蔽大象PC差异
-                if (process && process.env && process.env.APP_ENV && process.env.APP_ENV.indexOf('pc') > -1) {
-                    Object.defineProperty(file,'path',{
-                        value:'/' + file.name
-                    })
-                } else {
-                    file.path = '/' + file.name;
-                }
+                // if (process && process.env && process.env.APP_ENV && process.env.APP_ENV.indexOf('pc') > -1) {
+                //     Object.defineProperty(file,'path',{
+                //         value:'/' + file.name
+                //     })
+                // } else {
+                //     file.path = '/' + file.name;
+                // }
+                Object.defineProperty(file,'path',{
+                    value:'/' + file.name
+                });
                 if(!!this.config.multiple) {
                     await this.pushQueue(file);
                 }else{

@@ -1,6 +1,3 @@
-/**
- * Created by yeanzhi on 15/11/3.
- */
 'use strict';
 /**
  * Finds the index.scss of the listener for the event in its storage array.

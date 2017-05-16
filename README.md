@@ -20,6 +20,8 @@ import {Uploader, FileStatus} from '../somepath/uploader/index.js';
 
 ## 初始化
 
+### eg.
+
 ```javascript
 let uploader = new Uploader({
     'dnd': 'body',
@@ -28,13 +30,42 @@ let uploader = new Uploader({
     chunked: true,
     chunkSize: 20971520,
     listenerContainer: document,
-    $: $, // 需要jQuery或者zepto
     body: document.body,
     multiple: true,
     method:'post',
     withCredentials: true
 });
 ```
+
+### 初始化参数
+
+| 参数名 | 数据类型 | 默认值 | 说明 |
+| :--- | :--- | :--- | :--- |
+| timeout | Number | 0 | 超时时间，为0时不会设置超时事件 |
+| accept | Array | [] | [{extensions: 'jpg', mimeTypes: 'image/*'}] |
+| auto | Boolean | true | 是否得到文件后就上传，暂不支持设置为false |
+| sameTimeUploadCount | Number | 3 | 同时上传分片的个数 |
+| chunked | Boolean | false | 是否开启分片上传 |
+| chunkSize | Number | 20971520 | 分片大小，默认是20MB |
+| chunkRetry | Number | 2 | 分片失败重试次数(不建议更改太大) |
+| formData | Object | {} | 除了二进制文件外，拓展的formData对象 |
+| headers | Object | {} | 自定义头 |
+| fileVal | String | 'file' | formData二进制文件的key |
+| method | String | 'post' | 请求方法 |
+| fileNumLimit | Number | undefined | 暂不启用 |
+| fileSizeLimit | Number | undefined | 暂不启用 |
+| fileSingleSizeLimit | Number | undefined | 暂不启用 |
+| dnd | String | void 0 | 拖拽区域选择器 |
+| pick | String | void 0 | 点击区域的选择器 |
+| paste | String | void 0 | 粘贴区域选择器 |
+| server | String | '' | 服务器地址 |
+| listenerContainer | DOM | document | 事件委托的DOM元素 |
+| body | DOM | document.body | 动态创建的input插入到的DOM元素 |
+| multiple | Boolean | false | 是否可以选择多文件上传 |
+| withCredentials | Boolean | true | 是否开启跨域带cookie |
+| setName | Function | (id) => new Date().getTime() + id | 无文件名文件函数 |
+| log | Function | console.log | 记录log的函数 |
+| logLevel | Number | 1 | 暂时不开启使用 |
 
 ## 常用对象
 
