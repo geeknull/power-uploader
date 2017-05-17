@@ -55,7 +55,7 @@ export class Uploader {
         this.log = function () {
             let args = Array.prototype.slice.call(arguments, 0);
             args = ['FILE', ...args];
-            this.config.log.apply(null, args)
+            this.config.log.apply(null, args);
         }.bind(this);
         this.config._log = this.log;
 
@@ -127,7 +127,7 @@ export class Uploader {
 
         // 正在上传的文件个数
         let pendingLen = this.blobsQueue.filter(item => {
-            return item.status === blobStatus.PENDING
+            return item.status === blobStatus.PENDING;
         }).length;
 
         if (pendingLen < this.config.sameTimeUploadCount) {
@@ -232,7 +232,7 @@ export class Uploader {
             } else {
                 this.log('检测第一次上传文件出错');
                 // 不应该出现这个debugger的
-                debugger
+                debugger;
             }
         }
     }
@@ -354,6 +354,14 @@ export class Uploader {
     // 文件上传进度监听 只会运行一次
     fileProgressCalc () {
         this.eventEmitter.on('uploadBlobProgress', (shardLoaded, shardTotal, blobObj) => {
+            // 文件的速度暂时不做了
+            // let prevProgressTime = blobObj.file.prevProgressTime;
+            // if ( prevProgressTime ) {
+            //     let curProgressTime = new Date().getTime();
+            // } else {
+            //     blobObj.file.uploadSpeed = 0;
+            //     blobObj.file.prevProgressTime = new Date().getTime();
+            // }
             blobObj.loaded = shardLoaded;
 
             let currentLoaded = 0;
@@ -369,17 +377,18 @@ export class Uploader {
                 loaded: currentLoaded,
                 total: fileTotalSize,
                 shardLoaded: shardLoaded,
-                shardTotal: shardTotal
+                shardTotal: shardTotal,
+                uploadSpeed: blobObj.file.uploadSpeed
             });
-        })
+        });
     }
 
     on(eventSource, fn) {
         this.eventEmitter.on(eventSource, fn);
     }
 
-    destory () {
-        this.fileGetter.destory();
+    destroy () {
+        this.fileGetter.destroy();
         this.blobsQueue = this.blobsQueue.filter(item => {
             item.transport && item.transport.abort();
             item.status = blobStatus.CANCELLED;

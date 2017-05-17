@@ -32,8 +32,8 @@ module.exports = {
     },
 
     parseToDOM: function (str) {
-        var div = document.createElement("div");
-        if (typeof str == "string") {div.innerHTML = str;}
+        var div = document.createElement('div');
+        if (typeof str == 'string') {div.innerHTML = str;}
         return div.childNodes;
     },
 
@@ -54,7 +54,7 @@ module.exports = {
         var i = 0;
         var c = function (s) {
             i++;
-            return s / 1024
+            return s / 1024;
         };
 
         while (byte > 1024) {

@@ -44,7 +44,7 @@ module.exports = {
                             // 'latest',
                         ],
                         'plugins': [
-                          'transform-runtime'
+                            'transform-runtime'
                         ],
                         'env': {},
                         'ignore': [

@@ -17,7 +17,7 @@ function gid () {
  * @param {Lib.File} source [lib.File](#Lib.File)实例, 此source对象是带有Runtime信息的。
  */
 
-import Util from './util.js'
+import Util from './util.js';
 
 export function WUFile (source,opt) {
     this.eventEmitter = opt.eventEmitter;

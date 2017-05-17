@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /*
 * the event delegate library
@@ -7,11 +7,15 @@
 
 module.exports = Delegate;
 
+function isArray(obj) {
+    return Object.prototype.toString.call(obj) === '[object Array]';
+}
+
 function Delegate (root) {
     var rootElement = null;
 
     if ( typeof root === 'string' ) {
-        rootElement = document.querySelector(root)
+        rootElement = document.querySelector(root);
     } else {
         rootElement = root;
     }
@@ -26,14 +30,18 @@ function Delegate (root) {
 }
 
 Delegate.prototype.on = function (event, selector, callback) {
+    var selectorArr = isArray(selector) ? selector : selector.split(',');
     if ( !this.eventPool[event] ) { this.eventPool[event] = []; }
     var eventFunc = function (e) {
-        if ( e.target.closest(selector) ) {
-            callback(e);
+
+        for ( var i = 0, len = selectorArr.length; i < len; i++ ) {
+            if ( e.target.closest(selectorArr[i]) ) {
+                callback(e);
+            }
         }
     };
     this.eventPool[event].push(eventFunc);
-    this.root.addEventListener(event, eventFunc, false)
+    this.root.addEventListener(event, eventFunc, false);
 };
 
 Delegate.prototype.off = function (event) {

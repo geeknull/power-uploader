@@ -5,7 +5,7 @@
 建议使用ES6引入。
 
 ```javascript
-import {Uploader, FileStatus} from '../somepath/uploader/index.js';
+import {Uploader, FileStatus} from 'neixin-uploader';
 ```
 
 - `Uploader`：文件传输SDK的构造类
@@ -24,15 +24,14 @@ import {Uploader, FileStatus} from '../somepath/uploader/index.js';
 
 ```javascript
 let uploader = new Uploader({
-    'dnd': 'body',
-    'pick': '.ff-wrap .up-btn',
-    'auto': true,
-    chunked: true,
-    chunkSize: 20971520,
+    pick: '.ff-wrap .up-btn',
+    dnd: 'body, .dnd-area',
+    paste: ['body', '.paste-area'],
     listenerContainer: document,
     body: document.body,
+    chunked: true,
+    chunkSize: 20971520,
     multiple: true,
-    method:'post',
     withCredentials: true
 });
 ```
@@ -67,9 +66,9 @@ let uploader = new Uploader({
 | log | Function | console.log | 记录log的函数 |
 | logLevel | Number | 1 | 暂时不开启使用 |
 
-## 常用对象
+其中`pick`、`dnd`、`paste`填写选择器的时候支持Selector String，通过`,`分隔的Selector String，存放Selector String的数组。
 
-### file对象封装
+## file对象封装
 
 file对象封装在事件回调函数中返回的参数对象里为`file`的`key`
 
@@ -89,8 +88,20 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 
 ## 事件
 
-所有的事件的回调函数返回的参数均是一个对象，参数中常用的的值有
-file、
+所有的事件的回调函数返回的参数均是一个对象，参数中可能有的值说明
+
+| 名称 | 数据类型 | 说明 | 存在事件 |
+| :--- | :--- | :--- | :--- |
+| file | Object | 即上面的file对象封装 | 所有事件 |
+| currentShard | Number | 当前文件分片，从1开始计算，不是从0开始 | 大部分事件 |
+| shardCount | Number | 文件总分片 | 大部分事件 |
+| shard | Blob | 分片的二进制对象，一般很少用到 | 大部分事件 |
+| total | Number | 文件的总字节数 | 大部分事件 |
+| loaded | Number | 文件读取的字节数 | uploadProgress |
+| isUploadEnd | Boolean | 文件是否传输完毕 | uploadProgress |
+| responseText | String | 分片请求后的服务端返回 | uploadAccept |
+| responseText | String | 分片请求后的服务端返回 | uploadAccept |
+| error | Error | 上传错误信息 | uploadError |
 
 - `beforeFileQueued`：文件添加到上传队列之前，可以对文件进行一些过滤，`return false;`会阻止将该文件加入队列。
     
@@ -233,11 +244,11 @@ file、
     `@return Object { file, error[Error] }`
 
 
-文件夹相关文档暂时不写
+文件夹相关的事件，文档暂时不写
 
-- `selectDir`：选择文件夹。
-- `beforeChildFileQueued`：？？？
-- `beforeChildDirQueued`：？？？
+- `selectDir`：选择文件夹
+- `beforeChildFileQueued`：暂无文档
+- `beforeChildDirQueued`：暂无文档
 
 
 

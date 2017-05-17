@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 import EventDelegate from './eventDelegate.js';
 import Util from './util.js';
@@ -243,13 +243,16 @@ export default class {
                         if (_entry.isFile) {
                             let file = await new Promise((res)=> {
                                 _entry.file(async(file) => {
-                                    if(process.env.APP_ENV.indexOf('pc') > -1) {
-                                        Object.defineProperty(file,'path',{
-                                            value:_entry.fullPath
-                                        })
-                                    }else{
-                                        file.path = _entry.fullPath;
-                                    }
+                                    Object.defineProperty(file,'path',{
+                                        value:_entry.fullPath
+                                    });
+                                    // if(process.env.APP_ENV.indexOf('pc') > -1) {
+                                    //     Object.defineProperty(file,'path',{
+                                    //         value:_entry.fullPath
+                                    //     });
+                                    // }else{
+                                    //     file.path = _entry.fullPath;
+                                    // }
                                     res(file);
                                 });
                             });
@@ -268,7 +271,7 @@ export default class {
         }
     }
 
-    destory() {
+    destroy() {
         this.eventEmitter.removeEvents();
 
         if(this.config.dnd) {
