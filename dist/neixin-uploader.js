@@ -1852,7 +1852,8 @@ var _config = {
     },
     log: console.log,
     _log: function _log() {},
-    logLevel: 1
+    logLevel: 1,
+    fileIdPrefix: 'WU_FILE_'
 };
 
 // 分片状态
@@ -1891,13 +1892,18 @@ var Uploader = exports.Uploader = function () {
     (0, _createClass3.default)(Uploader, [{
         key: 'pushQueue',
         value: function () {
-            var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(file) {
+            var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(file, groupInfo) {
                 var wuFile, res;
                 return _regenerator2.default.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                wuFile = new _file.WUFile(file, { eventEmitter: this.eventEmitter, setName: this.config.setName });
+                                wuFile = new _file.WUFile(file, {
+                                    eventEmitter: this.eventEmitter,
+                                    setName: this.config.setName,
+                                    fileIdPrefix: this.config.fileIdPrefix,
+                                    groupInfo: groupInfo || {}
+                                });
                                 _context.next = 3;
                                 return this.eventEmitter.emit('beforeFileQueued', { file: wuFile });
 
@@ -1927,7 +1933,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee, this);
             }));
 
-            function pushQueue(_x2) {
+            function pushQueue(_x2, _x3) {
                 return _ref.apply(this, arguments);
             }
 
@@ -1994,7 +2000,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee2, this);
             }));
 
-            function sliceFile(_x3) {
+            function sliceFile(_x4) {
                 return _ref2.apply(this, arguments);
             }
 
@@ -2061,7 +2067,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee3, this);
             }));
 
-            function pushBlobQueue(_x4, _x5, _x6) {
+            function pushBlobQueue(_x5, _x6, _x7) {
                 return _ref3.apply(this, arguments);
             }
 
@@ -2127,7 +2133,7 @@ var Uploader = exports.Uploader = function () {
 
                                 // 真正的上传
                                 blobObj.file.statusText = _file.WUFile.Status.PROGRESS;
-                                uploadPromise = this._baseupload(blobObj.blob, blobObj.file.name, blobObj);
+                                uploadPromise = this._baseupload(blobObj);
 
                                 uploadPromise.then(function () {
                                     var _ref5 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(res) {
@@ -2149,7 +2155,7 @@ var Uploader = exports.Uploader = function () {
                                         }, _callee4, _this);
                                     }));
 
-                                    return function (_x7) {
+                                    return function (_x8) {
                                         return _ref5.apply(this, arguments);
                                     };
                                 }()).catch(function () {
@@ -2172,7 +2178,7 @@ var Uploader = exports.Uploader = function () {
                                         }, _callee5, _this);
                                     }));
 
-                                    return function (_x8) {
+                                    return function (_x9) {
                                         return _ref6.apply(this, arguments);
                                     };
                                 }());
@@ -2250,7 +2256,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee7, this);
             }));
 
-            function _catchUpfileError(_x9, _x10) {
+            function _catchUpfileError(_x10, _x11) {
                 return _ref7.apply(this, arguments);
             }
 
@@ -2317,7 +2323,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee8, this);
             }));
 
-            function checkFileUploadStart(_x11) {
+            function checkFileUploadStart(_x12) {
                 return _ref8.apply(this, arguments);
             }
 
@@ -2404,7 +2410,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee9, this);
             }));
 
-            function _uploadSuccess(_x12, _x13) {
+            function _uploadSuccess(_x13, _x14) {
                 return _ref9.apply(this, arguments);
             }
 
@@ -2460,7 +2466,7 @@ var Uploader = exports.Uploader = function () {
     }, {
         key: '_baseupload',
         value: function () {
-            var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(blob, fileName, blobObj) {
+            var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(blobObj) {
                 var config, res, i;
                 return _regenerator2.default.wrap(function _callee10$(_context10) {
                     while (1) {
@@ -2474,7 +2480,7 @@ var Uploader = exports.Uploader = function () {
                                     fileVal: this.config.fileVal,
                                     timeout: this.config.timeout, // 2分钟
                                     formData: this.config.formData,
-                                    fileName: fileName,
+                                    fileName: blobObj.file.name,
                                     withCredentials: this.config.withCredentials,
                                     log: this.log
                                 };
@@ -2483,50 +2489,58 @@ var Uploader = exports.Uploader = function () {
 
                             case 3:
                                 if (!(i < this.config.chunkRetry)) {
-                                    _context10.next = 20;
+                                    _context10.next = 22;
                                     break;
                                 }
 
-                                _context10.prev = 4;
+                                if (!(blobObj.status !== blobStatus.PENDING)) {
+                                    _context10.next = 6;
+                                    break;
+                                }
 
-                                this.transport = new _transport.Transport(blob, this.eventEmitter, config, blobObj);
+                                return _context10.abrupt('return', void 0);
+
+                            case 6:
+                                _context10.prev = 6;
+
+                                this.transport = new _transport.Transport(blobObj.blob, this.eventEmitter, config, blobObj);
                                 blobObj.transport = this.transport; // 为了能够abort
-                                _context10.next = 9;
+                                _context10.next = 11;
                                 return this.transport.send();
 
-                            case 9:
+                            case 11:
                                 res = _context10.sent;
-                                return _context10.abrupt('break', 20);
+                                return _context10.abrupt('break', 22);
 
-                            case 13:
-                                _context10.prev = 13;
-                                _context10.t0 = _context10['catch'](4);
+                            case 15:
+                                _context10.prev = 15;
+                                _context10.t0 = _context10['catch'](6);
 
                                 if (!(i >= this.config.chunkRetry - 1)) {
-                                    _context10.next = 17;
+                                    _context10.next = 19;
                                     break;
                                 }
 
                                 throw new Error(_context10.t0);
 
-                            case 17:
+                            case 19:
                                 i++;
                                 _context10.next = 3;
                                 break;
 
-                            case 20:
+                            case 22:
                                 this.transport = null;
                                 return _context10.abrupt('return', res);
 
-                            case 22:
+                            case 24:
                             case 'end':
                                 return _context10.stop();
                         }
                     }
-                }, _callee10, this, [[4, 13]]);
+                }, _callee10, this, [[6, 15]]);
             }));
 
-            function _baseupload(_x14, _x15, _x16) {
+            function _baseupload(_x15) {
                 return _ref10.apply(this, arguments);
             }
 
@@ -2621,10 +2635,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 /**
  * @fileOverview 文件属性封装
  */
-var idPrefix = 'WU_FILE_',
-    idSuffix = 0,
-    rExt = /\.([^.]+)$/,
-    statusMap = {};
+var idPrefix = 'WU_FILE_';
+var idSuffix = 0;
+var rExt = /\.([^.]+)$/;
+var statusMap = {};
 
 function gid() {
   return idPrefix + idSuffix++;
@@ -2639,6 +2653,9 @@ function gid() {
 
 function WUFile(source, opt) {
   this.eventEmitter = opt.eventEmitter;
+  if (opt.fileIdPrefix) {
+    idPrefix = opt.fileIdPrefix;
+  }
   var arrKeys = (0, _keys2.default)(source);
   for (var i in arrKeys) {
     this[arrKeys[i]] = source[arrKeys[i]];
@@ -2655,6 +2672,7 @@ function WUFile(source, opt) {
    * @type {string}
    */
   this.name = source.name || opt.setName(this.id) || 'Untitled';
+  this.groupInfo = opt.groupInfo || {}; // 组信息 id、count、current
 
   var ext = rExt.exec(source.name) ? RegExp.$1.toLowerCase() : '';
   /**
@@ -2864,11 +2882,12 @@ var _class = function () {
         this.log = config.log;
 
         this._selectFileTransactionId = 0;
-        this.pushQueue = function (file) {
+
+        this.pushQueue = function (file, groupInfo) {
             file = _this.fileFilter(file);
             if (file) {
                 file.selectFileTransactionId = _this._selectFileTransactionId;
-                pushQueue(file);
+                pushQueue(file, groupInfo);
             }
         };
 
@@ -2977,7 +2996,12 @@ var _class = function () {
                             event.stopPropagation();
                             event.preventDefault();
                             _this2._selectFileTransactionId++;
-                            _this2.pushQueue(blob);
+                            var groupInfo = {
+                                id: _this2._selectFileTransactionId,
+                                count: 1,
+                                current: 1
+                            };
+                            _this2.pushQueue(blob, groupInfo);
                         }
                     }
                 });
@@ -3169,12 +3193,14 @@ var _class = function () {
         key: 'funGetFiles',
         value: function () {
             var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(e) {
-                var files, items, entrys, key, index, l, file, entry;
+                var id, count, files, items, entrys, key, index, l, file, entry, groupInfo;
                 return _regenerator2.default.wrap(function _callee7$(_context7) {
                     while (1) {
                         switch (_context7.prev = _context7.next) {
                             case 0:
                                 this._selectFileTransactionId++;
+                                id = this._selectFileTransactionId;
+                                count = 0;
                                 files = e.target.files || e.dataTransfer.files;
                                 items = e.target.items || e.dataTransfer && e.dataTransfer.items;
                                 entrys = [];
@@ -3190,44 +3216,44 @@ var _class = function () {
                                         }
                                     }
                                 }
-                                _context7.next = 7;
+                                _context7.next = 9;
                                 return this.eventEmitter.emit('beforeFilesQueued', files);
 
-                            case 7:
+                            case 9:
                                 index = 0, l = (0, _keys2.default)(files).length;
 
-                            case 8:
+                            case 10:
                                 if (!(index < l)) {
-                                    _context7.next = 29;
+                                    _context7.next = 32;
                                     break;
                                 }
 
                                 file = files[index];
 
                                 if (!file) {
-                                    _context7.next = 26;
+                                    _context7.next = 29;
                                     break;
                                 }
 
                                 if (!(entrys && entrys[index])) {
-                                    _context7.next = 17;
+                                    _context7.next = 19;
                                     break;
                                 }
 
                                 entry = entrys[index];
 
                                 if (!(entry !== null && entry.isDirectory)) {
-                                    _context7.next = 17;
+                                    _context7.next = 19;
                                     break;
                                 }
 
-                                _context7.next = 16;
-                                return this.folderRead(entry);
+                                _context7.next = 18;
+                                return this.folderRead(entry, { id: id, count: count });
 
-                            case 16:
-                                return _context7.abrupt('continue', 26);
+                            case 18:
+                                return _context7.abrupt('continue', 29);
 
-                            case 17:
+                            case 19:
                                 // PC版上，path是只读属性，必须通过 Object.defineProperty来设置
                                 // file.path = '/' + file.name;
                                 // TODO 屏蔽大象PC差异
@@ -3242,35 +3268,41 @@ var _class = function () {
                                     value: '/' + file.name
                                 });
 
+                                groupInfo = {
+                                    id: id,
+                                    count: ++count,
+                                    current: count
+                                };
+
                                 if (!this.config.multiple) {
-                                    _context7.next = 23;
+                                    _context7.next = 26;
                                     break;
                                 }
 
-                                _context7.next = 21;
-                                return this.pushQueue(file);
+                                _context7.next = 24;
+                                return this.pushQueue(file, groupInfo);
 
-                            case 21:
-                                _context7.next = 26;
+                            case 24:
+                                _context7.next = 29;
                                 break;
-
-                            case 23:
-                                _context7.next = 25;
-                                return this.pushQueue(file);
-
-                            case 25:
-                                return _context7.abrupt('break', 29);
 
                             case 26:
-                                index++;
-                                _context7.next = 8;
-                                break;
+                                _context7.next = 28;
+                                return this.pushQueue(file, groupInfo);
+
+                            case 28:
+                                return _context7.abrupt('break', 32);
 
                             case 29:
-                                _context7.next = 31;
+                                index++;
+                                _context7.next = 10;
+                                break;
+
+                            case 32:
+                                _context7.next = 34;
                                 return this.eventEmitter.emit('filesQueued');
 
-                            case 31:
+                            case 34:
                             case 'end':
                                 return _context7.stop();
                         }
@@ -3287,9 +3319,11 @@ var _class = function () {
     }, {
         key: 'folderRead',
         value: function () {
-            var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(entry) {
+            var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(entry, _ref8) {
                 var _this3 = this;
 
+                var id = _ref8.id,
+                    count = _ref8.count;
                 var res;
                 return _regenerator2.default.wrap(function _callee10$(_context11) {
                     while (1) {
@@ -3311,7 +3345,7 @@ var _class = function () {
                                 _context11.next = 8;
                                 return new _promise2.default(function (res) {
                                     entry.createReader().readEntries(function () {
-                                        var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(entries) {
+                                        var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(entries) {
                                             var _loop, i;
 
                                             return _regenerator2.default.wrap(function _callee9$(_context10) {
@@ -3319,7 +3353,7 @@ var _class = function () {
                                                     switch (_context10.prev = _context10.next) {
                                                         case 0:
                                                             _loop = _regenerator2.default.mark(function _loop() {
-                                                                var _entry, file;
+                                                                var _entry, file, groupInfo;
 
                                                                 return _regenerator2.default.wrap(function _loop$(_context9) {
                                                                     while (1) {
@@ -3328,14 +3362,14 @@ var _class = function () {
                                                                                 _entry = entries[i];
 
                                                                                 if (!_entry.isFile) {
-                                                                                    _context9.next = 13;
+                                                                                    _context9.next = 14;
                                                                                     break;
                                                                                 }
 
                                                                                 _context9.next = 4;
                                                                                 return new _promise2.default(function (res) {
                                                                                     _entry.file(function () {
-                                                                                        var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(file) {
+                                                                                        var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(file) {
                                                                                             return _regenerator2.default.wrap(function _callee8$(_context8) {
                                                                                                 while (1) {
                                                                                                     switch (_context8.prev = _context8.next) {
@@ -3360,8 +3394,8 @@ var _class = function () {
                                                                                             }, _callee8, _this3);
                                                                                         }));
 
-                                                                                        return function (_x11) {
-                                                                                            return _ref10.apply(this, arguments);
+                                                                                        return function (_x12) {
+                                                                                            return _ref11.apply(this, arguments);
                                                                                         };
                                                                                     }());
                                                                                 });
@@ -3372,35 +3406,42 @@ var _class = function () {
                                                                                 return _this3.eventEmitter.emit('beforeChildFileQueued', file, entry);
 
                                                                             case 7:
-                                                                                _context9.next = 9;
-                                                                                return _this3.pushQueue(file, entry);
 
-                                                                            case 9:
-                                                                                _context9.next = 11;
+                                                                                // 是上一个作用域的 即funGetFiles的
+                                                                                groupInfo = {
+                                                                                    id: id,
+                                                                                    count: ++count,
+                                                                                    current: count
+                                                                                };
+                                                                                _context9.next = 10;
+                                                                                return _this3.pushQueue(file, groupInfo);
+
+                                                                            case 10:
+                                                                                _context9.next = 12;
                                                                                 return _this3.eventEmitter.emit('childFileQueued', file);
 
-                                                                            case 11:
-                                                                                _context9.next = 20;
+                                                                            case 12:
+                                                                                _context9.next = 21;
                                                                                 break;
 
-                                                                            case 13:
+                                                                            case 14:
                                                                                 if (!_entry.isDirectory) {
-                                                                                    _context9.next = 20;
+                                                                                    _context9.next = 21;
                                                                                     break;
                                                                                 }
 
-                                                                                _context9.next = 16;
+                                                                                _context9.next = 17;
                                                                                 return _this3.eventEmitter.emit('beforeChildDirQueued', _entry, entry);
 
-                                                                            case 16:
-                                                                                _context9.next = 18;
-                                                                                return _this3.folderRead(_entry, entry);
+                                                                            case 17:
+                                                                                _context9.next = 19;
+                                                                                return _this3.folderRead(_entry, { id: id, count: count });
 
-                                                                            case 18:
-                                                                                _context9.next = 20;
+                                                                            case 19:
+                                                                                _context9.next = 21;
                                                                                 return _this3.eventEmitter.emit('childDirQueued', _entry);
 
-                                                                            case 20:
+                                                                            case 21:
                                                                             case 'end':
                                                                                 return _context9.stop();
                                                                         }
@@ -3433,8 +3474,8 @@ var _class = function () {
                                             }, _callee9, _this3);
                                         }));
 
-                                        return function (_x10) {
-                                            return _ref9.apply(this, arguments);
+                                        return function (_x11) {
+                                            return _ref10.apply(this, arguments);
                                         };
                                     }());
                                 });
@@ -3447,8 +3488,8 @@ var _class = function () {
                 }, _callee10, this);
             }));
 
-            function folderRead(_x9) {
-                return _ref8.apply(this, arguments);
+            function folderRead(_x9, _x10) {
+                return _ref9.apply(this, arguments);
             }
 
             return folderRead;
