@@ -1,10 +1,10 @@
 /**
  * @fileOverview 文件属性封装
  */
-var idPrefix = 'WU_FILE_',
-    idSuffix = 0,
-    rExt = /\.([^.]+)$/,
-    statusMap = {};
+let idPrefix = 'WU_FILE_';
+let idSuffix = 0;
+let rExt = /\.([^.]+)$/;
+let statusMap = {};
 
 function gid () {
     return idPrefix + idSuffix++;
@@ -21,6 +21,9 @@ import Util from './util.js';
 
 export function WUFile (source,opt) {
     this.eventEmitter = opt.eventEmitter;
+    if ( opt.fileIdPrefix ) {
+        idPrefix = opt.fileIdPrefix;
+    }
     let arrKeys = Object.keys(source);
     for(let i in arrKeys) {
         this[arrKeys[i]] = source[arrKeys[i]];
@@ -37,6 +40,7 @@ export function WUFile (source,opt) {
      * @type {string}
      */
     this.name = source.name || opt.setName(this.id) || 'Untitled';
+    this.groupInfo = opt.groupInfo || {}; // 组信息 id、count、current
 
     let ext = rExt.exec(source.name) ? RegExp.$1.toLowerCase() : '';
     /**

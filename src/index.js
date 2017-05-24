@@ -32,7 +32,8 @@ let _config = {
     setName: (id) => new Date().getTime() + id,
     log: console.log,
     _log: () => {},
-    logLevel: 1
+    logLevel: 1,
+    fileIdPrefix: 'WU_FILE_'
 };
 
 // 分片状态
@@ -64,8 +65,13 @@ export class Uploader {
     }
 
     // 在这里有`beforeFileQueued`事件，用户可以在这个事件阻止文件被加入队列
-    async pushQueue(file) {
-        let wuFile = new WUFile(file, {eventEmitter: this.eventEmitter, setName: this.config.setName});
+    async pushQueue(file, groupInfo) {
+        let wuFile = new WUFile(file, {
+            eventEmitter: this.eventEmitter,
+            setName: this.config.setName,
+            fileIdPrefix: this.config.fileIdPrefix,
+            groupInfo: groupInfo || {}
+        });
         let res = await this.eventEmitter.emit('beforeFileQueued', {file: wuFile});
         if (res.indexOf(false) === -1) {
             wuFile.statusText = WUFile.Status.QUEUED;
@@ -161,7 +167,7 @@ export class Uploader {
 
             // 真正的上传
             blobObj.file.statusText = WUFile.Status.PROGRESS;
-            let uploadPromise = this._baseupload(blobObj.blob, blobObj.file.name, blobObj);
+            let uploadPromise = this._baseupload(blobObj);
             uploadPromise.then(async res => {
                 await this._uploadSuccess(res, blobObj);
                 this.runBlobQueue();
@@ -322,7 +328,7 @@ export class Uploader {
         });
     }
 
-    async _baseupload(blob, fileName, blobObj) { // 加入了第三个参数
+    async _baseupload(blobObj) { // 加入了第三个参数
         let config = {
             server: blobObj.config.server,
             headers: blobObj.config.headers,
@@ -330,14 +336,17 @@ export class Uploader {
             fileVal: this.config.fileVal,
             timeout: this.config.timeout,    // 2分钟
             formData: this.config.formData,
-            fileName: fileName,
+            fileName: blobObj.file.name,
             withCredentials: this.config.withCredentials,
             log: this.log
         };
         let res = null;
         for (let i = 0; i < this.config.chunkRetry; i++) {
+            if ( blobObj.status !== blobStatus.PENDING ) {
+                return void 0; // 防止终止后retry继续触发
+            }
             try {
-                this.transport = new Transport(blob, this.eventEmitter, config, blobObj);
+                this.transport = new Transport(blobObj.blob, this.eventEmitter, config, blobObj);
                 blobObj.transport = this.transport; // 为了能够abort
                 res = await this.transport.send();
                 break;
