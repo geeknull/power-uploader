@@ -2427,7 +2427,7 @@ var Uploader = exports.Uploader = function () {
         key: 'interruptFile',
         value: function interruptFile(id) {
             this.blobsQueue.forEach(function (item) {
-                if (item.file.id === id) {
+                if (item.file.id === id && item.status !== blobStatus.SUCCESS) {
                     item.file.statusText = _file.WUFile.Status.INTERRUPT;
                     item.status = blobStatus.INTERRUPT;
                     item.transport && item.transport.abort();

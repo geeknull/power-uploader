@@ -1,6 +1,6 @@
 {
   "name": "neixin-uploader",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "## 引入方式",
   "main": "./dist/neixin-uploader.js",
   "scripts": {

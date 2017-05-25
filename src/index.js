@@ -295,7 +295,7 @@ export class Uploader {
 
     interruptFile(id) {
         this.blobsQueue.forEach(item => {
-            if ( item.file.id === id ) {
+            if ( item.file.id === id && item.status !== blobStatus.SUCCESS ) {
                 item.file.statusText = WUFile.Status.INTERRUPT;
                 item.status = blobStatus.INTERRUPT;
                 item.transport && item.transport.abort();
