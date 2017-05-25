@@ -1,4 +1,4 @@
-# 0.1.6 TODO 2017.05.25
+# 0.1.7 TODO 2017.05.25
 - 修复文件批量标识中的总数量 不过会使childFileQueued、childDirQueued并不会真的入队列，因为要统计总数量了[√]
 - 修复主动上传支持意外抛出uploadAccept事件[√]
 
