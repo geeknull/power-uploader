@@ -343,7 +343,7 @@ export class Uploader {
         let res = null;
         for (let i = 0; i < this.config.chunkRetry; i++) {
             if ( blobObj.status !== blobStatus.PENDING ) {
-                return void 0; // 防止终止后retry继续触发
+                throw new Error('initiative stoped'); // 防止终止后retry继续触发
             }
             try {
                 this.transport = new Transport(blobObj.blob, this.eventEmitter, config, blobObj);

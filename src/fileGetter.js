@@ -185,6 +185,7 @@ export default class {
 
     //获取选择文件，file控件或拖放
     async funGetFiles(e) {
+        let tmpFileArr = [];
         this._selectFileTransactionId++;
         let id = this._selectFileTransactionId;
         let count = 0;
@@ -210,7 +211,7 @@ export default class {
                 if (entrys && entrys[index]) {
                     let entry = entrys[index];
                     if (entry !== null && entry.isDirectory) {
-                        await this.folderRead(entry, { id, count });
+                        await this.folderRead(entry, tmpFileArr);
                         continue;
                     }
                 }
@@ -228,25 +229,36 @@ export default class {
                     value:'/' + file.name
                 });
 
-                let groupInfo = {
-                    id: id,
-                    count: ++count,
-                    current: count
-                };
+                // let groupInfo = {
+                //     id: id,
+                //     count: ++count,
+                //     current: count
+                // };
                 if(!!this.config.multiple) {
-                    await this.pushQueue(file, groupInfo);
+                    tmpFileArr.push(file);
+                    // await this.pushQueue(file, groupInfo);
                 }else{
-                    await this.pushQueue(file, groupInfo);
+                    tmpFileArr.push(file);
+                    // await this.pushQueue(file, groupInfo);
                     break;
                 }
 
             }
         }
         // logger.log('files queued');
+        tmpFileArr.forEach(async (item, index, array) => {
+            let count = array.length;
+            let current = index+1;
+            let groupInfo = {
+                count, current,
+                id: id
+            };
+            await this.pushQueue(item, groupInfo);
+        });
         await this.eventEmitter.emit('filesQueued');
     }
 
-    async folderRead(entry, { id, count }) {
+    async folderRead(entry, tmpFileArr) {
         entry.path = entry.fullPath;
         entry.selectFileTransactionId = this._selectFileTransactionId;
         let res = await this.eventEmitter.emit('selectDir', entry);
@@ -274,17 +286,18 @@ export default class {
                             await this.eventEmitter.emit('beforeChildFileQueued', file, entry);
 
                             // 是上一个作用域的 即funGetFiles的
-                            let groupInfo = {
-                                id: id,
-                                count: ++count,
-                                current: count
-                            };
-                            await this.pushQueue(file, groupInfo);
-                            await this.eventEmitter.emit('childFileQueued', file);
+                            // let groupInfo = {
+                            //     id: id,
+                            //     count: ++count,
+                            //     current: count
+                            // };
+                            tmpFileArr.push(file);
+                            // await this.pushQueue(file, groupInfo);
+                            await this.eventEmitter.emit('childFileQueued', file); // 假的
                         } else if (_entry.isDirectory) {
                             await this.eventEmitter.emit('beforeChildDirQueued', _entry, entry);
                             // await this.folderRead(_entry, entry);
-                            await this.folderRead(_entry, { id, count });
+                            await this.folderRead(_entry, tmpFileArr);
                             await this.eventEmitter.emit('childDirQueued', _entry);
                         }
                     }

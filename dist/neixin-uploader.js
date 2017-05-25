@@ -2498,7 +2498,7 @@ var Uploader = exports.Uploader = function () {
                                     break;
                                 }
 
-                                return _context10.abrupt('return', void 0);
+                                throw new Error('initiative stoped');
 
                             case 6:
                                 _context10.prev = 6;
@@ -3192,12 +3192,16 @@ var _class = function () {
     }, {
         key: 'funGetFiles',
         value: function () {
-            var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(e) {
-                var id, count, files, items, entrys, key, index, l, file, entry, groupInfo;
-                return _regenerator2.default.wrap(function _callee7$(_context7) {
+            var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(e) {
+                var _this3 = this;
+
+                var tmpFileArr, id, count, files, items, entrys, key, index, l, file, entry;
+                return _regenerator2.default.wrap(function _callee8$(_context8) {
                     while (1) {
-                        switch (_context7.prev = _context7.next) {
+                        switch (_context8.prev = _context8.next) {
                             case 0:
+                                tmpFileArr = [];
+
                                 this._selectFileTransactionId++;
                                 id = this._selectFileTransactionId;
                                 count = 0;
@@ -3216,44 +3220,44 @@ var _class = function () {
                                         }
                                     }
                                 }
-                                _context7.next = 9;
+                                _context8.next = 10;
                                 return this.eventEmitter.emit('beforeFilesQueued', files);
 
-                            case 9:
+                            case 10:
                                 index = 0, l = (0, _keys2.default)(files).length;
 
-                            case 10:
+                            case 11:
                                 if (!(index < l)) {
-                                    _context7.next = 32;
+                                    _context8.next = 30;
                                     break;
                                 }
 
                                 file = files[index];
 
                                 if (!file) {
-                                    _context7.next = 29;
+                                    _context8.next = 27;
                                     break;
                                 }
 
                                 if (!(entrys && entrys[index])) {
-                                    _context7.next = 19;
+                                    _context8.next = 20;
                                     break;
                                 }
 
                                 entry = entrys[index];
 
                                 if (!(entry !== null && entry.isDirectory)) {
-                                    _context7.next = 19;
+                                    _context8.next = 20;
                                     break;
                                 }
 
-                                _context7.next = 18;
-                                return this.folderRead(entry, { id: id, count: count });
-
-                            case 18:
-                                return _context7.abrupt('continue', 29);
+                                _context8.next = 19;
+                                return this.folderRead(entry, tmpFileArr);
 
                             case 19:
+                                return _context8.abrupt('continue', 27);
+
+                            case 20:
                                 // PC版上，path是只读属性，必须通过 Object.defineProperty来设置
                                 // file.path = '/' + file.name;
                                 // TODO 屏蔽大象PC差异
@@ -3268,46 +3272,71 @@ var _class = function () {
                                     value: '/' + file.name
                                 });
 
-                                groupInfo = {
-                                    id: id,
-                                    count: ++count,
-                                    current: count
-                                };
+                                // let groupInfo = {
+                                //     id: id,
+                                //     count: ++count,
+                                //     current: count
+                                // };
 
                                 if (!this.config.multiple) {
-                                    _context7.next = 26;
+                                    _context8.next = 25;
                                     break;
                                 }
 
-                                _context7.next = 24;
-                                return this.pushQueue(file, groupInfo);
-
-                            case 24:
-                                _context7.next = 29;
+                                tmpFileArr.push(file);
+                                // await this.pushQueue(file, groupInfo);
+                                _context8.next = 27;
                                 break;
 
-                            case 26:
-                                _context7.next = 28;
-                                return this.pushQueue(file, groupInfo);
+                            case 25:
+                                tmpFileArr.push(file);
+                                // await this.pushQueue(file, groupInfo);
+                                return _context8.abrupt('break', 30);
 
-                            case 28:
-                                return _context7.abrupt('break', 32);
-
-                            case 29:
+                            case 27:
                                 index++;
-                                _context7.next = 10;
+                                _context8.next = 11;
                                 break;
 
-                            case 32:
-                                _context7.next = 34;
+                            case 30:
+                                // logger.log('files queued');
+                                tmpFileArr.forEach(function () {
+                                    var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee7(item, index, array) {
+                                        var count, current, groupInfo;
+                                        return _regenerator2.default.wrap(function _callee7$(_context7) {
+                                            while (1) {
+                                                switch (_context7.prev = _context7.next) {
+                                                    case 0:
+                                                        count = array.length;
+                                                        current = index + 1;
+                                                        groupInfo = {
+                                                            count: count, current: current,
+                                                            id: id
+                                                        };
+                                                        _context7.next = 5;
+                                                        return _this3.pushQueue(item, groupInfo);
+
+                                                    case 5:
+                                                    case 'end':
+                                                        return _context7.stop();
+                                                }
+                                            }
+                                        }, _callee7, _this3);
+                                    }));
+
+                                    return function (_x9, _x10, _x11) {
+                                        return _ref8.apply(this, arguments);
+                                    };
+                                }());
+                                _context8.next = 33;
                                 return this.eventEmitter.emit('filesQueued');
 
-                            case 34:
+                            case 33:
                             case 'end':
-                                return _context7.stop();
+                                return _context8.stop();
                         }
                     }
-                }, _callee7, this);
+                }, _callee8, this);
             }));
 
             function funGetFiles(_x8) {
@@ -3319,60 +3348,58 @@ var _class = function () {
     }, {
         key: 'folderRead',
         value: function () {
-            var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(entry, _ref8) {
-                var _this3 = this;
+            var _ref9 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee11(entry, tmpFileArr) {
+                var _this4 = this;
 
-                var id = _ref8.id,
-                    count = _ref8.count;
                 var res;
-                return _regenerator2.default.wrap(function _callee10$(_context11) {
+                return _regenerator2.default.wrap(function _callee11$(_context12) {
                     while (1) {
-                        switch (_context11.prev = _context11.next) {
+                        switch (_context12.prev = _context12.next) {
                             case 0:
                                 entry.path = entry.fullPath;
                                 entry.selectFileTransactionId = this._selectFileTransactionId;
-                                _context11.next = 4;
+                                _context12.next = 4;
                                 return this.eventEmitter.emit('selectDir', entry);
 
                             case 4:
-                                res = _context11.sent;
+                                res = _context12.sent;
 
                                 if (!(res.indexOf(false) === -1)) {
-                                    _context11.next = 8;
+                                    _context12.next = 8;
                                     break;
                                 }
 
-                                _context11.next = 8;
+                                _context12.next = 8;
                                 return new _promise2.default(function (res) {
                                     entry.createReader().readEntries(function () {
-                                        var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(entries) {
+                                        var _ref10 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee10(entries) {
                                             var _loop, i;
 
-                                            return _regenerator2.default.wrap(function _callee9$(_context10) {
+                                            return _regenerator2.default.wrap(function _callee10$(_context11) {
                                                 while (1) {
-                                                    switch (_context10.prev = _context10.next) {
+                                                    switch (_context11.prev = _context11.next) {
                                                         case 0:
                                                             _loop = _regenerator2.default.mark(function _loop() {
-                                                                var _entry, file, groupInfo;
+                                                                var _entry, file;
 
-                                                                return _regenerator2.default.wrap(function _loop$(_context9) {
+                                                                return _regenerator2.default.wrap(function _loop$(_context10) {
                                                                     while (1) {
-                                                                        switch (_context9.prev = _context9.next) {
+                                                                        switch (_context10.prev = _context10.next) {
                                                                             case 0:
                                                                                 _entry = entries[i];
 
                                                                                 if (!_entry.isFile) {
-                                                                                    _context9.next = 14;
+                                                                                    _context10.next = 12;
                                                                                     break;
                                                                                 }
 
-                                                                                _context9.next = 4;
+                                                                                _context10.next = 4;
                                                                                 return new _promise2.default(function (res) {
                                                                                     _entry.file(function () {
-                                                                                        var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee8(file) {
-                                                                                            return _regenerator2.default.wrap(function _callee8$(_context8) {
+                                                                                        var _ref11 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee9(file) {
+                                                                                            return _regenerator2.default.wrap(function _callee9$(_context9) {
                                                                                                 while (1) {
-                                                                                                    switch (_context8.prev = _context8.next) {
+                                                                                                    switch (_context9.prev = _context9.next) {
                                                                                                         case 0:
                                                                                                             Object.defineProperty(file, 'path', {
                                                                                                                 value: _entry.fullPath
@@ -3388,79 +3415,77 @@ var _class = function () {
 
                                                                                                         case 2:
                                                                                                         case 'end':
-                                                                                                            return _context8.stop();
+                                                                                                            return _context9.stop();
                                                                                                     }
                                                                                                 }
-                                                                                            }, _callee8, _this3);
+                                                                                            }, _callee9, _this4);
                                                                                         }));
 
-                                                                                        return function (_x12) {
+                                                                                        return function (_x15) {
                                                                                             return _ref11.apply(this, arguments);
                                                                                         };
                                                                                     }());
                                                                                 });
 
                                                                             case 4:
-                                                                                file = _context9.sent;
-                                                                                _context9.next = 7;
-                                                                                return _this3.eventEmitter.emit('beforeChildFileQueued', file, entry);
+                                                                                file = _context10.sent;
+                                                                                _context10.next = 7;
+                                                                                return _this4.eventEmitter.emit('beforeChildFileQueued', file, entry);
 
                                                                             case 7:
 
                                                                                 // 是上一个作用域的 即funGetFiles的
-                                                                                groupInfo = {
-                                                                                    id: id,
-                                                                                    count: ++count,
-                                                                                    current: count
-                                                                                };
-                                                                                _context9.next = 10;
-                                                                                return _this3.pushQueue(file, groupInfo);
+                                                                                // let groupInfo = {
+                                                                                //     id: id,
+                                                                                //     count: ++count,
+                                                                                //     current: count
+                                                                                // };
+                                                                                tmpFileArr.push(file);
+                                                                                // await this.pushQueue(file, groupInfo);
+                                                                                _context10.next = 10;
+                                                                                return _this4.eventEmitter.emit('childFileQueued', file);
 
                                                                             case 10:
-                                                                                _context9.next = 12;
-                                                                                return _this3.eventEmitter.emit('childFileQueued', file);
-
-                                                                            case 12:
-                                                                                _context9.next = 21;
+                                                                                _context10.next = 19;
                                                                                 break;
 
-                                                                            case 14:
+                                                                            case 12:
                                                                                 if (!_entry.isDirectory) {
-                                                                                    _context9.next = 21;
+                                                                                    _context10.next = 19;
                                                                                     break;
                                                                                 }
 
-                                                                                _context9.next = 17;
-                                                                                return _this3.eventEmitter.emit('beforeChildDirQueued', _entry, entry);
+                                                                                _context10.next = 15;
+                                                                                return _this4.eventEmitter.emit('beforeChildDirQueued', _entry, entry);
+
+                                                                            case 15:
+                                                                                _context10.next = 17;
+                                                                                return _this4.folderRead(_entry, tmpFileArr);
 
                                                                             case 17:
-                                                                                _context9.next = 19;
-                                                                                return _this3.folderRead(_entry, { id: id, count: count });
+                                                                                _context10.next = 19;
+                                                                                return _this4.eventEmitter.emit('childDirQueued', _entry);
 
                                                                             case 19:
-                                                                                _context9.next = 21;
-                                                                                return _this3.eventEmitter.emit('childDirQueued', _entry);
-
-                                                                            case 21:
                                                                             case 'end':
-                                                                                return _context9.stop();
+                                                                                return _context10.stop();
                                                                         }
                                                                     }
-                                                                }, _loop, _this3);
+                                                                }, _loop, _this4);
                                                             });
                                                             i = 0;
 
                                                         case 2:
                                                             if (!(i < entries.length)) {
-                                                                _context10.next = 7;
+                                                                _context11.next = 7;
                                                                 break;
                                                             }
 
-                                                            return _context10.delegateYield(_loop(), 't0', 4);
+                                                            return _context11.delegateYield(_loop(), 't0', 4);
 
                                                         case 4:
                                                             i++;
-                                                            _context10.next = 2;
+                                                            _context11.next = 2;
                                                             break;
 
                                                         case 7:
@@ -3468,13 +3493,13 @@ var _class = function () {
 
                                                         case 8:
                                                         case 'end':
-                                                            return _context10.stop();
+                                                            return _context11.stop();
                                                     }
                                                 }
-                                            }, _callee9, _this3);
+                                            }, _callee10, _this4);
                                         }));
 
-                                        return function (_x11) {
+                                        return function (_x14) {
                                             return _ref10.apply(this, arguments);
                                         };
                                     }());
@@ -3482,13 +3507,13 @@ var _class = function () {
 
                             case 8:
                             case 'end':
-                                return _context11.stop();
+                                return _context12.stop();
                         }
                     }
-                }, _callee10, this);
+                }, _callee11, this);
             }));
 
-            function folderRead(_x9, _x10) {
+            function folderRead(_x12, _x13) {
                 return _ref9.apply(this, arguments);
             }
 
