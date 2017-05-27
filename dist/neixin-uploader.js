@@ -619,14 +619,6 @@ __webpack_require__(51)(String, 'String', function(iterated){
 
 "use strict";
 
-/**
- * Finds the index.scss of the listener for the event in its storage array.
- *
- * @param {Function[]} listeners Array of listeners to search through.
- * @param {Function} listener Method to look for.
- * @return {Number} Index of the specified listener, -1 if not found
- * @api private
- */
 
 Object.defineProperty(exports, "__esModule", {
     value: true
@@ -650,6 +642,14 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+/**
+ * Finds the index.scss of the listener for the event in its storage array.
+ *
+ * @param {Function[]} listeners Array of listeners to search through.
+ * @param {Function} listener Method to look for.
+ * @return {Number} Index of the specified listener, -1 if not found
+ * @api private
+ */
 function indexOfListener(listeners, listener) {
     var i = listeners.length;
     while (i--) {
@@ -2210,6 +2210,14 @@ var Uploader = exports.Uploader = function () {
                     while (1) {
                         switch (_context7.prev = _context7.next) {
                             case 0:
+                                if (!(err.message === 'initiative interrupt')) {
+                                    _context7.next = 2;
+                                    break;
+                                }
+
+                                return _context7.abrupt('return', void 0);
+
+                            case 2:
                                 this.log('in _catchUpfileError', blobObj.status, blobObj.file.id);
                                 // TODO 重置错误分片的loaded属性
 
@@ -2217,7 +2225,7 @@ var Uploader = exports.Uploader = function () {
                                 // 已经错误处理过的文件就不需要处理了
 
                                 if (blobObj.status === blobStatus.CANCELLED || blobObj.status === blobStatus.INTERRUPT || blobObj.status === blobStatus.ERROR) {
-                                    _context7.next = 8;
+                                    _context7.next = 10;
                                     break;
                                 }
 
@@ -2233,14 +2241,14 @@ var Uploader = exports.Uploader = function () {
                                     return item;
                                 });
 
-                                _context7.next = 6;
+                                _context7.next = 8;
                                 return this.eventEmitter.emit('uploadError', {
                                     file: blobObj.file,
                                     error: err
                                 });
 
-                            case 6:
-                                _context7.next = 8;
+                            case 8:
+                                _context7.next = 10;
                                 return this.eventEmitter.emit('uploadEndSend', {
                                     file: blobObj.file,
                                     shard: blobObj.blob,
@@ -2248,7 +2256,7 @@ var Uploader = exports.Uploader = function () {
                                     currentShard: blobObj.shard.currentShard
                                 });
 
-                            case 8:
+                            case 10:
                             case 'end':
                                 return _context7.stop();
                         }
@@ -2498,7 +2506,7 @@ var Uploader = exports.Uploader = function () {
                                     break;
                                 }
 
-                                throw new Error('initiative stoped');
+                                throw new Error('initiative interrupt');
 
                             case 6:
                                 _context10.prev = 6;
@@ -2563,6 +2571,11 @@ var Uploader = exports.Uploader = function () {
                 //     blobObj.file.uploadSpeed = 0;
                 //     blobObj.file.prevProgressTime = new Date().getTime();
                 // }
+                //
+                // 修复abort后还会抛出progress事件的问题
+                if (blobObj.status !== blobStatus.PENDING) {
+                    return void 0;
+                }
                 blobObj.loaded = shardLoaded;
 
                 var currentLoaded = 0;

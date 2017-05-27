@@ -1,5 +1,3 @@
-'use strict';
-
 import EventEmitter from './eventBus.js';
 import EventDelegate from './eventDelegate.js';
 import {Transport} from './transport.js';
@@ -180,6 +178,9 @@ export class Uploader {
 
     // 错误处理
     async _catchUpfileError(err, blobObj) {
+        if ( err.message === 'initiative interrupt' ) {
+            return void 0;
+        }
         this.log('in _catchUpfileError', blobObj.status, blobObj.file.id);
         // TODO 重置错误分片的loaded属性
 
@@ -343,7 +344,7 @@ export class Uploader {
         let res = null;
         for (let i = 0; i < this.config.chunkRetry; i++) {
             if ( blobObj.status !== blobStatus.PENDING ) {
-                throw new Error('initiative stoped'); // 防止终止后retry继续触发
+                throw new Error('initiative interrupt'); // 防止终止后retry继续触发
             }
             try {
                 this.transport = new Transport(blobObj.blob, this.eventEmitter, config, blobObj);
@@ -371,6 +372,11 @@ export class Uploader {
             //     blobObj.file.uploadSpeed = 0;
             //     blobObj.file.prevProgressTime = new Date().getTime();
             // }
+            //
+            // 修复abort后还会抛出progress事件的问题
+            if ( blobObj.status !== blobStatus.PENDING ) {
+                return void 0;
+            }
             blobObj.loaded = shardLoaded;
 
             let currentLoaded = 0;

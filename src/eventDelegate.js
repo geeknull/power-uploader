@@ -1,5 +1,3 @@
-'use strict';
-
 /*
 * the event delegate library
 *

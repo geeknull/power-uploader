@@ -1,5 +1,3 @@
-'use strict';
-
 import EventDelegate from './eventDelegate.js';
 import Util from './util.js';
 
