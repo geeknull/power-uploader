@@ -333,9 +333,11 @@ export class Uploader {
             }
         });
 
-        this.eventEmitter.emit('interrupted', {
-            file: fileObj.file
-        });
+        if ( fileObj ) {
+            this.eventEmitter.emit('interrupted', {
+                file: fileObj.file
+            });
+        }
     }
 
     //中断所有
