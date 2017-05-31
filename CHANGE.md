@@ -1,5 +1,7 @@
 # 0.1.10 2017.05.27
-- 修复Safari诡异问题
+- 修复Safari诡异问题[√]
+- 给大部分异步函数增加了try catch[√]
+- 不要在async中用到arguments🤣
 
 # 0.1.9 2017.05.27
 - 修复abort后还会抛出progress事件的问题[√]

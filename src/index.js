@@ -84,8 +84,7 @@ export class Uploader {
                 // TODO 不需要auto的时候还没做
             }
         } catch (err) {
-            console.log(err);
-            debugger;
+            this.LOG.ERROR('pushQueue', err);
         }
     }
 
@@ -111,8 +110,7 @@ export class Uploader {
                 }
             }
         } catch (err) {
-            console.log(err);
-            debugger;
+            this.LOG.ERROR('sliceFile', err);
         }
     }
 
@@ -152,8 +150,7 @@ export class Uploader {
                 await this.runBlobQueue();
             }
         } catch (err) {
-            console.log(err);
-            debugger;
+            this.LOG.ERROR('pushBlobQueue', err);
         }
     }
 
@@ -184,51 +181,35 @@ export class Uploader {
 
                 // 真正的上传
                 blobObj.file.statusText = WUFile.Status.PROGRESS;
-                let uploadPromise = this._baseupload(blobObj);
-                uploadPromise.then(val => {
-                    debugger
-                }).catch(err => {
-                    debugger
-                })
-                debugger
-                // NND 这里用async function 进不来
-                uploadPromise.then(res => {
-                    debugger
-                    try {
-                        this._uploadSuccess(res, blobObj)
-                            .then(() => {
-                                this.runBlobQueue();
-                            });
-                    } catch (err) {
-                        console.log(err);
-                        debugger;
-                    }
-                }).catch(err => {
-                    debugger
-                    try {
-                        this._catchUpfileError(err, blobObj)
-                            .then(() => {
-                                this.runBlobQueue();
-                            });
-                    } catch (err) {
-                        console.log(err);
-                        debugger;
-                    }
-                });
+                this.runBlobQueueHandler(blobObj);
             }
         } catch (err) {
-            console.log(err);
-            debugger;
+            this.LOG.ERROR('runBlobQueue', err);
+        }
+    }
+
+    // 处理上传文件的成功或者失败 不能放到 runBlobQueue 是因为await会阻止 runBlobQueue
+    async runBlobQueueHandler (blobObj) {
+        // 这里不能在then里面用async function
+        try {
+            let res = await this._baseupload(blobObj);
+            if ( res !== undefined ) { // 防止考虑不周的地方
+                await this._uploadSuccess(res, blobObj);
+            }
+            this.runBlobQueue();
+        } catch (err) {
+            await this._catchUpfileError(err, blobObj);
+            this.runBlobQueue();
         }
     }
 
     // 错误处理
     async _catchUpfileError(err, blobObj) {
-        if ( err.message === 'initiative interrupt' ) {
+        if ( err.message.indexOf('initiative interrupt') !== -1 ) {
+            this.LOG.INFO('_catchUpfileError', 'initiative interrupt', blobObj, blobObj.file.id);
             return void 0;
         }
-        this.LOG.INFO('in _catchUpfileError', blobObj.status, blobObj.file.id);
-        // TODO 重置错误分片的loaded属性
+        this.LOG.INFO('_catchUpfileError', blobObj, blobObj.status, blobObj.file.id);
 
         blobObj.file.statusText = WUFile.Status.ERROR;
         // 已经错误处理过的文件就不需要处理了
@@ -283,9 +264,8 @@ export class Uploader {
                 file.statusText = WUFile.Status.PROGRESS;
                 await this.eventEmitter.emit('uploadStart', {file: file, shardCount: shardCount, config: config}); // 导出wuFile对象
             } else {
-                this.LOG.INFO('检测第一次上传文件出错');
+                this.LOG.INFO('checkFileUploadStart', '检测第一次上传文件出错');
                 // 不应该出现这个debugger的
-                debugger;
             }
         }
     }
@@ -301,7 +281,6 @@ export class Uploader {
 
     // 文件上传成功之后
     async _uploadSuccess (res, blobObj) {
-        debugger
         blobObj.status = blobStatus.SUCCESS;
         let isFileUploadEnd = this.checkFileUploadEnd(blobObj.file);
         if ( isFileUploadEnd ) {
@@ -342,12 +321,20 @@ export class Uploader {
     }
 
     interruptFile(id) {
+        let fileObj = null;
         this.blobsQueue.forEach(item => {
             if ( item.file.id === id && item.status !== blobStatus.SUCCESS ) {
                 item.file.statusText = WUFile.Status.INTERRUPT;
                 item.status = blobStatus.INTERRUPT;
                 item.transport && item.transport.abort();
+                if ( !fileObj ) {
+                    fileObj = item;
+                }
             }
+        });
+
+        this.eventEmitter.emit('interrupted', {
+            file: fileObj.file
         });
     }
 
@@ -406,26 +393,16 @@ export class Uploader {
                 }
             }
             this.transport = null;
-            debugger
             return res;
         } catch (err) {
-            console.log(err);
-            debugger;
+            this.LOG.ERROR('_baseupload', err);
+            throw new Error(err);
         }
     }
 
     // 文件上传进度监听 只会运行一次
     fileProgressCalc () {
         this.eventEmitter.on('uploadBlobProgress', (shardLoaded, shardTotal, blobObj) => {
-            // 文件的速度暂时不做了
-            // let prevProgressTime = blobObj.file.prevProgressTime;
-            // if ( prevProgressTime ) {
-            //     let curProgressTime = new Date().getTime();
-            // } else {
-            //     blobObj.file.uploadSpeed = 0;
-            //     blobObj.file.prevProgressTime = new Date().getTime();
-            // }
-            //
             // 修复abort后还会抛出progress事件的问题
             if ( blobObj.status !== blobStatus.PENDING ) {
                 return void 0;
@@ -446,7 +423,6 @@ export class Uploader {
                 total: fileTotalSize,
                 shardLoaded: shardLoaded,
                 shardTotal: shardTotal,
-                uploadSpeed: blobObj.file.uploadSpeed
             });
         });
     }
