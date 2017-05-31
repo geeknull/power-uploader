@@ -1,3 +1,5 @@
+'use strict';
+
 import EventEmitter from './eventBus.js';
 import EventDelegate from './eventDelegate.js';
 import {Transport} from './transport.js';
@@ -64,42 +66,52 @@ export class Uploader {
 
     // 在这里有`beforeFileQueued`事件，用户可以在这个事件阻止文件被加入队列
     async pushQueue(file, groupInfo) {
-        let wuFile = new WUFile(file, {
-            eventEmitter: this.eventEmitter,
-            setName: this.config.setName,
-            fileIdPrefix: this.config.fileIdPrefix,
-            groupInfo: groupInfo || {}
-        });
-        let res = await this.eventEmitter.emit('beforeFileQueued', {file: wuFile});
-        if (res.indexOf(false) === -1) {
-            wuFile.statusText = WUFile.Status.QUEUED;
-            await this.eventEmitter.emit('fileQueued', { file: wuFile });
-            if (this.config.auto) {
-                this.sliceFile(wuFile);
+        try {
+            let wuFile = new WUFile(file, {
+                eventEmitter: this.eventEmitter,
+                setName: this.config.setName,
+                fileIdPrefix: this.config.fileIdPrefix,
+                groupInfo: groupInfo || {}
+            });
+            let res = await this.eventEmitter.emit('beforeFileQueued', {file: wuFile});
+            if (res.indexOf(false) === -1) {
+                wuFile.statusText = WUFile.Status.QUEUED;
+                await this.eventEmitter.emit('fileQueued', { file: wuFile });
+                if (this.config.auto) {
+                    this.sliceFile(wuFile);
+                }
+                // TODO 不需要auto的时候还没做
             }
-            // TODO 不需要auto的时候还没做
+        } catch (err) {
+            console.log(err);
+            debugger;
         }
     }
 
     // 对文件进行分片 哈哈哈
     async sliceFile (wuFile) {
-        if ( wuFile.isFile === false ) { return null; }
-        if ( this.config.chunked ) {
-            let shardCount = Math.ceil(wuFile.size / this.config.chunkSize);
-            if ( shardCount === 0 ) {
-                shardCount = 1;
-            }
-            for ( let i = 0, len = shardCount; i < len; i++  ) {
-                let start = i * this.config.chunkSize;
-                let end = Math.min(wuFile.size, start + this.config.chunkSize);
-                let blob = wuFile.source.slice(start, end);
+        try {
+            if ( wuFile.isFile === false ) { return null; }
+            if ( this.config.chunked ) {
+                let shardCount = Math.ceil(wuFile.size / this.config.chunkSize);
+                if ( shardCount === 0 ) {
+                    shardCount = 1;
+                }
+                for ( let i = 0, len = shardCount; i < len; i++  ) {
+                    let start = i * this.config.chunkSize;
+                    let end = Math.min(wuFile.size, start + this.config.chunkSize);
+                    let blob = wuFile.source.slice(start, end);
 
-                let shardObj = {
-                    shardCount: shardCount,
-                    currentShard: i + 1 // 分片从1开始，下标都要+1
-                };
-                await this.pushBlobQueue(blob, wuFile, shardObj); // 需要异步等待
+                    let shardObj = {
+                        shardCount: shardCount,
+                        currentShard: i + 1 // 分片从1开始，下标都要+1
+                    };
+                    await this.pushBlobQueue(blob, wuFile, shardObj); // 需要异步等待
+                }
             }
+        } catch (err) {
+            console.log(err);
+            debugger;
         }
     }
 
@@ -113,66 +125,99 @@ export class Uploader {
 
     // 分片队列 推进分片队列的时候还会开始上传
     async pushBlobQueue (obj, file, shardObj) {
-        // 分片对象
-        let blobObj = {
-            blob: obj,
-            file: file, // wuFile
-            shard: shardObj,
-            status: blobStatus.WAIT,
-            loaded: 0,
-            config: {
-                server: '',
-                headers: '',
-                formData: {}
+        try {
+            // 分片对象
+            let blobObj = {
+                blob: obj,
+                file: file, // wuFile
+                shard: shardObj,
+                status: blobStatus.WAIT,
+                loaded: 0,
+                config: {
+                    server: '',
+                    headers: '',
+                    formData: {}
+                }
+            };
+            this.log('pushBlobQueue', blobObj);
+            this.blobsQueue.push(blobObj);
+
+            // 正在上传的文件个数
+            let pendingLen = this.blobsQueue.filter(item => {
+                return item.status === blobStatus.PENDING;
+            }).length;
+
+            if (pendingLen < this.config.sameTimeUploadCount) {
+                await this.runBlobQueue();
             }
-        };
-        this.log('pushBlobQueue', blobObj);
-        this.blobsQueue.push(blobObj);
-
-        // 正在上传的文件个数
-        let pendingLen = this.blobsQueue.filter(item => {
-            return item.status === blobStatus.PENDING;
-        }).length;
-
-        if (pendingLen < this.config.sameTimeUploadCount) {
-            await this.runBlobQueue();
+        } catch (err) {
+            console.log(err);
+            debugger;
         }
     }
 
     // 准备上传分片
     async runBlobQueue () {
-        let currentUploadCount = this.blobsQueue.filter(item => item.status === blobStatus.PENDING).length;
+        try {
+            let currentUploadCount = this.blobsQueue.filter(item => item.status === blobStatus.PENDING).length;
 
-        if ( currentUploadCount < this.config.sameTimeUploadCount ) {
-            let blobObj = this.blobsQueue.find(item => item.status === blobStatus.WAIT);
-            if ( !blobObj ) { return void 0; } // 只有一个分片的时候
-            blobObj.status = blobStatus.PENDING; // 由于是异步的关系 这个必须提前
+            if ( currentUploadCount < this.config.sameTimeUploadCount ) {
+                let blobObj = this.blobsQueue.find(item => item.status === blobStatus.WAIT);
+                if ( !blobObj ) { return void 0; } // 只有一个分片的时候
+                blobObj.status = blobStatus.PENDING; // 由于是异步的关系 这个必须提前
 
-            // 检测文件开始上传
-            await this.checkFileUploadStart({
-                file: blobObj.file, // 私有文件对象
-                shardCount: blobObj.shard.shardCount, // 总分片数
-                config: blobObj.config
-            });
+                // 检测文件开始上传
+                await this.checkFileUploadStart({
+                    file: blobObj.file, // 私有文件对象
+                    shardCount: blobObj.shard.shardCount, // 总分片数
+                    config: blobObj.config
+                });
 
-            await this.eventEmitter.emit('uploadBeforeSend', {
-                file: blobObj.file, // 私有文件对象
-                shard: blobObj.blob, // 文件blob
-                shardCount: blobObj.shard.shardCount, // 总分片数
-                currentShard: blobObj.shard.currentShard, // 当前片数
-                config: blobObj.config
-            });
+                await this.eventEmitter.emit('uploadBeforeSend', {
+                    file: blobObj.file, // 私有文件对象
+                    shard: blobObj.blob, // 文件blob
+                    shardCount: blobObj.shard.shardCount, // 总分片数
+                    currentShard: blobObj.shard.currentShard, // 当前片数
+                    config: blobObj.config
+                });
 
-            // 真正的上传
-            blobObj.file.statusText = WUFile.Status.PROGRESS;
-            let uploadPromise = this._baseupload(blobObj);
-            uploadPromise.then(async res => {
-                await this._uploadSuccess(res, blobObj);
-                this.runBlobQueue();
-            }).catch(async err => {
-                await this._catchUpfileError(err, blobObj);
-                this.runBlobQueue();
-            });
+                // 真正的上传
+                blobObj.file.statusText = WUFile.Status.PROGRESS;
+                let uploadPromise = this._baseupload(blobObj);
+                uploadPromise.then(val => {
+                    debugger
+                }).catch(err => {
+                    debugger
+                })
+                debugger
+                // NND 这里用async function 进不来
+                uploadPromise.then(res => {
+                    debugger
+                    try {
+                        this._uploadSuccess(res, blobObj)
+                            .then(() => {
+                                this.runBlobQueue();
+                            });
+                    } catch (err) {
+                        console.log(err);
+                        debugger;
+                    }
+                }).catch(err => {
+                    debugger
+                    try {
+                        this._catchUpfileError(err, blobObj)
+                            .then(() => {
+                                this.runBlobQueue();
+                            });
+                    } catch (err) {
+                        console.log(err);
+                        debugger;
+                    }
+                });
+            }
+        } catch (err) {
+            console.log(err);
+            debugger;
         }
     }
 
@@ -255,6 +300,7 @@ export class Uploader {
 
     // 文件上传成功之后
     async _uploadSuccess (res, blobObj) {
+        debugger
         blobObj.status = blobStatus.SUCCESS;
         let isFileUploadEnd = this.checkFileUploadEnd(blobObj.file);
         if ( isFileUploadEnd ) {
@@ -330,35 +376,41 @@ export class Uploader {
     }
 
     async _baseupload(blobObj) { // 加入了第三个参数
-        let config = {
-            server: blobObj.config.server,
-            headers: blobObj.config.headers,
-            method: this.config.method,
-            fileVal: this.config.fileVal,
-            timeout: this.config.timeout,    // 2分钟
-            formData: this.config.formData,
-            fileName: blobObj.file.name,
-            withCredentials: this.config.withCredentials,
-            log: this.log
-        };
-        let res = null;
-        for (let i = 0; i < this.config.chunkRetry; i++) {
-            if ( blobObj.status !== blobStatus.PENDING ) {
-                throw new Error('initiative interrupt'); // 防止终止后retry继续触发
-            }
-            try {
-                this.transport = new Transport(blobObj.blob, this.eventEmitter, config, blobObj);
-                blobObj.transport = this.transport; // 为了能够abort
-                res = await this.transport.send();
-                break;
-            } catch (err) {
-                if ( i >= this.config.chunkRetry-1 ) {
-                    throw new Error(err);
+        try {
+            let config = {
+                server: blobObj.config.server,
+                headers: blobObj.config.headers,
+                method: this.config.method,
+                fileVal: this.config.fileVal,
+                timeout: this.config.timeout,    // 2分钟
+                formData: this.config.formData,
+                fileName: blobObj.file.name,
+                withCredentials: this.config.withCredentials,
+                log: this.log
+            };
+            let res = null;
+            for (let i = 0; i < this.config.chunkRetry; i++) {
+                if ( blobObj.status !== blobStatus.PENDING ) {
+                    throw new Error('initiative interrupt'); // 防止终止后retry继续触发
+                }
+                try {
+                    this.transport = new Transport(blobObj.blob, this.eventEmitter, config, blobObj);
+                    blobObj.transport = this.transport; // 为了能够abort
+                    res = await this.transport.send();
+                    break;
+                } catch (err) {
+                    if ( i >= this.config.chunkRetry-1 ) {
+                        throw new Error(err);
+                    }
                 }
             }
+            this.transport = null;
+            debugger
+            return res;
+        } catch (err) {
+            console.log(err);
+            debugger;
         }
-        this.transport = null;
-        return res;
     }
 
     // 文件上传进度监听 只会运行一次

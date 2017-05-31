@@ -1,14 +1,8 @@
 /**
  * @fileOverview 文件属性封装
  */
-let idPrefix = 'WU_FILE_';
-let idSuffix = 0;
-let rExt = /\.([^.]+)$/;
-let statusMap = {};
+'use strict';
 
-function gid () {
-    return idPrefix + idSuffix++;
-}
 /**
  * 文件类
  * @class File
@@ -19,7 +13,24 @@ function gid () {
 
 import Util from './util.js';
 
+let idPrefix = 'WU_FILE_';
+let idSuffix = 0;
+let rExt = /\.([^.]+)$/;
+let statusMap = {};
+
+function gid () {
+    return idPrefix + idSuffix++;
+}
+
 export function WUFile (source,opt) {
+    // try {
+    //     noop(idPrefix);
+    // } catch (err) {
+    //     debugger;
+    // }
+    // debugger
+    // let noop = (idPrefix) => {console.log(idPrefix);};
+    // noop(idPrefix);
     this.eventEmitter = opt.eventEmitter;
     if ( opt.fileIdPrefix ) {
         idPrefix = opt.fileIdPrefix;

@@ -17,7 +17,10 @@ export default class {
             file = this.fileFilter(file);
             if ( file ) {
                 file.selectFileTransactionId = this._selectFileTransactionId;
-                pushQueue(file, groupInfo);
+                pushQueue(file, groupInfo).catch((err) => {
+                    console.error(err)
+                    debugger;
+                });
             }
         };
 
