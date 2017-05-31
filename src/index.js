@@ -5,6 +5,7 @@ import EventDelegate from './eventDelegate.js';
 import {Transport} from './transport.js';
 import {WUFile} from './file.js';
 import FileGetter from './fileGetter.js';
+import createLog from './log.js';
 
 let _config = {
     timeout: 0,
@@ -30,8 +31,7 @@ let _config = {
     multiple: false,
     withCredentials: false,
     setName: (id) => new Date().getTime() + id,
-    log: console.log,
-    _log: () => {},
+    log: (...args) => {console.log(...args);},
     logLevel: 1,
     fileIdPrefix: 'WU_FILE_'
 };
@@ -53,12 +53,13 @@ export class Uploader {
 
         this.eventEmitter = new EventEmitter();
         this.eventDelegate = new EventDelegate(this.config.listenerContainer);
-        this.log = function () {
-            let args = Array.prototype.slice.call(arguments, 0);
-            args = ['FILE', ...args];
-            this.config.log.apply(null, args);
-        }.bind(this);
-        this.config._log = this.log;
+        this.LOG = createLog(this.config.log, this.config.logLevel);
+        // 这个写法还是蛮坑的
+        // this.log = function () {
+        //     let args = Array.prototype.slice.call(arguments, 0);
+        //     args = ['FILE', ...args];
+        //     this.config.log.apply(null, args);
+        // }.bind(this);
 
         this.fileGetter = new FileGetter(this.config, this.pushQueue.bind(this), this.eventEmitter, this.eventDelegate);
         this.fileProgressCalc(); // 全局文件进度监听
@@ -118,7 +119,7 @@ export class Uploader {
     // 业务方自己传进来的文件
     pushFile (file) {
         let id = 'initiative_' + new Date().getTime();
-        this.log('initiative_pushFile', id, file);
+        this.LOG.INFO('initiative_pushFile', id, file);
         file.selectFileTransactionId = id;
         this.pushQueue(file);
     }
@@ -139,7 +140,7 @@ export class Uploader {
                     formData: {}
                 }
             };
-            this.log('pushBlobQueue', blobObj);
+            this.LOG.INFO('pushBlobQueue', blobObj);
             this.blobsQueue.push(blobObj);
 
             // 正在上传的文件个数
@@ -226,7 +227,7 @@ export class Uploader {
         if ( err.message === 'initiative interrupt' ) {
             return void 0;
         }
-        this.log('in _catchUpfileError', blobObj.status, blobObj.file.id);
+        this.LOG.INFO('in _catchUpfileError', blobObj.status, blobObj.file.id);
         // TODO 重置错误分片的loaded属性
 
         blobObj.file.statusText = WUFile.Status.ERROR;
@@ -242,7 +243,7 @@ export class Uploader {
                     item.transport && item.transport.abort();
                     item.status = blobStatus.ERROR;
                     item.loaded = 0;
-                    this.log('[FILE]', '_catchUpfileError: ', item, item.file.id);
+                    this.LOG.INFO('_catchUpfileError: ', item, item.file.id);
                 }
                 return item;
             });
@@ -282,7 +283,7 @@ export class Uploader {
                 file.statusText = WUFile.Status.PROGRESS;
                 await this.eventEmitter.emit('uploadStart', {file: file, shardCount: shardCount, config: config}); // 导出wuFile对象
             } else {
-                this.log('检测第一次上传文件出错');
+                this.LOG.INFO('检测第一次上传文件出错');
                 // 不应该出现这个debugger的
                 debugger;
             }
@@ -386,7 +387,7 @@ export class Uploader {
                 formData: this.config.formData,
                 fileName: blobObj.file.name,
                 withCredentials: this.config.withCredentials,
-                log: this.log
+                LOG: this.LOG
             };
             let res = null;
             for (let i = 0; i < this.config.chunkRetry; i++) {

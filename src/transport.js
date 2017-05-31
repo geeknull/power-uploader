@@ -25,7 +25,7 @@ export class Transport {
         this.config = assign({}, _options, opts);
         this._blob = _blob;
         this.blobObj = blobObj;
-        this.log = opts.log;
+        this.LOG = opts.LOG;
     }
 
     // 添加其他字段
@@ -65,7 +65,7 @@ export class Transport {
                 if (xhr.readyState === 4) {
                     if (xhr.status >= 200 && xhr.status <= 300) {
                         this.eventEmitter.emit('_uploadSuccess', this._blob, xhr.responseText);
-                        this.log('transport', xhr.responseText);
+                        this.LOG.INFO('transport', xhr.responseText);
                         res(xhr.responseText);
                     } else {
                         this.eventEmitter.emit('_uploadError', xhr.statusText);
