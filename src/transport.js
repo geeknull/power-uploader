@@ -1,3 +1,5 @@
+'use strict';
+
 import assign from 'lodash.assign';
 import eventEmitter from './eventBus.js';
 /**
@@ -65,7 +67,10 @@ export class Transport {
                 if (xhr.readyState === 4) {
                     if (xhr.status >= 200 && xhr.status <= 300) {
                         this.eventEmitter.emit('_uploadSuccess', this._blob, xhr.responseText);
-                        this.LOG.INFO('transport', xhr.responseText);
+                        this.LOG.INFO({
+                            lifecycle: 'transport',
+                            info: xhr.responseText
+                        });
                         res(xhr.responseText);
                     } else {
                         this.eventEmitter.emit('_uploadError', xhr.statusText);

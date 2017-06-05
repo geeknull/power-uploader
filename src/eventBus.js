@@ -6,6 +6,8 @@
  * @return {Number} Index of the specified listener, -1 if not found
  * @api private
  */
+'use strict';
+
 function indexOfListener (listeners, listener) {
     var i = listeners.length;
     while (i--) {

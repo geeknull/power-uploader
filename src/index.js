@@ -84,7 +84,10 @@ export class Uploader {
                 // TODO 不需要auto的时候还没做
             }
         } catch (err) {
-            this.LOG.ERROR('pushQueue', err);
+            this.LOG.ERROR({
+                lifecycle: pushQueue,
+                err
+            });
         }
     }
 
@@ -110,14 +113,20 @@ export class Uploader {
                 }
             }
         } catch (err) {
-            this.LOG.ERROR('sliceFile', err);
+            this.LOG.ERROR({
+                lifecycle: 'sliceFile',
+                info: err
+            });
         }
     }
 
     // 业务方自己传进来的文件
     pushFile (file) {
         let id = 'initiative_' + new Date().getTime();
-        this.LOG.INFO('initiative_pushFile', id, file);
+        this.LOG.INFO({
+            lifecycle: 'initiative_pushFile',
+            info: { id, file }
+        });
         file.selectFileTransactionId = id;
         this.pushQueue(file);
     }
@@ -138,7 +147,10 @@ export class Uploader {
                     formData: {}
                 }
             };
-            this.LOG.INFO('pushBlobQueue', blobObj);
+            this.LOG.INFO({
+                lifecycle: 'pushBlobQueue',
+                info: blobObj
+            });
             this.blobsQueue.push(blobObj);
 
             // 正在上传的文件个数
@@ -150,7 +162,10 @@ export class Uploader {
                 await this.runBlobQueue();
             }
         } catch (err) {
-            this.LOG.ERROR('pushBlobQueue', err);
+            this.LOG.ERROR({
+                lifecycle: 'pushBlobQueue',
+                info: err
+            });
         }
     }
 
@@ -184,7 +199,10 @@ export class Uploader {
                 this.runBlobQueueHandler(blobObj);
             }
         } catch (err) {
-            this.LOG.ERROR('runBlobQueue', err);
+            this.LOG.ERROR({
+                lifecycle: 'runBlobQueue',
+                info: err
+            });
         }
     }
 
@@ -206,10 +224,24 @@ export class Uploader {
     // 错误处理
     async _catchUpfileError(err, blobObj) {
         if ( err.message.indexOf('initiative interrupt') !== -1 ) {
-            this.LOG.INFO('_catchUpfileError', 'initiative interrupt', blobObj, blobObj.file.id);
+            this.LOG.INFO({
+                lifecycle: '_catchUpfileError',
+                info: {
+                    msg: 'initiative interrupt',
+                    blobObj,
+                    id: blobObj.file.id
+                }
+            });
             return void 0;
         }
-        this.LOG.INFO('_catchUpfileError', blobObj, blobObj.status, blobObj.file.id);
+        this.LOG.INFO({
+            lifecycle: '_catchUpfileError',
+            info: {
+                blobObj,
+                status: blobObj.status,
+                id: blobObj.file.id
+            }
+        });
 
         blobObj.file.statusText = WUFile.Status.ERROR;
         // 已经错误处理过的文件就不需要处理了
@@ -224,7 +256,11 @@ export class Uploader {
                     item.transport && item.transport.abort();
                     item.status = blobStatus.ERROR;
                     item.loaded = 0;
-                    this.LOG.INFO('_catchUpfileError: ', item, item.file.id);
+                    this.LOG.INFO({
+                        lifecycle: '_catchUpfileError',
+                        item,
+                        id: item.file.id
+                    });
                 }
                 return item;
             });
@@ -264,7 +300,10 @@ export class Uploader {
                 file.statusText = WUFile.Status.PROGRESS;
                 await this.eventEmitter.emit('uploadStart', {file: file, shardCount: shardCount, config: config}); // 导出wuFile对象
             } else {
-                this.LOG.INFO('checkFileUploadStart', '检测第一次上传文件出错');
+                this.LOG.INFO({
+                    lifecycle: 'checkFileUploadStart',
+                    msg: '检测第一次上传文件出错'
+                });
                 // 不应该出现这个debugger的
             }
         }
@@ -397,7 +436,10 @@ export class Uploader {
             this.transport = null;
             return res;
         } catch (err) {
-            this.LOG.ERROR('_baseupload', err);
+            this.LOG.ERROR({
+                lifecycle: '_baseupload',
+                info: { err }
+            });
             throw new Error(err);
         }
     }

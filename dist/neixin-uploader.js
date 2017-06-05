@@ -584,6 +584,14 @@ exports.f = __webpack_require__(0);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/**
+ * Finds the index.scss of the listener for the event in its storage array.
+ *
+ * @param {Function[]} listeners Array of listeners to search through.
+ * @param {Function} listener Method to look for.
+ * @return {Number} Index of the specified listener, -1 if not found
+ * @api private
+ */
 
 
 Object.defineProperty(exports, "__esModule", {
@@ -608,14 +616,6 @@ var _createClass3 = _interopRequireDefault(_createClass2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-/**
- * Finds the index.scss of the listener for the event in its storage array.
- *
- * @param {Function[]} listeners Array of listeners to search through.
- * @param {Function} listener Method to look for.
- * @return {Number} Index of the specified listener, -1 if not found
- * @api private
- */
 function indexOfListener(listeners, listener) {
     var i = listeners.length;
     while (i--) {
@@ -1101,12 +1101,11 @@ exports.default = EventEmitter;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
 /*
 * the event delegate library
 *
 * */
+
 
 module.exports = Delegate;
 
@@ -1826,7 +1825,17 @@ var Uploader = exports.Uploader = function () {
 
     (0, _createClass3.default)(Uploader, [{
         key: 'pushQueue',
-        value: function () {
+        value: function (_pushQueue) {
+            function pushQueue(_x, _x2) {
+                return _pushQueue.apply(this, arguments);
+            }
+
+            pushQueue.toString = function () {
+                return _pushQueue.toString();
+            };
+
+            return pushQueue;
+        }(function () {
             var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(file, groupInfo) {
                 var wuFile, res;
                 return _regenerator2.default.wrap(function _callee$(_context) {
@@ -1869,7 +1878,10 @@ var Uploader = exports.Uploader = function () {
                                 _context.prev = 12;
                                 _context.t0 = _context['catch'](0);
 
-                                this.LOG.ERROR('pushQueue', _context.t0);
+                                this.LOG.ERROR({
+                                    lifecycle: pushQueue,
+                                    err: _context.t0
+                                });
 
                             case 15:
                             case 'end':
@@ -1879,12 +1891,10 @@ var Uploader = exports.Uploader = function () {
                 }, _callee, this, [[0, 12]]);
             }));
 
-            function pushQueue(_x2, _x3) {
+            return function (_x4, _x5) {
                 return _ref.apply(this, arguments);
-            }
-
-            return pushQueue;
-        }()
+            };
+        }())
 
         // 对文件进行分片 哈哈哈
 
@@ -1948,7 +1958,10 @@ var Uploader = exports.Uploader = function () {
                                 _context2.prev = 19;
                                 _context2.t0 = _context2['catch'](0);
 
-                                this.LOG.ERROR('sliceFile', _context2.t0);
+                                this.LOG.ERROR({
+                                    lifecycle: 'sliceFile',
+                                    info: _context2.t0
+                                });
 
                             case 22:
                             case 'end':
@@ -1958,7 +1971,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee2, this, [[0, 19]]);
             }));
 
-            function sliceFile(_x4) {
+            function sliceFile(_x6) {
                 return _ref2.apply(this, arguments);
             }
 
@@ -1971,7 +1984,10 @@ var Uploader = exports.Uploader = function () {
         key: 'pushFile',
         value: function pushFile(file) {
             var id = 'initiative_' + new Date().getTime();
-            this.LOG.INFO('initiative_pushFile', id, file);
+            this.LOG.INFO({
+                lifecycle: 'initiative_pushFile',
+                info: { id: id, file: file }
+            });
             file.selectFileTransactionId = id;
             this.pushQueue(file);
         }
@@ -2003,7 +2019,10 @@ var Uploader = exports.Uploader = function () {
                                     }
                                 };
 
-                                this.LOG.INFO('pushBlobQueue', blobObj);
+                                this.LOG.INFO({
+                                    lifecycle: 'pushBlobQueue',
+                                    info: blobObj
+                                });
                                 this.blobsQueue.push(blobObj);
 
                                 // 正在上传的文件个数
@@ -2027,7 +2046,10 @@ var Uploader = exports.Uploader = function () {
                                 _context3.prev = 10;
                                 _context3.t0 = _context3['catch'](0);
 
-                                this.LOG.ERROR('pushBlobQueue', _context3.t0);
+                                this.LOG.ERROR({
+                                    lifecycle: 'pushBlobQueue',
+                                    info: _context3.t0
+                                });
 
                             case 13:
                             case 'end':
@@ -2037,7 +2059,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee3, this, [[0, 10]]);
             }));
 
-            function pushBlobQueue(_x5, _x6, _x7) {
+            function pushBlobQueue(_x7, _x8, _x9) {
                 return _ref3.apply(this, arguments);
             }
 
@@ -2112,7 +2134,10 @@ var Uploader = exports.Uploader = function () {
                                 _context4.prev = 15;
                                 _context4.t0 = _context4['catch'](0);
 
-                                this.LOG.ERROR('runBlobQueue', _context4.t0);
+                                this.LOG.ERROR({
+                                    lifecycle: 'runBlobQueue',
+                                    info: _context4.t0
+                                });
 
                             case 18:
                             case 'end':
@@ -2177,7 +2202,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee5, this, [[0, 10]]);
             }));
 
-            function runBlobQueueHandler(_x8) {
+            function runBlobQueueHandler(_x10) {
                 return _ref5.apply(this, arguments);
             }
 
@@ -2201,11 +2226,25 @@ var Uploader = exports.Uploader = function () {
                                     break;
                                 }
 
-                                this.LOG.INFO('_catchUpfileError', 'initiative interrupt', blobObj, blobObj.file.id);
+                                this.LOG.INFO({
+                                    lifecycle: '_catchUpfileError',
+                                    info: {
+                                        msg: 'initiative interrupt',
+                                        blobObj: blobObj,
+                                        id: blobObj.file.id
+                                    }
+                                });
                                 return _context6.abrupt('return', void 0);
 
                             case 3:
-                                this.LOG.INFO('_catchUpfileError', blobObj, blobObj.status, blobObj.file.id);
+                                this.LOG.INFO({
+                                    lifecycle: '_catchUpfileError',
+                                    info: {
+                                        blobObj: blobObj,
+                                        status: blobObj.status,
+                                        id: blobObj.file.id
+                                    }
+                                });
 
                                 blobObj.file.statusText = _file.WUFile.Status.ERROR;
                                 // 已经错误处理过的文件就不需要处理了
@@ -2222,7 +2261,11 @@ var Uploader = exports.Uploader = function () {
                                         item.transport && item.transport.abort();
                                         item.status = blobStatus.ERROR;
                                         item.loaded = 0;
-                                        _this.LOG.INFO('_catchUpfileError: ', item, item.file.id);
+                                        _this.LOG.INFO({
+                                            lifecycle: '_catchUpfileError',
+                                            item: item,
+                                            id: item.file.id
+                                        });
                                     }
                                     return item;
                                 });
@@ -2250,7 +2293,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee6, this);
             }));
 
-            function _catchUpfileError(_x9, _x10) {
+            function _catchUpfileError(_x11, _x12) {
                 return _ref6.apply(this, arguments);
             }
 
@@ -2305,7 +2348,10 @@ var Uploader = exports.Uploader = function () {
                                 break;
 
                             case 12:
-                                this.LOG.INFO('checkFileUploadStart', '检测第一次上传文件出错');
+                                this.LOG.INFO({
+                                    lifecycle: 'checkFileUploadStart',
+                                    msg: '检测第一次上传文件出错'
+                                });
                                 // 不应该出现这个debugger的
 
                             case 13:
@@ -2316,7 +2362,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee7, this);
             }));
 
-            function checkFileUploadStart(_x11) {
+            function checkFileUploadStart(_x13) {
                 return _ref7.apply(this, arguments);
             }
 
@@ -2403,7 +2449,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee8, this);
             }));
 
-            function _uploadSuccess(_x12, _x13) {
+            function _uploadSuccess(_x14, _x15) {
                 return _ref8.apply(this, arguments);
             }
 
@@ -2539,7 +2585,10 @@ var Uploader = exports.Uploader = function () {
                                 _context9.prev = 27;
                                 _context9.t1 = _context9['catch'](0);
 
-                                this.LOG.ERROR('_baseupload', _context9.t1);
+                                this.LOG.ERROR({
+                                    lifecycle: '_baseupload',
+                                    info: { err: _context9.t1 }
+                                });
                                 throw new Error(_context9.t1);
 
                             case 31:
@@ -2550,7 +2599,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee9, this, [[0, 27], [7, 16]]);
             }));
 
-            function _baseupload(_x14) {
+            function _baseupload(_x16) {
                 return _ref9.apply(this, arguments);
             }
 
@@ -2631,6 +2680,7 @@ var FileStatus = exports.FileStatus = _file.WUFile.Status;
  * @grammar new File( source ) => File
  * @param {Lib.File} source [lib.File](#Lib.File)实例, 此source对象是带有Runtime信息的。
  */
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -3571,65 +3621,64 @@ exports.default = _class;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/**
+ * Created by Weil on 2017/5/31.
+ */
 
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-/**
- * Created by Weil on 2017/5/31.
- */
-
 var createLog = function createLog(logFunc, logLevel) {
     var LOG = {};
     LOG.ALL = function () {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
-
-        logFunc.apply(undefined, ['FILE_ALL'].concat(args));
+        // logFunc('FILE_ALL', ...args);
+        logFunc({
+            logLevel: 'FILE_ALL',
+            logInfo: arguments.length <= 0 ? undefined : arguments[0]
+        });
     };
     LOG.DEBUG = function () {
-        for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
-        }
-
-        logFunc.apply(undefined, ['FILE_DEBUG'].concat(args));
+        // logFunc('FILE_DEBUG', ...args);
+        logFunc({
+            logLevel: 'FILE_DEBUG',
+            logInfo: arguments.length <= 0 ? undefined : arguments[0]
+        });
     };
     LOG.INFO = function () {
-        for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-            args[_key3] = arguments[_key3];
-        }
-
-        logFunc.apply(undefined, ['FILE_INFO'].concat(args));
+        // logFunc('FILE_INFO', ...args);
+        logFunc({
+            logLevel: 'FILE_INFO',
+            logInfo: arguments.length <= 0 ? undefined : arguments[0]
+        });
     };
     LOG.WARN = function () {
-        for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-            args[_key4] = arguments[_key4];
-        }
-
-        logFunc.apply(undefined, ['FILE_WARN'].concat(args));
+        // logFunc('FILE_WARN', ...args);
+        logFunc({
+            logLevel: 'FILE_WARN',
+            logInfo: arguments.length <= 0 ? undefined : arguments[0]
+        });
     };
     LOG.ERROR = function () {
-        for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-            args[_key5] = arguments[_key5];
-        }
-
-        logFunc.apply(undefined, ['FILE_ERROR'].concat(args));
+        // logFunc('FILE_ERROR', ...args);
+        logFunc({
+            logLevel: 'FILE_ERROR',
+            logInfo: arguments.length <= 0 ? undefined : arguments[0]
+        });
     };
     LOG.FATAL = function () {
-        for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-            args[_key6] = arguments[_key6];
-        }
-
-        logFunc.apply(undefined, ['FILE_FATAL'].concat(args));
+        // logFunc('FILE_FATAL', ...args);
+        logFunc({
+            logLevel: 'FILE_FATAL',
+            logInfo: arguments.length <= 0 ? undefined : arguments[0]
+        });
     };
     LOG.OFF = function () {
-        for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
-            args[_key7] = arguments[_key7];
-        }
-
-        logFunc.apply(undefined, ['FILE_OFF'].concat(args));
+        // logFunc('FILE_OFF', ...args);
+        logFunc({
+            logLevel: 'FILE_OFF',
+            logInfo: arguments.length <= 0 ? undefined : arguments[0]
+        });
     };
 
     return LOG;
@@ -3755,7 +3804,10 @@ var Transport = exports.Transport = function () {
                     if (xhr.readyState === 4) {
                         if (xhr.status >= 200 && xhr.status <= 300) {
                             _this.eventEmitter.emit('_uploadSuccess', _this._blob, xhr.responseText);
-                            _this.LOG.INFO('transport', xhr.responseText);
+                            _this.LOG.INFO({
+                                lifecycle: 'transport',
+                                info: xhr.responseText
+                            });
                             res(xhr.responseText);
                         } else {
                             _this.eventEmitter.emit('_uploadError', xhr.statusText);

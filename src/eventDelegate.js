@@ -2,6 +2,7 @@
 * the event delegate library
 *
 * */
+'use strict';
 
 module.exports = Delegate;
 
@@ -50,9 +51,6 @@ Delegate.prototype.off = function (event) {
         }
     }
 };
-
-
-
 
 /**
  * Finds the closest parent that matches a selector.

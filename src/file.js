@@ -10,6 +10,7 @@
  * @grammar new File( source ) => File
  * @param {Lib.File} source [lib.File](#Lib.File)实例, 此source对象是带有Runtime信息的。
  */
+'use strict';
 
 import Util from './util.js';
 

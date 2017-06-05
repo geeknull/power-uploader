@@ -244,11 +244,11 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
     `@return Object { file, error[Error] }`
 
 
-文件夹相关的事件，文档暂时不写
+文件夹相关的事件：
 
-- `selectDir`：选择文件夹
-- `beforeChildFileQueued`：暂无文档
-- `beforeChildDirQueued`：暂无文档
+- `selectDir`：选择了文件夹，参数返回entry信息，通过return false; 可以禁止
+- `beforeChildFileQueued`：文件夹中子文件进入队列，但是是假的，先不要用这个事件
+- `beforeChildDirQueued`：文件夹子中文件夹进入队列，但是是假的，先不要用这个事件
 
 
 
