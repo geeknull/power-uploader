@@ -1825,17 +1825,7 @@ var Uploader = exports.Uploader = function () {
 
     (0, _createClass3.default)(Uploader, [{
         key: 'pushQueue',
-        value: function (_pushQueue) {
-            function pushQueue(_x, _x2) {
-                return _pushQueue.apply(this, arguments);
-            }
-
-            pushQueue.toString = function () {
-                return _pushQueue.toString();
-            };
-
-            return pushQueue;
-        }(function () {
+        value: function () {
             var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(file, groupInfo) {
                 var wuFile, res;
                 return _regenerator2.default.wrap(function _callee$(_context) {
@@ -1879,7 +1869,7 @@ var Uploader = exports.Uploader = function () {
                                 _context.t0 = _context['catch'](0);
 
                                 this.LOG.ERROR({
-                                    lifecycle: pushQueue,
+                                    lifecycle: 'pushQueue',
                                     err: _context.t0
                                 });
 
@@ -1891,10 +1881,12 @@ var Uploader = exports.Uploader = function () {
                 }, _callee, this, [[0, 12]]);
             }));
 
-            return function (_x4, _x5) {
+            function pushQueue(_x2, _x3) {
                 return _ref.apply(this, arguments);
-            };
-        }())
+            }
+
+            return pushQueue;
+        }()
 
         // 对文件进行分片 哈哈哈
 
@@ -1971,7 +1963,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee2, this, [[0, 19]]);
             }));
 
-            function sliceFile(_x6) {
+            function sliceFile(_x4) {
                 return _ref2.apply(this, arguments);
             }
 
@@ -1989,7 +1981,11 @@ var Uploader = exports.Uploader = function () {
                 info: { id: id, file: file }
             });
             file.selectFileTransactionId = id;
-            this.pushQueue(file);
+            this.pushQueue(file, {
+                count: 1,
+                current: 1,
+                id: file.selectFileTransactionId
+            });
         }
 
         // 分片队列 推进分片队列的时候还会开始上传
@@ -2059,7 +2055,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee3, this, [[0, 10]]);
             }));
 
-            function pushBlobQueue(_x7, _x8, _x9) {
+            function pushBlobQueue(_x5, _x6, _x7) {
                 return _ref3.apply(this, arguments);
             }
 
@@ -2202,7 +2198,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee5, this, [[0, 10]]);
             }));
 
-            function runBlobQueueHandler(_x10) {
+            function runBlobQueueHandler(_x8) {
                 return _ref5.apply(this, arguments);
             }
 
@@ -2293,7 +2289,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee6, this);
             }));
 
-            function _catchUpfileError(_x11, _x12) {
+            function _catchUpfileError(_x9, _x10) {
                 return _ref6.apply(this, arguments);
             }
 
@@ -2362,7 +2358,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee7, this);
             }));
 
-            function checkFileUploadStart(_x13) {
+            function checkFileUploadStart(_x11) {
                 return _ref7.apply(this, arguments);
             }
 
@@ -2449,7 +2445,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee8, this);
             }));
 
-            function _uploadSuccess(_x14, _x15) {
+            function _uploadSuccess(_x12, _x13) {
                 return _ref8.apply(this, arguments);
             }
 
@@ -2599,7 +2595,7 @@ var Uploader = exports.Uploader = function () {
                 }, _callee9, this, [[0, 27], [7, 16]]);
             }));
 
-            function _baseupload(_x16) {
+            function _baseupload(_x14) {
                 return _ref9.apply(this, arguments);
             }
 

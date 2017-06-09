@@ -85,7 +85,7 @@ export class Uploader {
             }
         } catch (err) {
             this.LOG.ERROR({
-                lifecycle: pushQueue,
+                lifecycle: 'pushQueue',
                 err
             });
         }
@@ -128,7 +128,11 @@ export class Uploader {
             info: { id, file }
         });
         file.selectFileTransactionId = id;
-        this.pushQueue(file);
+        this.pushQueue(file, {
+            count: 1,
+            current: 1,
+            id: file.selectFileTransactionId
+        });
     }
 
     // 分片队列 推进分片队列的时候还会开始上传

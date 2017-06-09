@@ -20,7 +20,7 @@ export default class {
             if ( file ) {
                 file.selectFileTransactionId = this._selectFileTransactionId;
                 pushQueue(file, groupInfo).catch((err) => {
-                    console.error(err)
+                    console.error(err);
                     debugger;
                 });
             }
