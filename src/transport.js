@@ -69,19 +69,17 @@ export class Transport {
                         this.eventEmitter.emit('_uploadSuccess', this._blob, xhr.responseText);
                         this.LOG.INFO({
                             lifecycle: 'transport',
-                            info: {
-                                status: xhr.status,
-                                responseText: xhr.responseText
-                            }
+                            httpCode: xhr.status,
+                            responseText: xhr.responseText,
+                            fileName: this.blobObj.file.name
                         });
                         res(xhr.responseText);
                     } else {
                         this.LOG.INFO({
                             lifecycle: 'transport',
-                            info: {
-                                status: xhr.status,
-                                responseText: xhr.responseText
-                            }
+                            httpCode: xhr.status,
+                            responseText: xhr.responseText,
+                            fileName: this.blobObj.file.name
                         });
                         this.eventEmitter.emit('_uploadError', xhr.statusText);
                         rej(xhr.response);

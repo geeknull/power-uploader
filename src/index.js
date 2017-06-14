@@ -67,13 +67,13 @@ export class Uploader {
 
     // 在这里有`beforeFileQueued`事件，用户可以在这个事件阻止文件被加入队列
     async pushQueue(file, groupInfo) {
+        let wuFile = new WUFile(file, {
+            eventEmitter: this.eventEmitter,
+            setName: this.config.setName,
+            fileIdPrefix: this.config.fileIdPrefix,
+            groupInfo: groupInfo || {}
+        });
         try {
-            let wuFile = new WUFile(file, {
-                eventEmitter: this.eventEmitter,
-                setName: this.config.setName,
-                fileIdPrefix: this.config.fileIdPrefix,
-                groupInfo: groupInfo || {}
-            });
             let res = await this.eventEmitter.emit('beforeFileQueued', {file: wuFile});
             if (res.indexOf(false) === -1) {
                 wuFile.statusText = WUFile.Status.QUEUED;
@@ -83,9 +83,16 @@ export class Uploader {
                 }
                 // TODO 不需要auto的时候还没做
             }
+            this.LOG.ERROR({
+                lifecycle: 'pushQueue',
+                fileStatus: wuFile.statusText,
+                fileName: wuFile.name
+            });
         } catch (err) {
             this.LOG.ERROR({
                 lifecycle: 'pushQueue',
+                fileStatus: wuFile.statusText,
+                fileName: wuFile.name,
                 err
             });
         }
@@ -112,10 +119,17 @@ export class Uploader {
                     await this.pushBlobQueue(blob, wuFile, shardObj); // 需要异步等待
                 }
             }
+            this.LOG.ERROR({
+                lifecycle: 'sliceFile',
+                fileStatus: wuFile.statusText,
+                fileName: wuFile.name
+            });
         } catch (err) {
             this.LOG.ERROR({
                 lifecycle: 'sliceFile',
-                info: err
+                fileStatus: wuFile.statusText,
+                fileName: wuFile.name,
+                err
             });
         }
     }
@@ -125,7 +139,7 @@ export class Uploader {
         let id = 'initiative_' + new Date().getTime();
         this.LOG.INFO({
             lifecycle: 'initiative_pushFile',
-            info: { id, file }
+            fileId: id
         });
         file.selectFileTransactionId = id;
         this.pushQueue(file, {
@@ -153,7 +167,8 @@ export class Uploader {
             };
             this.LOG.INFO({
                 lifecycle: 'pushBlobQueue',
-                info: blobObj
+                fileStatus: file.statusText,
+                fileName: file.name
             });
             this.blobsQueue.push(blobObj);
 
@@ -165,21 +180,30 @@ export class Uploader {
             if (pendingLen < this.config.sameTimeUploadCount) {
                 await this.runBlobQueue();
             }
+            this.LOG.ERROR({
+                lifecycle: 'pushBlobQueue',
+                fileStatus: file.statusText,
+                fileName: file.name
+            });
         } catch (err) {
             this.LOG.ERROR({
                 lifecycle: 'pushBlobQueue',
-                info: err
+                fileStatus: file.statusText,
+                fileName: file.name,
+                err
             });
         }
     }
 
     // 准备上传分片
     async runBlobQueue () {
+        let _blobObj = null;
         try {
             let currentUploadCount = this.blobsQueue.filter(item => item.status === blobStatus.PENDING).length;
 
             if ( currentUploadCount < this.config.sameTimeUploadCount ) {
                 let blobObj = this.blobsQueue.find(item => item.status === blobStatus.WAIT);
+                _blobObj = blobObj;
                 if ( !blobObj ) { return void 0; } // 只有一个分片的时候
                 blobObj.status = blobStatus.PENDING; // 由于是异步的关系 这个必须提前
 
@@ -202,9 +226,16 @@ export class Uploader {
                 blobObj.file.statusText = WUFile.Status.PROGRESS;
                 this.runBlobQueueHandler(blobObj);
             }
+            this.LOG.ERROR({
+                lifecycle: 'runBlobQueue',
+                fileStatus: _blobObj.file.statusText,
+                fileName: _blobObj.file.name
+            });
         } catch (err) {
             this.LOG.ERROR({
                 lifecycle: 'runBlobQueue',
+                fileStatus: _blobObj.file.statusText,
+                fileName: _blobObj.file.name,
                 info: err
             });
         }
@@ -230,21 +261,18 @@ export class Uploader {
         if ( err.message.indexOf('initiative interrupt') !== -1 ) {
             this.LOG.INFO({
                 lifecycle: '_catchUpfileError',
-                info: {
-                    msg: 'initiative interrupt',
-                    blobObj,
-                    id: blobObj.file.id
-                }
+                msg: 'initiative interrupt',
+                fileStatus: blobObj.file.statusText,
+                fileName: blobObj.file.name,
+                fileId: blobObj.file.id
             });
             return void 0;
         }
         this.LOG.INFO({
             lifecycle: '_catchUpfileError',
-            info: {
-                blobObj,
-                status: blobObj.status,
-                id: blobObj.file.id
-            }
+            fileStatus: blobObj.file.statusText,
+            fileName: blobObj.file.name,
+            fileId: blobObj.file.id
         });
 
         blobObj.file.statusText = WUFile.Status.ERROR;
@@ -262,20 +290,24 @@ export class Uploader {
                     item.loaded = 0;
                     this.LOG.INFO({
                         lifecycle: '_catchUpfileError',
-                        item,
-                        id: item.file.id
+                        msg: 'stop all shard',
+                        fileStatus: item.file.statusText,
+                        fileName: item.file.name,
+                        fileId: item.file.id
                     });
                 }
                 return item;
             });
 
             await this.eventEmitter.emit('uploadError', {
-                file: blobObj.file,
+                fileStatus: blobObj.file.statusText,
+                fileName: blobObj.file.name,
                 error: err
             });
 
             await this.eventEmitter.emit('uploadEndSend', {
-                file: blobObj.file,
+                fileStatus: blobObj.file.statusText,
+                fileName: blobObj.file.name,
                 shard: blobObj.blob,
                 shardCount: blobObj.shard.shardCount,
                 currentShard: blobObj.shard.currentShard
@@ -306,6 +338,8 @@ export class Uploader {
             } else {
                 this.LOG.INFO({
                     lifecycle: 'checkFileUploadStart',
+                    fileName: file.name,
+                    fileStatus: file.statusText,
                     msg: '检测第一次上传文件出错'
                 });
                 // 不应该出现这个debugger的
@@ -442,7 +476,9 @@ export class Uploader {
         } catch (err) {
             this.LOG.ERROR({
                 lifecycle: '_baseupload',
-                info: { err }
+                fileStatus: blobObj.file.statusText,
+                fileName: blobObj.file.name,
+                err
             });
             throw new Error(err);
         }

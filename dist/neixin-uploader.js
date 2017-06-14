@@ -1832,13 +1832,13 @@ var Uploader = exports.Uploader = function () {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                _context.prev = 0;
                                 wuFile = new _file.WUFile(file, {
                                     eventEmitter: this.eventEmitter,
                                     setName: this.config.setName,
                                     fileIdPrefix: this.config.fileIdPrefix,
                                     groupInfo: groupInfo || {}
                                 });
+                                _context.prev = 1;
                                 _context.next = 4;
                                 return this.eventEmitter.emit('beforeFileQueued', { file: wuFile });
 
@@ -1861,24 +1861,31 @@ var Uploader = exports.Uploader = function () {
                                 // TODO 不需要auto的时候还没做
 
                             case 10:
-                                _context.next = 15;
+                                this.LOG.ERROR({
+                                    lifecycle: 'pushQueue',
+                                    fileStatus: wuFile.statusText,
+                                    fileName: wuFile.name
+                                });
+                                _context.next = 16;
                                 break;
 
-                            case 12:
-                                _context.prev = 12;
-                                _context.t0 = _context['catch'](0);
+                            case 13:
+                                _context.prev = 13;
+                                _context.t0 = _context['catch'](1);
 
                                 this.LOG.ERROR({
                                     lifecycle: 'pushQueue',
+                                    fileStatus: wuFile.statusText,
+                                    fileName: wuFile.name,
                                     err: _context.t0
                                 });
 
-                            case 15:
+                            case 16:
                             case 'end':
                                 return _context.stop();
                         }
                     }
-                }, _callee, this, [[0, 12]]);
+                }, _callee, this, [[1, 13]]);
             }));
 
             function pushQueue(_x2, _x3) {
@@ -1943,24 +1950,31 @@ var Uploader = exports.Uploader = function () {
                                 break;
 
                             case 17:
-                                _context2.next = 22;
+                                this.LOG.ERROR({
+                                    lifecycle: 'sliceFile',
+                                    fileStatus: wuFile.statusText,
+                                    fileName: wuFile.name
+                                });
+                                _context2.next = 23;
                                 break;
 
-                            case 19:
-                                _context2.prev = 19;
+                            case 20:
+                                _context2.prev = 20;
                                 _context2.t0 = _context2['catch'](0);
 
                                 this.LOG.ERROR({
                                     lifecycle: 'sliceFile',
-                                    info: _context2.t0
+                                    fileStatus: wuFile.statusText,
+                                    fileName: wuFile.name,
+                                    err: _context2.t0
                                 });
 
-                            case 22:
+                            case 23:
                             case 'end':
                                 return _context2.stop();
                         }
                     }
-                }, _callee2, this, [[0, 19]]);
+                }, _callee2, this, [[0, 20]]);
             }));
 
             function sliceFile(_x4) {
@@ -1978,7 +1992,7 @@ var Uploader = exports.Uploader = function () {
             var id = 'initiative_' + new Date().getTime();
             this.LOG.INFO({
                 lifecycle: 'initiative_pushFile',
-                info: { id: id, file: file }
+                fileId: id
             });
             file.selectFileTransactionId = id;
             this.pushQueue(file, {
@@ -2017,7 +2031,8 @@ var Uploader = exports.Uploader = function () {
 
                                 this.LOG.INFO({
                                     lifecycle: 'pushBlobQueue',
-                                    info: blobObj
+                                    fileStatus: file.statusText,
+                                    fileName: file.name
                                 });
                                 this.blobsQueue.push(blobObj);
 
@@ -2035,24 +2050,31 @@ var Uploader = exports.Uploader = function () {
                                 return this.runBlobQueue();
 
                             case 8:
-                                _context3.next = 13;
+                                this.LOG.ERROR({
+                                    lifecycle: 'pushBlobQueue',
+                                    fileStatus: file.statusText,
+                                    fileName: file.name
+                                });
+                                _context3.next = 14;
                                 break;
 
-                            case 10:
-                                _context3.prev = 10;
+                            case 11:
+                                _context3.prev = 11;
                                 _context3.t0 = _context3['catch'](0);
 
                                 this.LOG.ERROR({
                                     lifecycle: 'pushBlobQueue',
-                                    info: _context3.t0
+                                    fileStatus: file.statusText,
+                                    fileName: file.name,
+                                    err: _context3.t0
                                 });
 
-                            case 13:
+                            case 14:
                             case 'end':
                                 return _context3.stop();
                         }
                     }
-                }, _callee3, this, [[0, 10]]);
+                }, _callee3, this, [[0, 11]]);
             }));
 
             function pushBlobQueue(_x5, _x6, _x7) {
@@ -2068,18 +2090,20 @@ var Uploader = exports.Uploader = function () {
         key: 'runBlobQueue',
         value: function () {
             var _ref4 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
-                var currentUploadCount, blobObj;
+                var _blobObj, currentUploadCount, blobObj;
+
                 return _regenerator2.default.wrap(function _callee4$(_context4) {
                     while (1) {
                         switch (_context4.prev = _context4.next) {
                             case 0:
-                                _context4.prev = 0;
+                                _blobObj = null;
+                                _context4.prev = 1;
                                 currentUploadCount = this.blobsQueue.filter(function (item) {
                                     return item.status === blobStatus.PENDING;
                                 }).length;
 
                                 if (!(currentUploadCount < this.config.sameTimeUploadCount)) {
-                                    _context4.next = 13;
+                                    _context4.next = 15;
                                     break;
                                 }
 
@@ -2087,27 +2111,29 @@ var Uploader = exports.Uploader = function () {
                                     return item.status === blobStatus.WAIT;
                                 });
 
+                                _blobObj = blobObj;
+
                                 if (blobObj) {
-                                    _context4.next = 6;
+                                    _context4.next = 8;
                                     break;
                                 }
 
                                 return _context4.abrupt('return', void 0);
 
-                            case 6:
+                            case 8:
                                 // 只有一个分片的时候
                                 blobObj.status = blobStatus.PENDING; // 由于是异步的关系 这个必须提前
 
                                 // 检测文件开始上传
-                                _context4.next = 9;
+                                _context4.next = 11;
                                 return this.checkFileUploadStart({
                                     file: blobObj.file, // 私有文件对象
                                     shardCount: blobObj.shard.shardCount, // 总分片数
                                     config: blobObj.config
                                 });
 
-                            case 9:
-                                _context4.next = 11;
+                            case 11:
+                                _context4.next = 13;
                                 return this.eventEmitter.emit('uploadBeforeSend', {
                                     file: blobObj.file, // 私有文件对象
                                     shard: blobObj.blob, // 文件blob
@@ -2116,31 +2142,38 @@ var Uploader = exports.Uploader = function () {
                                     config: blobObj.config
                                 });
 
-                            case 11:
+                            case 13:
 
                                 // 真正的上传
                                 blobObj.file.statusText = _file.WUFile.Status.PROGRESS;
                                 this.runBlobQueueHandler(blobObj);
 
-                            case 13:
-                                _context4.next = 18;
+                            case 15:
+                                this.LOG.ERROR({
+                                    lifecycle: 'runBlobQueue',
+                                    fileStatus: _blobObj.file.statusText,
+                                    fileName: _blobObj.file.name
+                                });
+                                _context4.next = 21;
                                 break;
 
-                            case 15:
-                                _context4.prev = 15;
-                                _context4.t0 = _context4['catch'](0);
+                            case 18:
+                                _context4.prev = 18;
+                                _context4.t0 = _context4['catch'](1);
 
                                 this.LOG.ERROR({
                                     lifecycle: 'runBlobQueue',
+                                    fileStatus: _blobObj.file.statusText,
+                                    fileName: _blobObj.file.name,
                                     info: _context4.t0
                                 });
 
-                            case 18:
+                            case 21:
                             case 'end':
                                 return _context4.stop();
                         }
                     }
-                }, _callee4, this, [[0, 15]]);
+                }, _callee4, this, [[1, 18]]);
             }));
 
             function runBlobQueue() {
@@ -2224,22 +2257,19 @@ var Uploader = exports.Uploader = function () {
 
                                 this.LOG.INFO({
                                     lifecycle: '_catchUpfileError',
-                                    info: {
-                                        msg: 'initiative interrupt',
-                                        blobObj: blobObj,
-                                        id: blobObj.file.id
-                                    }
+                                    msg: 'initiative interrupt',
+                                    fileStatus: blobObj.file.statusText,
+                                    fileName: blobObj.file.name,
+                                    fileId: blobObj.file.id
                                 });
                                 return _context6.abrupt('return', void 0);
 
                             case 3:
                                 this.LOG.INFO({
                                     lifecycle: '_catchUpfileError',
-                                    info: {
-                                        blobObj: blobObj,
-                                        status: blobObj.status,
-                                        id: blobObj.file.id
-                                    }
+                                    fileStatus: blobObj.file.statusText,
+                                    fileName: blobObj.file.name,
+                                    fileId: blobObj.file.id
                                 });
 
                                 blobObj.file.statusText = _file.WUFile.Status.ERROR;
@@ -2259,8 +2289,10 @@ var Uploader = exports.Uploader = function () {
                                         item.loaded = 0;
                                         _this.LOG.INFO({
                                             lifecycle: '_catchUpfileError',
-                                            item: item,
-                                            id: item.file.id
+                                            msg: 'stop all shard',
+                                            fileStatus: item.file.statusText,
+                                            fileName: item.file.name,
+                                            fileId: item.file.id
                                         });
                                     }
                                     return item;
@@ -2268,14 +2300,16 @@ var Uploader = exports.Uploader = function () {
 
                                 _context6.next = 9;
                                 return this.eventEmitter.emit('uploadError', {
-                                    file: blobObj.file,
+                                    fileStatus: blobObj.file.statusText,
+                                    fileName: blobObj.file.name,
                                     error: err
                                 });
 
                             case 9:
                                 _context6.next = 11;
                                 return this.eventEmitter.emit('uploadEndSend', {
-                                    file: blobObj.file,
+                                    fileStatus: blobObj.file.statusText,
+                                    fileName: blobObj.file.name,
                                     shard: blobObj.blob,
                                     shardCount: blobObj.shard.shardCount,
                                     currentShard: blobObj.shard.currentShard
@@ -2346,6 +2380,8 @@ var Uploader = exports.Uploader = function () {
                             case 12:
                                 this.LOG.INFO({
                                     lifecycle: 'checkFileUploadStart',
+                                    fileName: file.name,
+                                    fileStatus: file.statusText,
                                     msg: '检测第一次上传文件出错'
                                 });
                                 // 不应该出现这个debugger的
@@ -2583,7 +2619,9 @@ var Uploader = exports.Uploader = function () {
 
                                 this.LOG.ERROR({
                                     lifecycle: '_baseupload',
-                                    info: { err: _context9.t1 }
+                                    fileStatus: blobObj.file.statusText,
+                                    fileName: blobObj.file.name,
+                                    err: _context9.t1
                                 });
                                 throw new Error(_context9.t1);
 
@@ -3802,19 +3840,17 @@ var Transport = exports.Transport = function () {
                             _this.eventEmitter.emit('_uploadSuccess', _this._blob, xhr.responseText);
                             _this.LOG.INFO({
                                 lifecycle: 'transport',
-                                info: {
-                                    status: xhr.status,
-                                    responseText: xhr.responseText
-                                }
+                                httpCode: xhr.status,
+                                responseText: xhr.responseText,
+                                fileName: _this.blobObj.file.name
                             });
                             res(xhr.responseText);
                         } else {
                             _this.LOG.INFO({
                                 lifecycle: 'transport',
-                                info: {
-                                    status: xhr.status,
-                                    responseText: xhr.responseText
-                                }
+                                httpCode: xhr.status,
+                                responseText: xhr.responseText,
+                                fileName: _this.blobObj.file.name
                             });
                             _this.eventEmitter.emit('_uploadError', xhr.statusText);
                             rej(xhr.response);
