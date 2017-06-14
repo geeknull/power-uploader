@@ -300,14 +300,12 @@ export class Uploader {
             });
 
             await this.eventEmitter.emit('uploadError', {
-                fileStatus: blobObj.file.statusText,
-                fileName: blobObj.file.name,
+                file: blobObj.file,
                 error: err
             });
 
             await this.eventEmitter.emit('uploadEndSend', {
-                fileStatus: blobObj.file.statusText,
-                fileName: blobObj.file.name,
+                file: blobObj.file,
                 shard: blobObj.blob,
                 shardCount: blobObj.shard.shardCount,
                 currentShard: blobObj.shard.currentShard

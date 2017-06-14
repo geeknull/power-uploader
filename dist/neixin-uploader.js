@@ -2300,16 +2300,14 @@ var Uploader = exports.Uploader = function () {
 
                                 _context6.next = 9;
                                 return this.eventEmitter.emit('uploadError', {
-                                    fileStatus: blobObj.file.statusText,
-                                    fileName: blobObj.file.name,
+                                    file: blobObj.file,
                                     error: err
                                 });
 
                             case 9:
                                 _context6.next = 11;
                                 return this.eventEmitter.emit('uploadEndSend', {
-                                    fileStatus: blobObj.file.statusText,
-                                    fileName: blobObj.file.name,
+                                    file: blobObj.file,
                                     shard: blobObj.blob,
                                     shardCount: blobObj.shard.shardCount,
                                     currentShard: blobObj.shard.currentShard
