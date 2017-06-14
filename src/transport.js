@@ -69,10 +69,20 @@ export class Transport {
                         this.eventEmitter.emit('_uploadSuccess', this._blob, xhr.responseText);
                         this.LOG.INFO({
                             lifecycle: 'transport',
-                            info: xhr.responseText
+                            info: {
+                                status: xhr.status,
+                                responseText: xhr.responseText
+                            }
                         });
                         res(xhr.responseText);
                     } else {
+                        this.LOG.INFO({
+                            lifecycle: 'transport',
+                            info: {
+                                status: xhr.status,
+                                responseText: xhr.responseText
+                            }
+                        });
                         this.eventEmitter.emit('_uploadError', xhr.statusText);
                         rej(xhr.response);
                     }

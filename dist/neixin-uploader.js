@@ -3802,10 +3802,20 @@ var Transport = exports.Transport = function () {
                             _this.eventEmitter.emit('_uploadSuccess', _this._blob, xhr.responseText);
                             _this.LOG.INFO({
                                 lifecycle: 'transport',
-                                info: xhr.responseText
+                                info: {
+                                    status: xhr.status,
+                                    responseText: xhr.responseText
+                                }
                             });
                             res(xhr.responseText);
                         } else {
+                            _this.LOG.INFO({
+                                lifecycle: 'transport',
+                                info: {
+                                    status: xhr.status,
+                                    responseText: xhr.responseText
+                                }
+                            });
                             _this.eventEmitter.emit('_uploadError', xhr.statusText);
                             rej(xhr.response);
                         }
