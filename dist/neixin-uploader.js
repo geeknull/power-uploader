@@ -1840,7 +1840,19 @@ var Uploader = exports.Uploader = function () {
                                 });
                                 _context.prev = 1;
                                 _context.next = 4;
-                                return this.eventEmitter.emit('beforeFileQueued', { file: wuFile });
+                                return this.eventEmitter.emit('beforeFileQueued', { file: wuFile, setContentType: function setContentType(type) {
+                                        // 允许用户自定义
+                                        if (type) {
+                                            var blobFile = new Blob([wuFile.source], { type: type });
+                                            blobFile.file2blob = true;
+                                            blobFile.lastModified = wuFile.source.lastModified;
+                                            blobFile.name = wuFile.source.name;
+                                            blobFile.size = wuFile.source.size;
+                                            blobFile.type = type;
+                                            blobFile.lastModifiedDate = wuFile.source.lastModifiedDate; // chrome专属
+                                            blobFile.webkitRelativePath = wuFile.source.webkitRelativePath; // chrome专属
+                                        }
+                                    } });
 
                             case 4:
                                 res = _context.sent;

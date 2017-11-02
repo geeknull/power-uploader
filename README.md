@@ -112,7 +112,8 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
     ```javascript
     uploader.on('beforeFileQueued', (obj)=> {
         console.log('beforeFileQueued');
-        let { file } = obj;
+        let { file, setContentType } = obj;
+        setContentType('image/png'); // 更改文件的Content-Type  
     
         if (/^[^<>\|\*\?\/]*$/.test(file.name)) {
             let b1 = new Buffer(file.name);

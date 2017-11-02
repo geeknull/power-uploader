@@ -1,10 +1,9 @@
 {
   "name": "neixin-uploader",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "## 引入方式",
   "main": "./dist/neixin-uploader.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
     "b": "webpack --config webpack.config.bak.js",
     "lint": "eslint src/*.js",

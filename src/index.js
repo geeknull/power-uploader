@@ -74,7 +74,19 @@ export class Uploader {
             groupInfo: groupInfo || {}
         });
         try {
-            let res = await this.eventEmitter.emit('beforeFileQueued', {file: wuFile});
+            let res = await this.eventEmitter.emit('beforeFileQueued', {file: wuFile, setContentType: (type) => {
+                // 允许用户自定义
+                if (type) {
+                    let blobFile = new Blob([wuFile.source], {type: type});
+                    blobFile.file2blob = true;
+                    blobFile.lastModified = wuFile.source.lastModified;
+                    blobFile.name = wuFile.source.name;
+                    blobFile.size = wuFile.source.size;
+                    blobFile.type = type;
+                    blobFile.lastModifiedDate = wuFile.source.lastModifiedDate; // chrome专属
+                    blobFile.webkitRelativePath = wuFile.source.webkitRelativePath; // chrome专属
+                }
+            }});
             if (res.indexOf(false) === -1) {
                 wuFile.statusText = WUFile.Status.QUEUED;
                 await this.eventEmitter.emit('fileQueued', { file: wuFile });
