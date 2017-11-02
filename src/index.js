@@ -81,10 +81,11 @@ export class Uploader {
                     blobFile.file2blob = true;
                     blobFile.lastModified = wuFile.source.lastModified;
                     blobFile.name = wuFile.source.name;
-                    blobFile.size = wuFile.source.size;
-                    blobFile.type = type;
+                    // blobFile.size = wuFile.source.size;
+                    // blobFile.type = type;
                     blobFile.lastModifiedDate = wuFile.source.lastModifiedDate; // chrome专属
                     blobFile.webkitRelativePath = wuFile.source.webkitRelativePath; // chrome专属
+                    wuFile.source = blobFile;
                 }
             }});
             if (res.indexOf(false) === -1) {
@@ -122,7 +123,12 @@ export class Uploader {
                 for ( let i = 0, len = shardCount; i < len; i++  ) {
                     let start = i * this.config.chunkSize;
                     let end = Math.min(wuFile.size, start + this.config.chunkSize);
+
                     let blob = wuFile.source.slice(start, end);
+                    if (len === 1) {
+                        // 只有一片的时候 保留分片信息 不进行slice 是为了保留Content-Type
+                        blob = wuFile.source;
+                    }
 
                     let shardObj = {
                         shardCount: shardCount,
