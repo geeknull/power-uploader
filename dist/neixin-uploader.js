@@ -1847,10 +1847,11 @@ var Uploader = exports.Uploader = function () {
                                             blobFile.file2blob = true;
                                             blobFile.lastModified = wuFile.source.lastModified;
                                             blobFile.name = wuFile.source.name;
-                                            blobFile.size = wuFile.source.size;
-                                            blobFile.type = type;
+                                            // blobFile.size = wuFile.source.size;
+                                            // blobFile.type = type;
                                             blobFile.lastModifiedDate = wuFile.source.lastModifiedDate; // chrome专属
                                             blobFile.webkitRelativePath = wuFile.source.webkitRelativePath; // chrome专属
+                                            wuFile.source = blobFile;
                                         }
                                     } });
 
@@ -1929,7 +1930,7 @@ var Uploader = exports.Uploader = function () {
 
                             case 3:
                                 if (!this.config.chunked) {
-                                    _context2.next = 17;
+                                    _context2.next = 18;
                                     break;
                                 }
 
@@ -1942,36 +1943,42 @@ var Uploader = exports.Uploader = function () {
 
                             case 7:
                                 if (!(i < len)) {
-                                    _context2.next = 17;
+                                    _context2.next = 18;
                                     break;
                                 }
 
                                 start = i * this.config.chunkSize;
                                 end = Math.min(wuFile.size, start + this.config.chunkSize);
                                 blob = wuFile.source.slice(start, end);
+
+                                if (len === 1) {
+                                    // 只有一片的时候 保留分片信息 不进行slice 是为了保留Content-Type
+                                    blob = wuFile.source;
+                                }
+
                                 shardObj = {
                                     shardCount: shardCount,
                                     currentShard: i + 1 // 分片从1开始，下标都要+1
                                 };
-                                _context2.next = 14;
+                                _context2.next = 15;
                                 return this.pushBlobQueue(blob, wuFile, shardObj);
 
-                            case 14:
+                            case 15:
                                 i++;
                                 _context2.next = 7;
                                 break;
 
-                            case 17:
+                            case 18:
                                 this.LOG.ERROR({
                                     lifecycle: 'sliceFile',
                                     fileStatus: wuFile.statusText,
                                     fileName: wuFile.name
                                 });
-                                _context2.next = 23;
+                                _context2.next = 24;
                                 break;
 
-                            case 20:
-                                _context2.prev = 20;
+                            case 21:
+                                _context2.prev = 21;
                                 _context2.t0 = _context2['catch'](0);
 
                                 this.LOG.ERROR({
@@ -1981,12 +1988,12 @@ var Uploader = exports.Uploader = function () {
                                     err: _context2.t0
                                 });
 
-                            case 23:
+                            case 24:
                             case 'end':
                                 return _context2.stop();
                         }
                     }
-                }, _callee2, this, [[0, 20]]);
+                }, _callee2, this, [[0, 21]]);
             }));
 
             function sliceFile(_x4) {
