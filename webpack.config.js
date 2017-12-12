@@ -5,8 +5,8 @@ module.exports = {
     entry: ['./src/index.js'],
     output: {
         path: path.join(__dirname, './dist'),
-        filename: 'neixin-uploader.js',
-        library: 'neixin-uploader',
+        filename: 'power-uploader.js',
+        library: 'power-uploader',
         libraryTarget: 'umd'
     },
     devtool: 'cheap-module-source-map',
