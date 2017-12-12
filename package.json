@@ -1,6 +1,6 @@
 {
   "name": "power-uploader",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "## 引入方式",
   "main": "./dist/power-uploader.js",
   "scripts": {
@@ -9,7 +9,12 @@
     "lint": "eslint src/*.js",
     "lint:fix": "eslint --fix src/*.js"
   },
-  "files": ["dist", "src", "README.md", "CHANGE.md"],
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "CHANGE.md"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/neixin/power-uploader"

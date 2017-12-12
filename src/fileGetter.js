@@ -44,6 +44,10 @@ export default class {
         }
         this._pickOnChangeBindThis = this._pickOnChange.bind(this);
         this._pickOnClickBindThis = this._pickOnClick.bind(this);
+
+        this._pickDirOnClickBindThis = this._pickDirOnClick.bind(this);
+        this._pickDirOnChangeBindThis = this._pickDirOnChange.bind(this);
+
         this._dndHandleDragenterBindThis = this._dndHandleDragenter.bind(this);
         this._dndHandleDragoverBindThis = this._dndHandleDragover.bind(this);
         this._dndHandleDragleaveBindThis = this._dndHandleDragleave.bind(this);
@@ -73,6 +77,9 @@ export default class {
         let input = `<input type="file" id="${this.inputId}" size="30" name="fileselect[]" style="position:absolute;top:-100000px;">`;
         let inputEle = Util.parseToDOM(input)[0];
 
+        let inputDir = `<input type="file" id="${this.inputId}Dir" webkitdirectory mozdirectory size="30" name="fileselect[]" style="position:absolute;top:-100000px;">`;
+        let inputEleDir = Util.parseToDOM(inputDir)[0];
+
         if (this.config.accept && this.config.accept.length > 0) {
             let arr = [];
 
@@ -86,10 +93,15 @@ export default class {
         }
 
         Util.removeDOM(`#${this.inputId}`);
+        Util.removeDOM(`#${this.inputId}Dir`);
         this.config.body.appendChild(inputEle);
+        this.config.body.appendChild(inputEleDir);
         this.reset();
         if (this.config.pick) {
             this._pickHandle();
+        }
+        if (this.config.pickDir) {
+            this._pickDirHandler();
         }
         if (this.config.dnd) {
             this._dndHandle();
@@ -106,6 +118,8 @@ export default class {
     reset() {
         let inputEle = document.querySelector(`#${this.inputId}`);
         this._resetinput(inputEle);
+        let inputEleDir = document.querySelector(`#${this.inputId}Dir`);
+        this._resetinput(inputEleDir);
     }
 
     _pasteHandle() {
@@ -138,22 +152,38 @@ export default class {
 
     _pickHandle() {
         this.globalEventDelegate.on('change', `#${this.inputId}`, this._pickOnChangeBindThis);
-        if(this.config.pick) {
-            this.globalEventDelegate.on('click', this.config.pick, this._pickOnClickBindThis);
-        }
+        this.globalEventDelegate.on('click', this.config.pick, this._pickOnClickBindThis);
     }
 
-    async _pickOnChange(event) {
-        event.stopPropagation();
-        event.preventDefault();
-        await this.funGetFiles(event);
+    _pickDirHandler () {
+        this.globalEventDelegate.on('change', `#${this.inputId}Dir`, this._pickDirOnChangeBindThis);
+        this.globalEventDelegate.on('click', this.config.pickDir, this._pickDirOnClickBindThis);
+    }
+
+    async _pickOnChange(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        await this.funGetFiles(e);
         this.reset(); // 重复文件会不触发
     }
 
-    async _pickOnClick (event) {
-        event.stopPropagation();
-        event.preventDefault();
+    async _pickOnClick (e) {
+        e.stopPropagation();
+        e.preventDefault();
         document.querySelector(`#${this.inputId}`).click();
+    }
+
+    async _pickDirOnChange(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        await this.funGetFiles(e, 'pickDir');
+        this.reset(); // 重复文件会不触发
+    }
+
+    async _pickDirOnClick(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        document.querySelector(`#${this.inputId}Dir`).click();
     }
 
     _dndHandle() {
@@ -165,29 +195,29 @@ export default class {
         }
     }
 
-    async _dndHandleDragenter(event) {
-        event.stopPropagation();
-        event.preventDefault();
+    async _dndHandleDragenter(e) {
+        e.stopPropagation();
+        e.preventDefault();
     }
-    async _dndHandleDragover(event) {
-        event.dataTransfer.dropEffect = 'copy'; // 兼容圈点APP
-        event.stopPropagation();
-        event.preventDefault();
+    async _dndHandleDragover(e) {
+        e.dataTransfer.dropEffect = 'copy'; // 兼容圈点APP
+        e.stopPropagation();
+        e.preventDefault();
         this.eventEmitter.emit('dragover');
     }
-    async _dndHandleDragleave(event) {
-        event.stopPropagation();
-        event.preventDefault();
+    async _dndHandleDragleave(e) {
+        e.stopPropagation();
+        e.preventDefault();
         this.eventEmitter.emit('dragleave');
     }
-    async _dndHandleDrop(event) {
-        event.stopPropagation();
-        event.preventDefault();
-        await this.funGetFiles(event);
+    async _dndHandleDrop(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        await this.funGetFiles(e);
     }
 
     //获取选择文件，file控件或拖放
-    async funGetFiles(e) {
+    async funGetFiles(e, type) {
         let tmpFileArr = [];
         this._selectFileTransactionId++;
         let id = this._selectFileTransactionId;
@@ -208,47 +238,62 @@ export default class {
             }
         }
         await this.eventEmitter.emit('beforeFilesQueued', files);
-        for (let index = 0, l = Object.keys(files).length; index < l; index++) {
-            let file = files[index];
-            if (!!file) {
-                if (entrys && entrys[index]) {
-                    let entry = entrys[index];
-                    if (entry !== null && entry.isDirectory) {
-                        await this.folderRead(entry, tmpFileArr);
-                        continue;
-                    }
-                }
-                // PC版上，path是只读属性，必须通过 Object.defineProperty来设置
-                // file.path = '/' + file.name;
-                // TODO 屏蔽大象PC差异
-                // if (process && process.env && process.env.APP_ENV && process.env.APP_ENV.indexOf('pc') > -1) {
-                //     Object.defineProperty(file,'path',{
-                //         value:'/' + file.name
-                //     })
-                // } else {
-                //     file.path = '/' + file.name;
-                // }
-                Object.defineProperty(file,'path',{
-                    value:'/' + file.name
+
+        // uploadDir
+        if (type === 'pickDir') {
+            let filesArr = [].slice.call(files);
+            tmpFileArr = filesArr.map(item => {
+                Object.defineProperty(item, 'path' ,{
+                    value: '/' + item.webkitRelativePath
                 });
+                return item;
+            });
+            let pathReg = /\/(\w*)\//;
+            let someFileName = tmpFileArr[0].path;
+            let dirName = someFileName.match(pathReg)[1];
 
-                // let groupInfo = {
-                //     id: id,
-                //     count: ++count,
-                //     current: count
-                // };
-                if(!!this.config.multiple) {
-                    tmpFileArr.push(file);
-                    // await this.pushQueue(file, groupInfo);
-                }else{
-                    tmpFileArr.push(file);
-                    // await this.pushQueue(file, groupInfo);
-                    break;
+            let entry = {};
+            entry.path = entry.fullPath = dirName;
+            entry.selectFileTransactionId = this._selectFileTransactionId;
+            let res = await this.eventEmitter.emit('selectDir', entry);
+            if (res.indexOf(false) !== -1) {
+                return void 0;
+            }
+        } else {
+            for (let index = 0, l = Object.keys(files).length; index < l; index++) {
+                let file = files[index];
+                if (!!file) {
+                    if (entrys && entrys[index]) {
+                        let entry = entrys[index]; // maybe is {}
+                        if (entry !== null && entry.isDirectory) {
+                            await this.folderRead(entry, tmpFileArr);
+                            continue;
+                        }
+                    }
+
+                    // file.path = '/' + file.name; // PC版这种情况会有问题
+                    Object.defineProperty(file,'path',{
+                        value:'/' + file.name
+                    });
+
+                    // let groupInfo = {
+                    //     id: id,
+                    //     count: ++count,
+                    //     current: count
+                    // };
+                    if(!!this.config.multiple) {
+                        tmpFileArr.push(file);
+                        // await this.pushQueue(file, groupInfo);
+                    }else{
+                        tmpFileArr.push(file);
+                        // await this.pushQueue(file, groupInfo);
+                        break;
+                    }
+
                 }
-
             }
         }
-        // logger.log('files queued');
+
         tmpFileArr.forEach(async (item, index, array) => {
             let count = array.length;
             let current = index+1;
@@ -273,16 +318,10 @@ export default class {
                         if (_entry.isFile) {
                             let file = await new Promise((res)=> {
                                 _entry.file(async(file) => {
+                                    // file.path = _entry.fullPath;
                                     Object.defineProperty(file,'path',{
                                         value:_entry.fullPath
                                     });
-                                    // if(process.env.APP_ENV.indexOf('pc') > -1) {
-                                    //     Object.defineProperty(file,'path',{
-                                    //         value:_entry.fullPath
-                                    //     });
-                                    // }else{
-                                    //     file.path = _entry.fullPath;
-                                    // }
                                     res(file);
                                 });
                             });
@@ -323,7 +362,7 @@ export default class {
         }
 
         this.globalEventDelegate.off('change');
-        if(this.config.pick) {
+        if(this.config.pick || this.config.pickDir) {
             this.globalEventDelegate.off('click');
         }
     }

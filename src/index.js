@@ -24,6 +24,7 @@ let _config = {
     fileSingleSizeLimit: void 0,
     dnd: void 0,
     pick: void 0,
+    pickDir: void 0,
     paste: void 0,
     server: '',
     listenerContainer: document,

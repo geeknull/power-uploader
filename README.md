@@ -1,6 +1,3 @@
-> 此项目转移到 `power-uploader`
-> https://www.npmjs.com/package/power-uploader
-
 # 文件传输SDK文档
 
 ## 引入方式
@@ -59,6 +56,7 @@ let uploader = new Uploader({
 | fileSingleSizeLimit | Number | undefined | 暂不启用 |
 | dnd | String | void 0 | 拖拽区域选择器 |
 | pick | String | void 0 | 点击区域的选择器 |
+| pickDir | String | void 0 | 点击区域的选择器(选择文件夹) |
 | paste | String | void 0 | 粘贴区域选择器 |
 | server | String | '' | 服务器地址 |
 | listenerContainer | DOM | document | 事件委托的DOM元素 |
