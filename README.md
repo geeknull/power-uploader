@@ -1,3 +1,6 @@
+> 此项目转移到 `power-uploader`
+> https://www.npmjs.com/package/power-uploader
+
 # 文件传输SDK文档
 
 ## 引入方式

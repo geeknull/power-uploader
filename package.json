@@ -1,6 +1,6 @@
 {
   "name": "neixin-uploader",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "description": "## 引入方式",
   "main": "./dist/neixin-uploader.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "files": ["dist", "src", "README.md", "CHANGE.md"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/neixin/neixin-uploader"
+    "url": "https://github.com/neixin/power-uploader"
   },
   "keywords": [],
   "author": "geeknull",
