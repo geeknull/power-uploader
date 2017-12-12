@@ -1879,6 +1879,7 @@ var _config = {
     fileSingleSizeLimit: void 0,
     dnd: void 0,
     pick: void 0,
+    pickDir: void 0,
     paste: void 0,
     server: '',
     listenerContainer: document,
@@ -3134,6 +3135,10 @@ var _class = function () {
         }
         this._pickOnChangeBindThis = this._pickOnChange.bind(this);
         this._pickOnClickBindThis = this._pickOnClick.bind(this);
+
+        this._pickDirOnClickBindThis = this._pickDirOnClick.bind(this);
+        this._pickDirOnChangeBindThis = this._pickDirOnChange.bind(this);
+
         this._dndHandleDragenterBindThis = this._dndHandleDragenter.bind(this);
         this._dndHandleDragoverBindThis = this._dndHandleDragover.bind(this);
         this._dndHandleDragleaveBindThis = this._dndHandleDragleave.bind(this);
@@ -3167,6 +3172,9 @@ var _class = function () {
             var input = '<input type="file" id="' + this.inputId + '" size="30" name="fileselect[]" style="position:absolute;top:-100000px;">';
             var inputEle = _util2.default.parseToDOM(input)[0];
 
+            var inputDir = '<input type="file" id="' + this.inputId + 'Dir" webkitdirectory mozdirectory size="30" name="fileselect[]" style="position:absolute;top:-100000px;">';
+            var inputEleDir = _util2.default.parseToDOM(inputDir)[0];
+
             if (this.config.accept && this.config.accept.length > 0) {
                 var arr = [];
 
@@ -3180,10 +3188,15 @@ var _class = function () {
             }
 
             _util2.default.removeDOM('#' + this.inputId);
+            _util2.default.removeDOM('#' + this.inputId + 'Dir');
             this.config.body.appendChild(inputEle);
+            this.config.body.appendChild(inputEleDir);
             this.reset();
             if (this.config.pick) {
                 this._pickHandle();
+            }
+            if (this.config.pickDir) {
+                this._pickDirHandler();
             }
             if (this.config.dnd) {
                 this._dndHandle();
@@ -3202,6 +3215,8 @@ var _class = function () {
         value: function reset() {
             var inputEle = document.querySelector('#' + this.inputId);
             this._resetinput(inputEle);
+            var inputEleDir = document.querySelector('#' + this.inputId + 'Dir');
+            this._resetinput(inputEleDir);
         }
     }, {
         key: '_pasteHandle',
@@ -3238,22 +3253,26 @@ var _class = function () {
         key: '_pickHandle',
         value: function _pickHandle() {
             this.globalEventDelegate.on('change', '#' + this.inputId, this._pickOnChangeBindThis);
-            if (this.config.pick) {
-                this.globalEventDelegate.on('click', this.config.pick, this._pickOnClickBindThis);
-            }
+            this.globalEventDelegate.on('click', this.config.pick, this._pickOnClickBindThis);
+        }
+    }, {
+        key: '_pickDirHandler',
+        value: function _pickDirHandler() {
+            this.globalEventDelegate.on('change', '#' + this.inputId + 'Dir', this._pickDirOnChangeBindThis);
+            this.globalEventDelegate.on('click', this.config.pickDir, this._pickDirOnClickBindThis);
         }
     }, {
         key: '_pickOnChange',
         value: function () {
-            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(event) {
+            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(e) {
                 return _regenerator2.default.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
                             case 0:
-                                event.stopPropagation();
-                                event.preventDefault();
+                                e.stopPropagation();
+                                e.preventDefault();
                                 _context.next = 4;
-                                return this.funGetFiles(event);
+                                return this.funGetFiles(e);
 
                             case 4:
                                 this.reset(); // 重复文件会不触发
@@ -3275,13 +3294,13 @@ var _class = function () {
     }, {
         key: '_pickOnClick',
         value: function () {
-            var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(event) {
+            var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(e) {
                 return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
                             case 0:
-                                event.stopPropagation();
-                                event.preventDefault();
+                                e.stopPropagation();
+                                e.preventDefault();
                                 document.querySelector('#' + this.inputId).click();
 
                             case 3:
@@ -3299,6 +3318,62 @@ var _class = function () {
             return _pickOnClick;
         }()
     }, {
+        key: '_pickDirOnChange',
+        value: function () {
+            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(e) {
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                e.stopPropagation();
+                                e.preventDefault();
+                                _context3.next = 4;
+                                return this.funGetFiles(e, 'pickDir');
+
+                            case 4:
+                                this.reset(); // 重复文件会不触发
+
+                            case 5:
+                            case 'end':
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, this);
+            }));
+
+            function _pickDirOnChange(_x4) {
+                return _ref3.apply(this, arguments);
+            }
+
+            return _pickDirOnChange;
+        }()
+    }, {
+        key: '_pickDirOnClick',
+        value: function () {
+            var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(e) {
+                return _regenerator2.default.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                e.stopPropagation();
+                                e.preventDefault();
+                                document.querySelector('#' + this.inputId + 'Dir').click();
+
+                            case 3:
+                            case 'end':
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, this);
+            }));
+
+            function _pickDirOnClick(_x5) {
+                return _ref4.apply(this, arguments);
+            }
+
+            return _pickDirOnClick;
+        }()
+    }, {
         key: '_dndHandle',
         value: function _dndHandle() {
             if (this.config.dnd) {
@@ -3311,68 +3386,15 @@ var _class = function () {
     }, {
         key: '_dndHandleDragenter',
         value: function () {
-            var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(event) {
-                return _regenerator2.default.wrap(function _callee3$(_context3) {
-                    while (1) {
-                        switch (_context3.prev = _context3.next) {
-                            case 0:
-                                event.stopPropagation();
-                                event.preventDefault();
-
-                            case 2:
-                            case 'end':
-                                return _context3.stop();
-                        }
-                    }
-                }, _callee3, this);
-            }));
-
-            function _dndHandleDragenter(_x4) {
-                return _ref3.apply(this, arguments);
-            }
-
-            return _dndHandleDragenter;
-        }()
-    }, {
-        key: '_dndHandleDragover',
-        value: function () {
-            var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(event) {
-                return _regenerator2.default.wrap(function _callee4$(_context4) {
-                    while (1) {
-                        switch (_context4.prev = _context4.next) {
-                            case 0:
-                                event.dataTransfer.dropEffect = 'copy'; // 兼容圈点APP
-                                event.stopPropagation();
-                                event.preventDefault();
-                                this.eventEmitter.emit('dragover');
-
-                            case 4:
-                            case 'end':
-                                return _context4.stop();
-                        }
-                    }
-                }, _callee4, this);
-            }));
-
-            function _dndHandleDragover(_x5) {
-                return _ref4.apply(this, arguments);
-            }
-
-            return _dndHandleDragover;
-        }()
-    }, {
-        key: '_dndHandleDragleave',
-        value: function () {
-            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(event) {
+            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(e) {
                 return _regenerator2.default.wrap(function _callee5$(_context5) {
                     while (1) {
                         switch (_context5.prev = _context5.next) {
                             case 0:
-                                event.stopPropagation();
-                                event.preventDefault();
-                                this.eventEmitter.emit('dragleave');
+                                e.stopPropagation();
+                                e.preventDefault();
 
-                            case 3:
+                            case 2:
                             case 'end':
                                 return _context5.stop();
                         }
@@ -3380,24 +3402,24 @@ var _class = function () {
                 }, _callee5, this);
             }));
 
-            function _dndHandleDragleave(_x6) {
+            function _dndHandleDragenter(_x6) {
                 return _ref5.apply(this, arguments);
             }
 
-            return _dndHandleDragleave;
+            return _dndHandleDragenter;
         }()
     }, {
-        key: '_dndHandleDrop',
+        key: '_dndHandleDragover',
         value: function () {
-            var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(event) {
+            var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(e) {
                 return _regenerator2.default.wrap(function _callee6$(_context6) {
                     while (1) {
                         switch (_context6.prev = _context6.next) {
                             case 0:
-                                event.stopPropagation();
-                                event.preventDefault();
-                                _context6.next = 4;
-                                return this.funGetFiles(event);
+                                e.dataTransfer.dropEffect = 'copy'; // 兼容圈点APP
+                                e.stopPropagation();
+                                e.preventDefault();
+                                this.eventEmitter.emit('dragover');
 
                             case 4:
                             case 'end':
@@ -3407,8 +3429,61 @@ var _class = function () {
                 }, _callee6, this);
             }));
 
-            function _dndHandleDrop(_x7) {
+            function _dndHandleDragover(_x7) {
                 return _ref6.apply(this, arguments);
+            }
+
+            return _dndHandleDragover;
+        }()
+    }, {
+        key: '_dndHandleDragleave',
+        value: function () {
+            var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(e) {
+                return _regenerator2.default.wrap(function _callee7$(_context7) {
+                    while (1) {
+                        switch (_context7.prev = _context7.next) {
+                            case 0:
+                                e.stopPropagation();
+                                e.preventDefault();
+                                this.eventEmitter.emit('dragleave');
+
+                            case 3:
+                            case 'end':
+                                return _context7.stop();
+                        }
+                    }
+                }, _callee7, this);
+            }));
+
+            function _dndHandleDragleave(_x8) {
+                return _ref7.apply(this, arguments);
+            }
+
+            return _dndHandleDragleave;
+        }()
+    }, {
+        key: '_dndHandleDrop',
+        value: function () {
+            var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(e) {
+                return _regenerator2.default.wrap(function _callee8$(_context8) {
+                    while (1) {
+                        switch (_context8.prev = _context8.next) {
+                            case 0:
+                                e.stopPropagation();
+                                e.preventDefault();
+                                _context8.next = 4;
+                                return this.funGetFiles(e);
+
+                            case 4:
+                            case 'end':
+                                return _context8.stop();
+                        }
+                    }
+                }, _callee8, this);
+            }));
+
+            function _dndHandleDrop(_x9) {
+                return _ref8.apply(this, arguments);
             }
 
             return _dndHandleDrop;
@@ -3419,13 +3494,14 @@ var _class = function () {
     }, {
         key: 'funGetFiles',
         value: function () {
-            var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(e) {
+            var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(e, type) {
                 var _this3 = this;
 
-                var tmpFileArr, id, count, files, items, entrys, key, index, l, file, entry;
-                return _regenerator2.default.wrap(function _callee8$(_context8) {
+                var tmpFileArr, id, count, files, items, entrys, key, filesArr, pathReg, someFileName, dirName, entry, res, index, l, file, _entry2;
+
+                return _regenerator2.default.wrap(function _callee10$(_context10) {
                     while (1) {
-                        switch (_context8.prev = _context8.next) {
+                        switch (_context10.prev = _context10.next) {
                             case 0:
                                 tmpFileArr = [];
 
@@ -3447,54 +3523,84 @@ var _class = function () {
                                         }
                                     }
                                 }
-                                _context8.next = 10;
+                                _context10.next = 10;
                                 return this.eventEmitter.emit('beforeFilesQueued', files);
 
                             case 10:
+                                if (!(type === 'pickDir')) {
+                                    _context10.next = 26;
+                                    break;
+                                }
+
+                                filesArr = [].slice.call(files);
+
+                                tmpFileArr = filesArr.map(function (item) {
+                                    Object.defineProperty(item, 'path', {
+                                        value: '/' + item.webkitRelativePath
+                                    });
+                                    return item;
+                                });
+                                pathReg = /\/(\w*)\//;
+                                someFileName = tmpFileArr[0].path;
+                                dirName = someFileName.match(pathReg)[1];
+                                entry = {};
+
+                                entry.path = entry.fullPath = dirName;
+                                entry.selectFileTransactionId = this._selectFileTransactionId;
+                                _context10.next = 21;
+                                return this.eventEmitter.emit('selectDir', entry);
+
+                            case 21:
+                                res = _context10.sent;
+
+                                if (!(res.indexOf(false) !== -1)) {
+                                    _context10.next = 24;
+                                    break;
+                                }
+
+                                return _context10.abrupt('return', void 0);
+
+                            case 24:
+                                _context10.next = 46;
+                                break;
+
+                            case 26:
                                 index = 0, l = (0, _keys2.default)(files).length;
 
-                            case 11:
+                            case 27:
                                 if (!(index < l)) {
-                                    _context8.next = 30;
+                                    _context10.next = 46;
                                     break;
                                 }
 
                                 file = files[index];
 
                                 if (!file) {
-                                    _context8.next = 27;
+                                    _context10.next = 43;
                                     break;
                                 }
 
                                 if (!(entrys && entrys[index])) {
-                                    _context8.next = 20;
+                                    _context10.next = 36;
                                     break;
                                 }
 
-                                entry = entrys[index];
+                                _entry2 = entrys[index]; // maybe is {}
 
-                                if (!(entry !== null && entry.isDirectory)) {
-                                    _context8.next = 20;
+                                if (!(_entry2 !== null && _entry2.isDirectory)) {
+                                    _context10.next = 36;
                                     break;
                                 }
 
-                                _context8.next = 19;
-                                return this.folderRead(entry, tmpFileArr);
+                                _context10.next = 35;
+                                return this.folderRead(_entry2, tmpFileArr);
 
-                            case 19:
-                                return _context8.abrupt('continue', 27);
+                            case 35:
+                                return _context10.abrupt('continue', 43);
 
-                            case 20:
-                                // PC版上，path是只读属性，必须通过 Object.defineProperty来设置
-                                // file.path = '/' + file.name;
-                                // TODO 屏蔽大象PC差异
-                                // if (process && process.env && process.env.APP_ENV && process.env.APP_ENV.indexOf('pc') > -1) {
-                                //     Object.defineProperty(file,'path',{
-                                //         value:'/' + file.name
-                                //     })
-                                // } else {
-                                //     file.path = '/' + file.name;
-                                // }
+                            case 36:
+
+                                // file.path = '/' + file.name; // PC版这种情况会有问题
                                 Object.defineProperty(file, 'path', {
                                     value: '/' + file.name
                                 });
@@ -3506,33 +3612,33 @@ var _class = function () {
                                 // };
 
                                 if (!this.config.multiple) {
-                                    _context8.next = 25;
+                                    _context10.next = 41;
                                     break;
                                 }
 
                                 tmpFileArr.push(file);
                                 // await this.pushQueue(file, groupInfo);
-                                _context8.next = 27;
+                                _context10.next = 43;
                                 break;
 
-                            case 25:
+                            case 41:
                                 tmpFileArr.push(file);
                                 // await this.pushQueue(file, groupInfo);
-                                return _context8.abrupt('break', 30);
+                                return _context10.abrupt('break', 46);
 
-                            case 27:
+                            case 43:
                                 index++;
-                                _context8.next = 11;
+                                _context10.next = 27;
                                 break;
 
-                            case 30:
-                                // logger.log('files queued');
+                            case 46:
+
                                 tmpFileArr.forEach(function () {
-                                    var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(item, index, array) {
+                                    var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(item, index, array) {
                                         var count, current, groupInfo;
-                                        return _regenerator2.default.wrap(function _callee7$(_context7) {
+                                        return _regenerator2.default.wrap(function _callee9$(_context9) {
                                             while (1) {
-                                                switch (_context7.prev = _context7.next) {
+                                                switch (_context9.prev = _context9.next) {
                                                     case 0:
                                                         count = array.length;
                                                         current = index + 1;
@@ -3540,34 +3646,34 @@ var _class = function () {
                                                             count: count, current: current,
                                                             id: id
                                                         };
-                                                        _context7.next = 5;
+                                                        _context9.next = 5;
                                                         return _this3.pushQueue(item, groupInfo);
 
                                                     case 5:
                                                     case 'end':
-                                                        return _context7.stop();
+                                                        return _context9.stop();
                                                 }
                                             }
-                                        }, _callee7, _this3);
+                                        }, _callee9, _this3);
                                     }));
 
-                                    return function (_x9, _x10, _x11) {
-                                        return _ref8.apply(this, arguments);
+                                    return function (_x12, _x13, _x14) {
+                                        return _ref10.apply(this, arguments);
                                     };
                                 }());
-                                _context8.next = 33;
+                                _context10.next = 49;
                                 return this.eventEmitter.emit('filesQueued');
 
-                            case 33:
+                            case 49:
                             case 'end':
-                                return _context8.stop();
+                                return _context10.stop();
                         }
                     }
-                }, _callee8, this);
+                }, _callee10, this);
             }));
 
-            function funGetFiles(_x8) {
-                return _ref7.apply(this, arguments);
+            function funGetFiles(_x10, _x11) {
+                return _ref9.apply(this, arguments);
             }
 
             return funGetFiles;
@@ -3575,88 +3681,82 @@ var _class = function () {
     }, {
         key: 'folderRead',
         value: function () {
-            var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(entry, tmpFileArr) {
+            var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13(entry, tmpFileArr) {
                 var _this4 = this;
 
                 var res;
-                return _regenerator2.default.wrap(function _callee11$(_context12) {
+                return _regenerator2.default.wrap(function _callee13$(_context14) {
                     while (1) {
-                        switch (_context12.prev = _context12.next) {
+                        switch (_context14.prev = _context14.next) {
                             case 0:
                                 entry.path = entry.fullPath;
                                 entry.selectFileTransactionId = this._selectFileTransactionId;
-                                _context12.next = 4;
+                                _context14.next = 4;
                                 return this.eventEmitter.emit('selectDir', entry);
 
                             case 4:
-                                res = _context12.sent;
+                                res = _context14.sent;
 
                                 if (!(res.indexOf(false) === -1)) {
-                                    _context12.next = 8;
+                                    _context14.next = 8;
                                     break;
                                 }
 
-                                _context12.next = 8;
+                                _context14.next = 8;
                                 return new _promise2.default(function (res) {
                                     entry.createReader().readEntries(function () {
-                                        var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(entries) {
+                                        var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(entries) {
                                             var _loop, i;
 
-                                            return _regenerator2.default.wrap(function _callee10$(_context11) {
+                                            return _regenerator2.default.wrap(function _callee12$(_context13) {
                                                 while (1) {
-                                                    switch (_context11.prev = _context11.next) {
+                                                    switch (_context13.prev = _context13.next) {
                                                         case 0:
                                                             _loop = /*#__PURE__*/_regenerator2.default.mark(function _loop() {
                                                                 var _entry, file;
 
-                                                                return _regenerator2.default.wrap(function _loop$(_context10) {
+                                                                return _regenerator2.default.wrap(function _loop$(_context12) {
                                                                     while (1) {
-                                                                        switch (_context10.prev = _context10.next) {
+                                                                        switch (_context12.prev = _context12.next) {
                                                                             case 0:
                                                                                 _entry = entries[i];
 
                                                                                 if (!_entry.isFile) {
-                                                                                    _context10.next = 12;
+                                                                                    _context12.next = 12;
                                                                                     break;
                                                                                 }
 
-                                                                                _context10.next = 4;
+                                                                                _context12.next = 4;
                                                                                 return new _promise2.default(function (res) {
                                                                                     _entry.file(function () {
-                                                                                        var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(file) {
-                                                                                            return _regenerator2.default.wrap(function _callee9$(_context9) {
+                                                                                        var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(file) {
+                                                                                            return _regenerator2.default.wrap(function _callee11$(_context11) {
                                                                                                 while (1) {
-                                                                                                    switch (_context9.prev = _context9.next) {
+                                                                                                    switch (_context11.prev = _context11.next) {
                                                                                                         case 0:
+                                                                                                            // file.path = _entry.fullPath;
                                                                                                             Object.defineProperty(file, 'path', {
                                                                                                                 value: _entry.fullPath
                                                                                                             });
-                                                                                                            // if(process.env.APP_ENV.indexOf('pc') > -1) {
-                                                                                                            //     Object.defineProperty(file,'path',{
-                                                                                                            //         value:_entry.fullPath
-                                                                                                            //     });
-                                                                                                            // }else{
-                                                                                                            //     file.path = _entry.fullPath;
-                                                                                                            // }
                                                                                                             res(file);
 
                                                                                                         case 2:
                                                                                                         case 'end':
-                                                                                                            return _context9.stop();
+                                                                                                            return _context11.stop();
                                                                                                     }
                                                                                                 }
-                                                                                            }, _callee9, _this4);
+                                                                                            }, _callee11, _this4);
                                                                                         }));
 
-                                                                                        return function (_x15) {
-                                                                                            return _ref11.apply(this, arguments);
+                                                                                        return function (_x18) {
+                                                                                            return _ref13.apply(this, arguments);
                                                                                         };
                                                                                     }());
                                                                                 });
 
                                                                             case 4:
-                                                                                file = _context10.sent;
-                                                                                _context10.next = 7;
+                                                                                file = _context12.sent;
+                                                                                _context12.next = 7;
                                                                                 return _this4.eventEmitter.emit('beforeChildFileQueued', file, entry);
 
                                                                             case 7:
@@ -3669,33 +3769,33 @@ var _class = function () {
                                                                                 // };
                                                                                 tmpFileArr.push(file);
                                                                                 // await this.pushQueue(file, groupInfo);
-                                                                                _context10.next = 10;
+                                                                                _context12.next = 10;
                                                                                 return _this4.eventEmitter.emit('childFileQueued', file);
 
                                                                             case 10:
-                                                                                _context10.next = 19;
+                                                                                _context12.next = 19;
                                                                                 break;
 
                                                                             case 12:
                                                                                 if (!_entry.isDirectory) {
-                                                                                    _context10.next = 19;
+                                                                                    _context12.next = 19;
                                                                                     break;
                                                                                 }
 
-                                                                                _context10.next = 15;
+                                                                                _context12.next = 15;
                                                                                 return _this4.eventEmitter.emit('beforeChildDirQueued', _entry, entry);
 
                                                                             case 15:
-                                                                                _context10.next = 17;
+                                                                                _context12.next = 17;
                                                                                 return _this4.folderRead(_entry, tmpFileArr);
 
                                                                             case 17:
-                                                                                _context10.next = 19;
+                                                                                _context12.next = 19;
                                                                                 return _this4.eventEmitter.emit('childDirQueued', _entry);
 
                                                                             case 19:
                                                                             case 'end':
-                                                                                return _context10.stop();
+                                                                                return _context12.stop();
                                                                         }
                                                                     }
                                                                 }, _loop, _this4);
@@ -3704,15 +3804,15 @@ var _class = function () {
 
                                                         case 2:
                                                             if (!(i < entries.length)) {
-                                                                _context11.next = 7;
+                                                                _context13.next = 7;
                                                                 break;
                                                             }
 
-                                                            return _context11.delegateYield(_loop(), 't0', 4);
+                                                            return _context13.delegateYield(_loop(), 't0', 4);
 
                                                         case 4:
                                                             i++;
-                                                            _context11.next = 2;
+                                                            _context13.next = 2;
                                                             break;
 
                                                         case 7:
@@ -3720,28 +3820,28 @@ var _class = function () {
 
                                                         case 8:
                                                         case 'end':
-                                                            return _context11.stop();
+                                                            return _context13.stop();
                                                     }
                                                 }
-                                            }, _callee10, _this4);
+                                            }, _callee12, _this4);
                                         }));
 
-                                        return function (_x14) {
-                                            return _ref10.apply(this, arguments);
+                                        return function (_x17) {
+                                            return _ref12.apply(this, arguments);
                                         };
                                     }());
                                 });
 
                             case 8:
                             case 'end':
-                                return _context12.stop();
+                                return _context14.stop();
                         }
                     }
-                }, _callee11, this);
+                }, _callee13, this);
             }));
 
-            function folderRead(_x12, _x13) {
-                return _ref9.apply(this, arguments);
+            function folderRead(_x15, _x16) {
+                return _ref11.apply(this, arguments);
             }
 
             return folderRead;
@@ -3761,7 +3861,7 @@ var _class = function () {
             }
 
             this.globalEventDelegate.off('change');
-            if (this.config.pick) {
+            if (this.config.pick || this.config.pickDir) {
                 this.globalEventDelegate.off('click');
             }
         }
