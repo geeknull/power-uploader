@@ -1,3 +1,6 @@
+# 0.2.5 2017.12.14
+groupInfo alias
+
 # 0.2.4 2017.12.14
 groupId => uploadGroupId
 

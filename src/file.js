@@ -52,7 +52,8 @@ export function WUFile (source,opt) {
      * @type {string}
      */
     this.name = source.name || opt.setName(this.id) || 'Untitled';
-    this.groupInfo = opt.groupInfo || {}; // 组信息 id、count、current
+    this.groupInfo = opt.groupInfo; // 组信息 id、count、current
+    this.uploadGroupInfo = opt.uploadGroupInfo; // alias
 
     let ext = rExt.exec(source.name) ? RegExp.$1.toLowerCase() : '';
     /**
