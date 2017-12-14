@@ -92,7 +92,7 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var store = __webpack_require__(33)('wks');
+var store = __webpack_require__(32)('wks');
 var uid = __webpack_require__(24);
 var Symbol = __webpack_require__(0).Symbol;
 var USE_SYMBOL = typeof Symbol == 'function';
@@ -207,7 +207,7 @@ module.exports = $export;
 
 var anObject = __webpack_require__(3);
 var IE8_DOM_DEFINE = __webpack_require__(46);
-var toPrimitive = __webpack_require__(36);
+var toPrimitive = __webpack_require__(35);
 var dP = Object.defineProperty;
 
 exports.f = __webpack_require__(4) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
@@ -275,7 +275,7 @@ module.exports = function (exec) {
 
 // to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = __webpack_require__(47);
-var defined = __webpack_require__(27);
+var defined = __webpack_require__(26);
 module.exports = function (it) {
   return IObject(defined(it));
 };
@@ -305,7 +305,7 @@ module.exports = {};
 
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys = __webpack_require__(51);
-var enumBugKeys = __webpack_require__(29);
+var enumBugKeys = __webpack_require__(28);
 
 module.exports = Object.keys || function keys(O) {
   return $keys(O, enumBugKeys);
@@ -458,12 +458,6 @@ module.exports = function (key) {
 /* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = { "default": __webpack_require__(72), __esModule: true };
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
@@ -488,7 +482,7 @@ exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.d
 };
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports) {
 
 // 7.2.1 RequireObjectCoercible(argument)
@@ -499,7 +493,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(9);
@@ -512,7 +506,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports) {
 
 // IE 8- don't enum bug keys
@@ -522,7 +516,7 @@ module.exports = (
 
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -547,17 +541,17 @@ module.exports.f = function (C) {
 
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports) {
 
 exports.f = Object.getOwnPropertySymbols;
 
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var shared = __webpack_require__(33)('keys');
+var shared = __webpack_require__(32)('keys');
 var uid = __webpack_require__(24);
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
@@ -565,7 +559,7 @@ module.exports = function (key) {
 
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -577,7 +571,7 @@ module.exports = function (key) {
 
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports) {
 
 // 7.1.4 ToInteger
@@ -589,18 +583,18 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 35 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.13 ToObject(argument)
-var defined = __webpack_require__(27);
+var defined = __webpack_require__(26);
 module.exports = function (it) {
   return Object(defined(it));
 };
 
 
 /***/ }),
-/* 36 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
@@ -618,13 +612,13 @@ module.exports = function (it, S) {
 
 
 /***/ }),
-/* 37 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
 var core = __webpack_require__(2);
 var LIBRARY = __webpack_require__(20);
-var wksExt = __webpack_require__(38);
+var wksExt = __webpack_require__(37);
 var defineProperty = __webpack_require__(6).f;
 module.exports = function (name) {
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
@@ -633,14 +627,14 @@ module.exports = function (name) {
 
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports.f = __webpack_require__(1);
 
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -662,7 +656,7 @@ var _promise = __webpack_require__(15);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _typeof2 = __webpack_require__(26);
+var _typeof2 = __webpack_require__(25);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -1157,7 +1151,7 @@ var EventEmitter = function () {
 exports.default = EventEmitter;
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1247,13 +1241,13 @@ if (typeof Element !== 'undefined' && !Element.prototype.matches) {
 }
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _typeof2 = __webpack_require__(26);
+var _typeof2 = __webpack_require__(25);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -1328,6 +1322,12 @@ module.exports = {
 
     // TODO 判断文件是否图片 UNDO
 };
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(72), __esModule: true };
 
 /***/ }),
 /* 42 */
@@ -1422,7 +1422,7 @@ module.exports = document && document.documentElement;
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = !__webpack_require__(4) && !__webpack_require__(10)(function () {
-  return Object.defineProperty(__webpack_require__(28)('div'), 'a', { get: function () { return 7; } }).a != 7;
+  return Object.defineProperty(__webpack_require__(27)('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
 
@@ -1522,15 +1522,15 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject = __webpack_require__(3);
 var dPs = __webpack_require__(91);
-var enumBugKeys = __webpack_require__(29);
-var IE_PROTO = __webpack_require__(32)('IE_PROTO');
+var enumBugKeys = __webpack_require__(28);
+var IE_PROTO = __webpack_require__(31)('IE_PROTO');
 var Empty = function () { /* empty */ };
 var PROTOTYPE = 'prototype';
 
 // Create object with fake `null` prototype: use iframe Object with cleared prototype
 var createDict = function () {
   // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(28)('iframe');
+  var iframe = __webpack_require__(27)('iframe');
   var i = enumBugKeys.length;
   var lt = '<';
   var gt = '>';
@@ -1568,7 +1568,7 @@ module.exports = Object.create || function create(O, Properties) {
 
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 var $keys = __webpack_require__(51);
-var hiddenKeys = __webpack_require__(29).concat('length', 'prototype');
+var hiddenKeys = __webpack_require__(28).concat('length', 'prototype');
 
 exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
   return $keys(O, hiddenKeys);
@@ -1582,7 +1582,7 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
 var has = __webpack_require__(7);
 var toIObject = __webpack_require__(11);
 var arrayIndexOf = __webpack_require__(78)(false);
-var IE_PROTO = __webpack_require__(32)('IE_PROTO');
+var IE_PROTO = __webpack_require__(31)('IE_PROTO');
 
 module.exports = function (object, names) {
   var O = toIObject(object);
@@ -1617,7 +1617,7 @@ module.exports = function (exec) {
 
 var anObject = __webpack_require__(3);
 var isObject = __webpack_require__(9);
-var newPromiseCapability = __webpack_require__(30);
+var newPromiseCapability = __webpack_require__(29);
 
 module.exports = function (C, x) {
   anObject(C);
@@ -1658,7 +1658,7 @@ module.exports = function (O, D) {
 var ctx = __webpack_require__(19);
 var invoke = __webpack_require__(81);
 var html = __webpack_require__(45);
-var cel = __webpack_require__(28);
+var cel = __webpack_require__(27);
 var global = __webpack_require__(0);
 var process = global.process;
 var setTask = global.setImmediate;
@@ -1746,7 +1746,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.15 ToLength
-var toInteger = __webpack_require__(34);
+var toInteger = __webpack_require__(33);
 var min = Math.min;
 module.exports = function (it) {
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
@@ -1840,11 +1840,11 @@ var _createClass2 = __webpack_require__(17);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _eventBus = __webpack_require__(39);
+var _eventBus = __webpack_require__(38);
 
 var _eventBus2 = _interopRequireDefault(_eventBus);
 
-var _eventDelegate = __webpack_require__(40);
+var _eventDelegate = __webpack_require__(39);
 
 var _eventDelegate2 = _interopRequireDefault(_eventDelegate);
 
@@ -2123,11 +2123,11 @@ var Uploader = exports.Uploader = function () {
                 lifecycle: 'initiative_pushFile',
                 fileId: id
             });
-            file.selectFileTransactionId = id;
+            file.groupId = id;
             this.pushQueue(file, {
                 count: 1,
                 current: 1,
-                id: file.selectFileTransactionId
+                id: file.groupId
             });
         }
 
@@ -2847,13 +2847,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keys = __webpack_require__(25);
+var _keys = __webpack_require__(41);
 
 var _keys2 = _interopRequireDefault(_keys);
 
 exports.WUFile = WUFile;
 
-var _util = __webpack_require__(41);
+var _util = __webpack_require__(40);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3057,10 +3057,6 @@ var _promise = __webpack_require__(15);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _keys = __webpack_require__(25);
-
-var _keys2 = _interopRequireDefault(_keys);
-
 var _regenerator = __webpack_require__(43);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -3077,11 +3073,11 @@ var _createClass2 = __webpack_require__(17);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _eventDelegate = __webpack_require__(40);
+var _eventDelegate = __webpack_require__(39);
 
 var _eventDelegate2 = _interopRequireDefault(_eventDelegate);
 
-var _util = __webpack_require__(41);
+var _util = __webpack_require__(40);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3106,12 +3102,12 @@ var _class = function () {
         this.globalEventDelegate = new _eventDelegate2.default(document); // 全局的事件代理
         this.log = config.log;
 
-        this._selectFileTransactionId = 0;
+        this._groupId = 0;
 
         this.pushQueue = function (file, groupInfo) {
             file = _this.fileFilter(file);
             if (file) {
-                file.selectFileTransactionId = _this._selectFileTransactionId;
+                file.selectFileTransactionId = _this._groupId;
                 pushQueue(file, groupInfo).catch(function (err) {
                     console.error(err);
                     debugger;
@@ -3237,9 +3233,9 @@ var _class = function () {
                             }
                             event.stopPropagation();
                             event.preventDefault();
-                            _this2._selectFileTransactionId++;
+                            _this2._groupId++;
                             var groupInfo = {
-                                id: _this2._selectFileTransactionId,
+                                id: _this2._groupId,
                                 count: 1,
                                 current: 1
                             };
@@ -3272,7 +3268,7 @@ var _class = function () {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 _context.next = 4;
-                                return this.funGetFiles(e);
+                                return this.getFiles(e);
 
                             case 4:
                                 this.reset(); // 重复文件会不触发
@@ -3328,7 +3324,7 @@ var _class = function () {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 _context3.next = 4;
-                                return this.funGetFiles(e, 'pickDir');
+                                return this.getFiles(e, 'pickDir');
 
                             case 4:
                                 this.reset(); // 重复文件会不触发
@@ -3472,7 +3468,7 @@ var _class = function () {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 _context8.next = 4;
-                                return this.funGetFiles(e);
+                                return this.getFiles(e);
 
                             case 4:
                             case 'end':
@@ -3492,12 +3488,12 @@ var _class = function () {
         //获取选择文件，file控件或拖放
 
     }, {
-        key: 'funGetFiles',
+        key: 'getFiles',
         value: function () {
-            var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(e, type) {
+            var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(e, actionType) {
                 var _this3 = this;
 
-                var tmpFileArr, id, count, files, items, entrys, key, filesArr, pathReg, someFileName, dirName, entry, res, index, l, file, _entry2;
+                var tmpFileArr, groupId, files, items, filesArr, itemsArr, entryArr, pathReg, someFileName, dirName, entry, res, i, len, file, item, _entry2;
 
                 return _regenerator2.default.wrap(function _callee10$(_context10) {
                     while (1) {
@@ -3505,133 +3501,108 @@ var _class = function () {
                             case 0:
                                 tmpFileArr = [];
 
-                                this._selectFileTransactionId++;
-                                id = this._selectFileTransactionId;
-                                count = 0;
-                                files = e.target.files || e.dataTransfer.files;
-                                items = e.target.items || e.dataTransfer && e.dataTransfer.items;
-                                entrys = [];
+                                this._groupId++;
+                                groupId = this._groupId;
+                                files = e.target.files || e.dataTransfer.files; // 后者在拖拽文件的情况会存在
 
-                                for (key in items) {
-                                    if (!!items[key] && items.hasOwnProperty(key)) {
-                                        if (items[key].getAsEntry) {
-                                            entrys.push(items[key].getAsEntry());
-                                        } else if (items[key].webkitGetAsEntry) {
-                                            entrys.push(items[key].webkitGetAsEntry());
-                                        } else {
-                                            entrys.push({});
-                                        }
-                                    }
-                                }
+                                items = e.dataTransfer && e.dataTransfer.items || []; // 拖拽的文件会有
+
+                                filesArr = [].slice.call(files);
+                                itemsArr = [].slice.call(items);
+                                entryArr = itemsArr.map(function (item) {
+                                    return item.getAsEntry ? item.getAsEntry() : item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
+                                });
                                 _context10.next = 10;
-                                return this.eventEmitter.emit('beforeFilesQueued', files);
+                                return this.eventEmitter.emit('beforeFilesQueued', { filesSource: filesArr, actionType: actionType, groupId: groupId });
 
                             case 10:
-                                if (!(type === 'pickDir')) {
-                                    _context10.next = 26;
+                                if (!(actionType === 'pickDir')) {
+                                    _context10.next = 27;
                                     break;
                                 }
 
-                                filesArr = [].slice.call(files);
+                                if (!(filesArr.length === 0)) {
+                                    _context10.next = 13;
+                                    break;
+                                }
 
+                                return _context10.abrupt('return', void 0);
+
+                            case 13:
                                 tmpFileArr = filesArr.map(function (item) {
                                     Object.defineProperty(item, 'path', {
                                         value: '/' + item.webkitRelativePath
                                     });
                                     return item;
                                 });
-                                pathReg = /\/(\w*)\//;
+
+                                pathReg = /\/(.*)\//;
                                 someFileName = tmpFileArr[0].path;
                                 dirName = someFileName.match(pathReg)[1];
                                 entry = {};
 
-                                entry.path = entry.fullPath = dirName;
-                                entry.selectFileTransactionId = this._selectFileTransactionId;
-                                _context10.next = 21;
-                                return this.eventEmitter.emit('selectDir', entry);
+                                entry.path = entry.fullPath = '/' + dirName;
+                                entry.groupId = groupId;
 
-                            case 21:
+                                _context10.next = 22;
+                                return this.eventEmitter.emit('selectDir', { entry: entry, groupId: groupId, actionType: actionType });
+
+                            case 22:
                                 res = _context10.sent;
 
                                 if (!(res.indexOf(false) !== -1)) {
-                                    _context10.next = 24;
+                                    _context10.next = 25;
                                     break;
                                 }
 
                                 return _context10.abrupt('return', void 0);
 
-                            case 24:
-                                _context10.next = 46;
+                            case 25:
+                                _context10.next = 41;
                                 break;
 
-                            case 26:
-                                index = 0, l = (0, _keys2.default)(files).length;
-
                             case 27:
-                                if (!(index < l)) {
-                                    _context10.next = 46;
+                                i = 0, len = filesArr.length;
+
+                            case 28:
+                                if (!(i < len)) {
+                                    _context10.next = 41;
                                     break;
                                 }
 
-                                file = files[index];
+                                file = filesArr[i];
+                                item = itemsArr[i];
+                                _entry2 = entryArr[i];
 
-                                if (!file) {
-                                    _context10.next = 43;
-                                    break;
-                                }
-
-                                if (!(entrys && entrys[index])) {
-                                    _context10.next = 36;
-                                    break;
-                                }
-
-                                _entry2 = entrys[index]; // maybe is {}
-
-                                if (!(_entry2 !== null && _entry2.isDirectory)) {
+                                if (!(_entry2 && _entry2.isDirectory)) {
                                     _context10.next = 36;
                                     break;
                                 }
 
                                 _context10.next = 35;
-                                return this.folderRead(_entry2, tmpFileArr);
+                                return this.folderRead({ entry: _entry2, tmpFileArr: tmpFileArr, groupId: groupId, actionType: actionType });
 
                             case 35:
-                                return _context10.abrupt('continue', 43);
+                                return _context10.abrupt('continue', 38);
 
                             case 36:
 
                                 // file.path = '/' + file.name; // PC版这种情况会有问题
-                                Object.defineProperty(file, 'path', {
-                                    value: '/' + file.name
-                                });
-
-                                // let groupInfo = {
-                                //     id: id,
-                                //     count: ++count,
-                                //     current: count
-                                // };
-
-                                if (!this.config.multiple) {
-                                    _context10.next = 41;
-                                    break;
-                                }
+                                Object.defineProperty(file, 'path', { value: '/' + file.name });
 
                                 tmpFileArr.push(file);
-                                // await this.pushQueue(file, groupInfo);
-                                _context10.next = 43;
+
+                            case 38:
+                                i++;
+                                _context10.next = 28;
                                 break;
 
                             case 41:
-                                tmpFileArr.push(file);
-                                // await this.pushQueue(file, groupInfo);
-                                return _context10.abrupt('break', 46);
 
-                            case 43:
-                                index++;
-                                _context10.next = 27;
-                                break;
-
-                            case 46:
+                                // TODO this.config.multiple to break the for cycle
+                                if (this.config.multiple === false) {
+                                    tmpFileArr = tmpFileArr[0] || [];
+                                }
 
                                 tmpFileArr.forEach(function () {
                                     var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(item, index, array) {
@@ -3644,7 +3615,7 @@ var _class = function () {
                                                         current = index + 1;
                                                         groupInfo = {
                                                             count: count, current: current,
-                                                            id: id
+                                                            id: groupId
                                                         };
                                                         _context9.next = 5;
                                                         return _this3.pushQueue(item, groupInfo);
@@ -3661,10 +3632,10 @@ var _class = function () {
                                         return _ref10.apply(this, arguments);
                                     };
                                 }());
-                                _context10.next = 49;
-                                return this.eventEmitter.emit('filesQueued');
+                                _context10.next = 45;
+                                return this.eventEmitter.emit('filesQueued', { filesSource: tmpFileArr, groupId: groupId, actionType: actionType });
 
-                            case 49:
+                            case 45:
                             case 'end':
                                 return _context10.stop();
                         }
@@ -3672,130 +3643,113 @@ var _class = function () {
                 }, _callee10, this);
             }));
 
-            function funGetFiles(_x10, _x11) {
+            function getFiles(_x10, _x11) {
                 return _ref9.apply(this, arguments);
             }
 
-            return funGetFiles;
+            return getFiles;
         }()
+
+        // add custom field: path groupId
+
     }, {
         key: 'folderRead',
         value: function () {
-            var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13(entry, tmpFileArr) {
+            var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(_ref11) {
                 var _this4 = this;
 
-                var res;
-                return _regenerator2.default.wrap(function _callee13$(_context14) {
+                var entry = _ref11.entry,
+                    tmpFileArr = _ref11.tmpFileArr,
+                    groupId = _ref11.groupId,
+                    actionType = _ref11.actionType;
+                var eventResFlagArr;
+                return _regenerator2.default.wrap(function _callee12$(_context13) {
                     while (1) {
-                        switch (_context14.prev = _context14.next) {
+                        switch (_context13.prev = _context13.next) {
                             case 0:
+                                // custom field
                                 entry.path = entry.fullPath;
-                                entry.selectFileTransactionId = this._selectFileTransactionId;
-                                _context14.next = 4;
-                                return this.eventEmitter.emit('selectDir', entry);
+                                entry.groupId = groupId; // old selectFileTransactionId
+
+                                _context13.next = 4;
+                                return this.eventEmitter.emit('selectDir', { entry: entry, groupId: groupId, actionType: actionType });
 
                             case 4:
-                                res = _context14.sent;
+                                eventResFlagArr = _context13.sent;
 
-                                if (!(res.indexOf(false) === -1)) {
-                                    _context14.next = 8;
+                                if (!(eventResFlagArr.indexOf(false) !== -1)) {
+                                    _context13.next = 7;
                                     break;
                                 }
 
-                                _context14.next = 8;
-                                return new _promise2.default(function (res) {
+                                return _context13.abrupt('return', void 0);
+
+                            case 7:
+                                _context13.next = 9;
+                                return new _promise2.default(function (resolve) {
                                     entry.createReader().readEntries(function () {
-                                        var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(entries) {
+                                        var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(entries) {
                                             var _loop, i;
 
-                                            return _regenerator2.default.wrap(function _callee12$(_context13) {
+                                            return _regenerator2.default.wrap(function _callee11$(_context12) {
                                                 while (1) {
-                                                    switch (_context13.prev = _context13.next) {
+                                                    switch (_context12.prev = _context12.next) {
                                                         case 0:
-                                                            _loop = /*#__PURE__*/_regenerator2.default.mark(function _loop() {
+                                                            _loop = /*#__PURE__*/_regenerator2.default.mark(function _loop(i) {
                                                                 var _entry, file;
 
-                                                                return _regenerator2.default.wrap(function _loop$(_context12) {
+                                                                return _regenerator2.default.wrap(function _loop$(_context11) {
                                                                     while (1) {
-                                                                        switch (_context12.prev = _context12.next) {
+                                                                        switch (_context11.prev = _context11.next) {
                                                                             case 0:
                                                                                 _entry = entries[i];
 
                                                                                 if (!_entry.isFile) {
-                                                                                    _context12.next = 12;
+                                                                                    _context11.next = 12;
                                                                                     break;
                                                                                 }
 
-                                                                                _context12.next = 4;
-                                                                                return new _promise2.default(function (res) {
-                                                                                    _entry.file(function () {
-                                                                                        var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(file) {
-                                                                                            return _regenerator2.default.wrap(function _callee11$(_context11) {
-                                                                                                while (1) {
-                                                                                                    switch (_context11.prev = _context11.next) {
-                                                                                                        case 0:
-                                                                                                            // file.path = _entry.fullPath;
-                                                                                                            Object.defineProperty(file, 'path', {
-                                                                                                                value: _entry.fullPath
-                                                                                                            });
-                                                                                                            res(file);
-
-                                                                                                        case 2:
-                                                                                                        case 'end':
-                                                                                                            return _context11.stop();
-                                                                                                    }
-                                                                                                }
-                                                                                            }, _callee11, _this4);
-                                                                                        }));
-
-                                                                                        return function (_x18) {
-                                                                                            return _ref13.apply(this, arguments);
-                                                                                        };
-                                                                                    }());
+                                                                                _context11.next = 4;
+                                                                                return new _promise2.default(function (r) {
+                                                                                    _entry.file(function (file) {
+                                                                                        return r(Object.defineProperty(file, 'path', { value: _entry.fullPath }));
+                                                                                    });
                                                                                 });
 
                                                                             case 4:
-                                                                                file = _context12.sent;
-                                                                                _context12.next = 7;
-                                                                                return _this4.eventEmitter.emit('beforeChildFileQueued', file, entry);
+                                                                                file = _context11.sent;
+                                                                                _context11.next = 7;
+                                                                                return _this4.eventEmitter.emit('beforeChildFileQueued', { fileSource: file, parentEntry: entry, groupId: groupId, actionType: actionType });
 
                                                                             case 7:
-
-                                                                                // 是上一个作用域的 即funGetFiles的
-                                                                                // let groupInfo = {
-                                                                                //     id: id,
-                                                                                //     count: ++count,
-                                                                                //     current: count
-                                                                                // };
                                                                                 tmpFileArr.push(file);
-                                                                                // await this.pushQueue(file, groupInfo);
-                                                                                _context12.next = 10;
-                                                                                return _this4.eventEmitter.emit('childFileQueued', file);
+                                                                                _context11.next = 10;
+                                                                                return _this4.eventEmitter.emit('childFileQueued', { fileSource: file, parentEntry: entry, groupId: groupId, actionType: actionType });
 
                                                                             case 10:
-                                                                                _context12.next = 19;
+                                                                                _context11.next = 19;
                                                                                 break;
 
                                                                             case 12:
                                                                                 if (!_entry.isDirectory) {
-                                                                                    _context12.next = 19;
+                                                                                    _context11.next = 19;
                                                                                     break;
                                                                                 }
 
-                                                                                _context12.next = 15;
-                                                                                return _this4.eventEmitter.emit('beforeChildDirQueued', _entry, entry);
+                                                                                _context11.next = 15;
+                                                                                return _this4.eventEmitter.emit('beforeChildDirQueued', { currentEntry: _entry, parentEntry: entry, groupId: groupId, actionType: actionType });
 
                                                                             case 15:
-                                                                                _context12.next = 17;
-                                                                                return _this4.folderRead(_entry, tmpFileArr);
+                                                                                _context11.next = 17;
+                                                                                return _this4.folderRead({ entry: _entry, tmpFileArr: tmpFileArr, groupId: groupId, actionType: actionType });
 
                                                                             case 17:
-                                                                                _context12.next = 19;
-                                                                                return _this4.eventEmitter.emit('childDirQueued', _entry);
+                                                                                _context11.next = 19;
+                                                                                return _this4.eventEmitter.emit('childDirQueued', { currentEntry: _entry, parentEntry: entry, groupId: groupId, actionType: actionType });
 
                                                                             case 19:
                                                                             case 'end':
-                                                                                return _context12.stop();
+                                                                                return _context11.stop();
                                                                         }
                                                                     }
                                                                 }, _loop, _this4);
@@ -3804,44 +3758,44 @@ var _class = function () {
 
                                                         case 2:
                                                             if (!(i < entries.length)) {
-                                                                _context13.next = 7;
+                                                                _context12.next = 7;
                                                                 break;
                                                             }
 
-                                                            return _context13.delegateYield(_loop(), 't0', 4);
+                                                            return _context12.delegateYield(_loop(i), 't0', 4);
 
                                                         case 4:
                                                             i++;
-                                                            _context13.next = 2;
+                                                            _context12.next = 2;
                                                             break;
 
                                                         case 7:
-                                                            res();
+                                                            resolve();
 
                                                         case 8:
                                                         case 'end':
-                                                            return _context13.stop();
+                                                            return _context12.stop();
                                                     }
                                                 }
-                                            }, _callee12, _this4);
+                                            }, _callee11, _this4);
                                         }));
 
-                                        return function (_x17) {
-                                            return _ref12.apply(this, arguments);
+                                        return function (_x16) {
+                                            return _ref13.apply(this, arguments);
                                         };
                                     }());
                                 });
 
-                            case 8:
+                            case 9:
                             case 'end':
-                                return _context14.stop();
+                                return _context13.stop();
                         }
                     }
-                }, _callee13, this);
+                }, _callee12, this);
             }));
 
-            function folderRead(_x15, _x16) {
-                return _ref11.apply(this, arguments);
+            function folderRead(_x15) {
+                return _ref12.apply(this, arguments);
             }
 
             return folderRead;
@@ -3958,7 +3912,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Transport = undefined;
 
-var _keys = __webpack_require__(25);
+var _keys = __webpack_require__(41);
 
 var _keys2 = _interopRequireDefault(_keys);
 
@@ -3966,7 +3920,7 @@ var _promise = __webpack_require__(15);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _typeof2 = __webpack_require__(26);
+var _typeof2 = __webpack_require__(25);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -3982,7 +3936,7 @@ var _lodash = __webpack_require__(111);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _eventBus = __webpack_require__(39);
+var _eventBus = __webpack_require__(38);
 
 var _eventBus2 = _interopRequireDefault(_eventBus);
 
@@ -4188,7 +4142,7 @@ module.exports = __webpack_require__(2).Symbol;
 
 __webpack_require__(59);
 __webpack_require__(60);
-module.exports = __webpack_require__(38).f('iterator');
+module.exports = __webpack_require__(37).f('iterator');
 
 
 /***/ }),
@@ -4244,7 +4198,7 @@ module.exports = function (IS_INCLUDES) {
 
 // all enumerable object keys, includes symbols
 var getKeys = __webpack_require__(14);
-var gOPS = __webpack_require__(31);
+var gOPS = __webpack_require__(30);
 var pIE = __webpack_require__(21);
 module.exports = function (it) {
   var result = getKeys(it);
@@ -4553,9 +4507,9 @@ module.exports = function () {
 
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys = __webpack_require__(14);
-var gOPS = __webpack_require__(31);
+var gOPS = __webpack_require__(30);
 var pIE = __webpack_require__(21);
-var toObject = __webpack_require__(35);
+var toObject = __webpack_require__(34);
 var IObject = __webpack_require__(47);
 var $assign = Object.assign;
 
@@ -4612,7 +4566,7 @@ module.exports = __webpack_require__(4) ? Object.defineProperties : function def
 var pIE = __webpack_require__(21);
 var createDesc = __webpack_require__(22);
 var toIObject = __webpack_require__(11);
-var toPrimitive = __webpack_require__(36);
+var toPrimitive = __webpack_require__(35);
 var has = __webpack_require__(7);
 var IE8_DOM_DEFINE = __webpack_require__(46);
 var gOPD = Object.getOwnPropertyDescriptor;
@@ -4658,8 +4612,8 @@ module.exports.f = function getOwnPropertyNames(it) {
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has = __webpack_require__(7);
-var toObject = __webpack_require__(35);
-var IE_PROTO = __webpack_require__(32)('IE_PROTO');
+var toObject = __webpack_require__(34);
+var IE_PROTO = __webpack_require__(31)('IE_PROTO');
 var ObjectProto = Object.prototype;
 
 module.exports = Object.getPrototypeOf || function (O) {
@@ -4725,8 +4679,8 @@ module.exports = function (KEY) {
 /* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(34);
-var defined = __webpack_require__(27);
+var toInteger = __webpack_require__(33);
+var defined = __webpack_require__(26);
 // true  -> String#at
 // false -> String#codePointAt
 module.exports = function (TO_STRING) {
@@ -4748,7 +4702,7 @@ module.exports = function (TO_STRING) {
 /* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(34);
+var toInteger = __webpack_require__(33);
 var max = Math.max;
 var min = Math.min;
 module.exports = function (index, length) {
@@ -4836,7 +4790,7 @@ $export($export.S + $export.F * !__webpack_require__(4), 'Object', { definePrope
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(35);
+var toObject = __webpack_require__(34);
 var $keys = __webpack_require__(14);
 
 __webpack_require__(95)('keys', function () {
@@ -4864,7 +4818,7 @@ var forOf = __webpack_require__(80);
 var speciesConstructor = __webpack_require__(55);
 var task = __webpack_require__(56).set;
 var microtask = __webpack_require__(89)();
-var newPromiseCapabilityModule = __webpack_require__(30);
+var newPromiseCapabilityModule = __webpack_require__(29);
 var perform = __webpack_require__(52);
 var promiseResolve = __webpack_require__(53);
 var PROMISE = 'Promise';
@@ -5140,18 +5094,18 @@ var $export = __webpack_require__(5);
 var redefine = __webpack_require__(54);
 var META = __webpack_require__(88).KEY;
 var $fails = __webpack_require__(10);
-var shared = __webpack_require__(33);
+var shared = __webpack_require__(32);
 var setToStringTag = __webpack_require__(23);
 var uid = __webpack_require__(24);
 var wks = __webpack_require__(1);
-var wksExt = __webpack_require__(38);
-var wksDefine = __webpack_require__(37);
+var wksExt = __webpack_require__(37);
+var wksDefine = __webpack_require__(36);
 var enumKeys = __webpack_require__(79);
 var isArray = __webpack_require__(83);
 var anObject = __webpack_require__(3);
 var isObject = __webpack_require__(9);
 var toIObject = __webpack_require__(11);
-var toPrimitive = __webpack_require__(36);
+var toPrimitive = __webpack_require__(35);
 var createDesc = __webpack_require__(22);
 var _create = __webpack_require__(49);
 var gOPNExt = __webpack_require__(93);
@@ -5282,7 +5236,7 @@ if (!USE_NATIVE) {
   $DP.f = $defineProperty;
   __webpack_require__(50).f = gOPNExt.f = $getOwnPropertyNames;
   __webpack_require__(21).f = $propertyIsEnumerable;
-  __webpack_require__(31).f = $getOwnPropertySymbols;
+  __webpack_require__(30).f = $getOwnPropertySymbols;
 
   if (DESCRIPTORS && !__webpack_require__(20)) {
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
@@ -5402,7 +5356,7 @@ $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
 
 // https://github.com/tc39/proposal-promise-try
 var $export = __webpack_require__(5);
-var newPromiseCapability = __webpack_require__(30);
+var newPromiseCapability = __webpack_require__(29);
 var perform = __webpack_require__(52);
 
 $export($export.S, 'Promise', { 'try': function (callbackfn) {
@@ -5417,14 +5371,14 @@ $export($export.S, 'Promise', { 'try': function (callbackfn) {
 /* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(37)('asyncIterator');
+__webpack_require__(36)('asyncIterator');
 
 
 /***/ }),
 /* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(37)('observable');
+__webpack_require__(36)('observable');
 
 
 /***/ }),

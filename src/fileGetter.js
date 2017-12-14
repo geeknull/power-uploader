@@ -13,12 +13,12 @@ export default class {
         this.globalEventDelegate = new EventDelegate(document); // 全局的事件代理
         this.log = config.log;
 
-        this._selectFileTransactionId = 0;
+        this._groupId = 0;
 
         this.pushQueue = (file, groupInfo) => {
             file = this.fileFilter(file);
             if ( file ) {
-                file.selectFileTransactionId = this._selectFileTransactionId;
+                file.selectFileTransactionId = this._groupId;
                 pushQueue(file, groupInfo).catch((err) => {
                     console.error(err);
                     debugger;
@@ -137,9 +137,9 @@ export default class {
                         }
                         event.stopPropagation();
                         event.preventDefault();
-                        this._selectFileTransactionId++;
+                        this._groupId++;
                         let groupInfo = {
-                            id: this._selectFileTransactionId,
+                            id: this._groupId,
                             count: 1,
                             current: 1
                         };
@@ -163,7 +163,7 @@ export default class {
     async _pickOnChange(e) {
         e.stopPropagation();
         e.preventDefault();
-        await this.funGetFiles(e);
+        await this.getFiles(e);
         this.reset(); // 重复文件会不触发
     }
 
@@ -176,7 +176,7 @@ export default class {
     async _pickDirOnChange(e) {
         e.stopPropagation();
         e.preventDefault();
-        await this.funGetFiles(e, 'pickDir');
+        await this.getFiles(e, 'pickDir');
         this.reset(); // 重复文件会不触发
     }
 
@@ -213,85 +213,70 @@ export default class {
     async _dndHandleDrop(e) {
         e.stopPropagation();
         e.preventDefault();
-        await this.funGetFiles(e);
+        await this.getFiles(e);
     }
 
     //获取选择文件，file控件或拖放
-    async funGetFiles(e, type) {
+    async getFiles(e, actionType) {
         let tmpFileArr = [];
-        this._selectFileTransactionId++;
-        let id = this._selectFileTransactionId;
-        let count = 0;
+        this._groupId++;
+        let groupId = this._groupId;
 
-        let files = e.target.files || e.dataTransfer.files;
-        let items = e.target.items || (e.dataTransfer && e.dataTransfer.items);
-        let entrys = [];
-        for (let key in items) {
-            if (!!items[key] && items.hasOwnProperty(key)) {
-                if (items[key].getAsEntry) {
-                    entrys.push(items[key].getAsEntry());
-                } else if (items[key].webkitGetAsEntry) {
-                    entrys.push(items[key].webkitGetAsEntry());
-                } else {
-                    entrys.push({});
-                }
-            }
-        }
-        await this.eventEmitter.emit('beforeFilesQueued', files);
+        let files = e.target.files || e.dataTransfer.files; // 后者在拖拽文件的情况会存在
+        let items = (e.dataTransfer && e.dataTransfer.items) || []; // 拖拽的文件会有
+
+        let filesArr = [].slice.call(files);
+        let itemsArr = [].slice.call(items);
+        let entryArr = itemsArr.map(item =>
+            item.getAsEntry ? item.getAsEntry() : (item.webkitGetAsEntry ? item.webkitGetAsEntry() : null));
+
+        await this.eventEmitter.emit('beforeFilesQueued', {filesSource: filesArr, actionType, groupId});
 
         // uploadDir
-        if (type === 'pickDir') {
-            let filesArr = [].slice.call(files);
+        if (actionType === 'pickDir') {
+            if (filesArr.length === 0) {
+                return void 0;
+            }
             tmpFileArr = filesArr.map(item => {
                 Object.defineProperty(item, 'path' ,{
                     value: '/' + item.webkitRelativePath
                 });
                 return item;
             });
-            let pathReg = /\/(\w*)\//;
+
+            let pathReg = /\/(.*)\//;
             let someFileName = tmpFileArr[0].path;
             let dirName = someFileName.match(pathReg)[1];
 
             let entry = {};
-            entry.path = entry.fullPath = dirName;
-            entry.selectFileTransactionId = this._selectFileTransactionId;
-            let res = await this.eventEmitter.emit('selectDir', entry);
+            entry.path = entry.fullPath = '/' + dirName;
+            entry.groupId = groupId;
+
+            let res = await this.eventEmitter.emit('selectDir', {entry, groupId, actionType});
             if (res.indexOf(false) !== -1) {
                 return void 0;
             }
         } else {
-            for (let index = 0, l = Object.keys(files).length; index < l; index++) {
-                let file = files[index];
-                if (!!file) {
-                    if (entrys && entrys[index]) {
-                        let entry = entrys[index]; // maybe is {}
-                        if (entry !== null && entry.isDirectory) {
-                            await this.folderRead(entry, tmpFileArr);
-                            continue;
-                        }
-                    }
+            for (let i = 0, len = filesArr.length; i < len; i++) {
+                let file = filesArr[i];
+                let item = itemsArr[i];
+                let entry = entryArr[i];
 
-                    // file.path = '/' + file.name; // PC版这种情况会有问题
-                    Object.defineProperty(file,'path',{
-                        value:'/' + file.name
-                    });
-
-                    // let groupInfo = {
-                    //     id: id,
-                    //     count: ++count,
-                    //     current: count
-                    // };
-                    if(!!this.config.multiple) {
-                        tmpFileArr.push(file);
-                        // await this.pushQueue(file, groupInfo);
-                    }else{
-                        tmpFileArr.push(file);
-                        // await this.pushQueue(file, groupInfo);
-                        break;
-                    }
-
+                if (entry && entry.isDirectory) {
+                    await this.folderRead({entry, tmpFileArr, groupId, actionType});
+                    continue;
                 }
+
+                // file.path = '/' + file.name; // PC版这种情况会有问题
+                Object.defineProperty(file, 'path', {value: '/' + file.name});
+
+                tmpFileArr.push(file);
             }
+        }
+
+        // TODO this.config.multiple to break the for cycle
+        if (this.config.multiple === false) {
+            tmpFileArr = tmpFileArr[0] || [];
         }
 
         tmpFileArr.forEach(async (item, index, array) => {
@@ -299,54 +284,47 @@ export default class {
             let current = index+1;
             let groupInfo = {
                 count, current,
-                id: id
+                id: groupId
             };
             await this.pushQueue(item, groupInfo);
         });
-        await this.eventEmitter.emit('filesQueued');
+        await this.eventEmitter.emit('filesQueued', {filesSource: tmpFileArr, groupId, actionType });
     }
 
-    async folderRead(entry, tmpFileArr) {
+    // add custom field: path groupId
+    async folderRead({entry, tmpFileArr, groupId, actionType}) {
+        // custom field
         entry.path = entry.fullPath;
-        entry.selectFileTransactionId = this._selectFileTransactionId;
-        let res = await this.eventEmitter.emit('selectDir', entry);
-        if (res.indexOf(false) === -1) {
-            await new Promise((res)=> {
-                entry.createReader().readEntries(async(entries) => {
-                    for (var i = 0; i < entries.length; i++) {
-                        let _entry = entries[i];
-                        if (_entry.isFile) {
-                            let file = await new Promise((res)=> {
-                                _entry.file(async(file) => {
-                                    // file.path = _entry.fullPath;
-                                    Object.defineProperty(file,'path',{
-                                        value:_entry.fullPath
-                                    });
-                                    res(file);
-                                });
-                            });
-                            await this.eventEmitter.emit('beforeChildFileQueued', file, entry);
+        entry.groupId = groupId; // old selectFileTransactionId
 
-                            // 是上一个作用域的 即funGetFiles的
-                            // let groupInfo = {
-                            //     id: id,
-                            //     count: ++count,
-                            //     current: count
-                            // };
-                            tmpFileArr.push(file);
-                            // await this.pushQueue(file, groupInfo);
-                            await this.eventEmitter.emit('childFileQueued', file); // 假的
-                        } else if (_entry.isDirectory) {
-                            await this.eventEmitter.emit('beforeChildDirQueued', _entry, entry);
-                            // await this.folderRead(_entry, entry);
-                            await this.folderRead(_entry, tmpFileArr);
-                            await this.eventEmitter.emit('childDirQueued', _entry);
-                        }
+        let eventResFlagArr = await this.eventEmitter.emit('selectDir', {entry, groupId, actionType});
+        if (eventResFlagArr.indexOf(false) !== -1) {return void 0;}
+
+
+        await new Promise((resolve)=> {
+            entry.createReader().readEntries(async(entries) => {
+                for (let i = 0; i < entries.length; i++) {
+                    let _entry = entries[i];
+
+                    if (_entry.isFile) {
+                        let file = await new Promise((r)=> {
+                            _entry.file(file => r(Object.defineProperty(file, 'path', {value:_entry.fullPath})) );
+                        });
+
+                        await this.eventEmitter.emit('beforeChildFileQueued', {fileSource: file, parentEntry: entry, groupId, actionType});
+                        tmpFileArr.push(file);
+                        await this.eventEmitter.emit('childFileQueued', {fileSource: file, parentEntry: entry, groupId, actionType});
+
+                    } else if (_entry.isDirectory) {
+
+                        await this.eventEmitter.emit('beforeChildDirQueued', {currentEntry: _entry, parentEntry: entry, groupId, actionType});
+                        await this.folderRead({entry: _entry, tmpFileArr, groupId, actionType});
+                        await this.eventEmitter.emit('childDirQueued', {currentEntry: _entry, parentEntry: entry, groupId, actionType});
                     }
-                    res();
-                });
+                }
+                resolve();
             });
-        }
+        });
     }
 
     destroy() {

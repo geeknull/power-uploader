@@ -81,7 +81,7 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 - `loaded`：上传字节数
 - `name`：文件名
 - `path`：文件路径
-- `selectFileTransactionId`：文件组ID(可能吧)
+- `groupId`：文件组ID
 - `size`：文件大小(字节数)
 - `source`：原生文件对象
 - `statusText`：文件状态，即`FileStatus`的值
@@ -103,6 +103,32 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 | responseText | String | 分片请求后的服务端返回 | uploadAccept |
 | responseText | String | 分片请求后的服务端返回 | uploadAccept |
 | error | Error | 上传错误信息 | uploadError |
+
+- `beforeFilesQueued`: 选择上传一组文件之前 包含目录源信息
+	`@return Object { filesSource, actionType, groupId }`
+	**demo**
+    
+	```javascript
+		uploader.on('beforeFilesQueued', (obj) => {
+			let {filesSource, actionType, groupId} = obj;
+			if (actionType === 'pickDir') {
+				// 选择的是文件夹
+			}
+		});
+	```
+
+- `filesQueued`: 选择上传一组文件之后 春文件
+	`@return Object { filesSource, actionType, groupId }`
+	**demo**
+    
+	```javascript
+		uploader.on('beforeFilesQueued', (obj) => {
+			let {filesSource, actionType, groupId} = obj;
+			if (actionType === 'pickDir') {
+				// 选择的是文件夹
+			}
+		});
+	```
 
 - `beforeFileQueued`：文件添加到上传队列之前，可以对文件进行一些过滤，`return false;`会阻止将该文件加入队列。
     
@@ -244,13 +270,24 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 - `uploadError`：文件上传失败。
 
     `@return Object { file, error[Error] }`
-
+	
 
 文件夹相关的事件：
+    
+- `beforeChildFileQueued`：文件夹中的子文件入队列之前
+	`@return Object { fileSource, entry, groupId, actionType }`
+	
+- `childFileQueued`：文件夹中的子文件入队列之后
+	`@return Object { fileSource, entry, groupId, actionType }`
+
+- `beforeChildDirQueued`：文件夹中的子文件夹入队列之前
+	`@return Object { currentEntry, parentEntry, groupId, actionType }`
+
+- `childDirQueued`：文件夹中的子文件夹入队列之后
+	`@return Object { currentEntry, parentEntry, groupId, actionType }`
 
 - `selectDir`：选择了文件夹，参数返回entry信息，通过return false; 可以禁止
-- `beforeChildFileQueued`：文件夹中子文件进入队列，但是是假的，先不要用这个事件
-- `beforeChildDirQueued`：文件夹子中文件夹进入队列，但是是假的，先不要用这个事件
+	`@return Object { entry, groupId, actionType }`
 
 
 

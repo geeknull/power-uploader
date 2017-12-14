@@ -160,11 +160,11 @@ export class Uploader {
             lifecycle: 'initiative_pushFile',
             fileId: id
         });
-        file.selectFileTransactionId = id;
+        file.groupId = id;
         this.pushQueue(file, {
             count: 1,
             current: 1,
-            id: file.selectFileTransactionId
+            id: file.groupId
         });
     }
 
