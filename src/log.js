@@ -1,6 +1,3 @@
-/**
- * Created by Weil on 2017/5/31.
- */
 'use strict';
 
 let createLog = function (logFunc, logLevel) {

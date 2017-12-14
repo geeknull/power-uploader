@@ -163,7 +163,7 @@ export default class {
     async _pickOnChange(e) {
         e.stopPropagation();
         e.preventDefault();
-        await this.getFiles(e);
+        await this.getFiles(e, 'pick');
         this.reset(); // 重复文件会不触发
     }
 
@@ -213,10 +213,11 @@ export default class {
     async _dndHandleDrop(e) {
         e.stopPropagation();
         e.preventDefault();
-        await this.getFiles(e);
+        await this.getFiles(e, 'drop');
     }
 
     //获取选择文件，file控件或拖放
+    // @actionType ['pick' || 'pickDir' || 'drop' ]
     async getFiles(e, actionType) {
         let tmpFileArr = [];
         this._groupId++;
@@ -230,7 +231,7 @@ export default class {
         let entryArr = itemsArr.map(item =>
             item.getAsEntry ? item.getAsEntry() : (item.webkitGetAsEntry ? item.webkitGetAsEntry() : null));
 
-        await this.eventEmitter.emit('beforeFilesQueued', {filesSource: filesArr, actionType, groupId});
+        await this.eventEmitter.emit('beforeFilesSourceQueued', {filesSource: filesArr, actionType, groupId});
 
         // uploadDir
         if (actionType === 'pickDir') {
@@ -288,7 +289,7 @@ export default class {
             };
             await this.pushQueue(item, groupInfo);
         });
-        await this.eventEmitter.emit('filesQueued', {filesSource: tmpFileArr, groupId, actionType });
+        await this.eventEmitter.emit('filesSourceQueued', {filesSource: tmpFileArr, groupId, actionType });
     }
 
     // add custom field: path groupId

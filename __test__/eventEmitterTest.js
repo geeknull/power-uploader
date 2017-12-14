@@ -1,9 +1,4 @@
-/**
- * Created by yeanzhi on 15/11/3.
- */
-import {eventEmitter} from '../eventBus.js';
-import {logger} from '@util/util';
-
+import {eventEmitter} from '../src/eventBus.js';
 
 eventEmitter.on('hello', ()=> {
     logger.log(1);

@@ -3268,7 +3268,7 @@ var _class = function () {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 _context.next = 4;
-                                return this.getFiles(e);
+                                return this.getFiles(e, 'pick');
 
                             case 4:
                                 this.reset(); // 重复文件会不触发
@@ -3468,7 +3468,7 @@ var _class = function () {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 _context8.next = 4;
-                                return this.getFiles(e);
+                                return this.getFiles(e, 'drop');
 
                             case 4:
                             case 'end':
@@ -3486,6 +3486,7 @@ var _class = function () {
         }()
 
         //获取选择文件，file控件或拖放
+        // @actionType ['pick' || 'pickDir' || 'drop' ]
 
     }, {
         key: 'getFiles',
@@ -3513,7 +3514,7 @@ var _class = function () {
                                     return item.getAsEntry ? item.getAsEntry() : item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
                                 });
                                 _context10.next = 10;
-                                return this.eventEmitter.emit('beforeFilesQueued', { filesSource: filesArr, actionType: actionType, groupId: groupId });
+                                return this.eventEmitter.emit('beforeFilesSourceQueued', { filesSource: filesArr, actionType: actionType, groupId: groupId });
 
                             case 10:
                                 if (!(actionType === 'pickDir')) {
@@ -3633,7 +3634,7 @@ var _class = function () {
                                     };
                                 }());
                                 _context10.next = 45;
-                                return this.eventEmitter.emit('filesQueued', { filesSource: tmpFileArr, groupId: groupId, actionType: actionType });
+                                return this.eventEmitter.emit('filesSourceQueued', { filesSource: tmpFileArr, groupId: groupId, actionType: actionType });
 
                             case 45:
                             case 'end':
@@ -3835,9 +3836,6 @@ exports.default = _class;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/**
- * Created by Weil on 2017/5/31.
- */
 
 
 Object.defineProperty(exports, "__esModule", {

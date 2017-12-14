@@ -5,7 +5,7 @@
 建议使用ES6引入。
 
 ```javascript
-import {Uploader, FileStatus} from 'neixin-uploader';
+import {Uploader, FileStatus} from 'power-uploader';
 ```
 
 - `Uploader`：文件传输SDK的构造类
@@ -104,7 +104,7 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 | responseText | String | 分片请求后的服务端返回 | uploadAccept |
 | error | Error | 上传错误信息 | uploadError |
 
-- `beforeFilesQueued`: 选择上传一组文件之前 包含目录源信息
+- `beforeFilesSourceQueued`: 选择上传一组文件之前 包含目录源信息
 	`@return Object { filesSource, actionType, groupId }`
 	**demo**
     
@@ -117,7 +117,7 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 		});
 	```
 
-- `filesQueued`: 选择上传一组文件之后 春文件
+- `beforeFilesSourceQueued`: 选择上传一组文件之后 春文件
 	`@return Object { filesSource, actionType, groupId }`
 	**demo**
     
@@ -275,10 +275,10 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 文件夹相关的事件：
     
 - `beforeChildFileQueued`：文件夹中的子文件入队列之前
-	`@return Object { fileSource, entry, groupId, actionType }`
+	`@return Object { fileSource, parentEntry, groupId, actionType }`
 	
 - `childFileQueued`：文件夹中的子文件入队列之后
-	`@return Object { fileSource, entry, groupId, actionType }`
+	`@return Object { fileSource, parentEntry, groupId, actionType }`
 
 - `beforeChildDirQueued`：文件夹中的子文件夹入队列之前
 	`@return Object { currentEntry, parentEntry, groupId, actionType }`

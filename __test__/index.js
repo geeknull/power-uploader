@@ -1,6 +1,3 @@
-/**
- * Created by yeanzhi on 15/11/2.
- */
 //import {Uploader} from '../index.scss.js'
 //
 //var up = new Uploader();
@@ -28,8 +25,6 @@
 //    });
 //    logger.log(res);
 //}
-//'11'
-//'席铭'
 //hello();
 var b1 = new Buffer('111111');
 var bytes = Array.prototype.slice.call(b1, 0);
