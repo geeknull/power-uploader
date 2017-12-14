@@ -1946,7 +1946,8 @@ var Uploader = exports.Uploader = function () {
                                     eventEmitter: this.eventEmitter,
                                     setName: this.config.setName,
                                     fileIdPrefix: this.config.fileIdPrefix,
-                                    groupInfo: groupInfo || {}
+                                    groupInfo: groupInfo || {},
+                                    uploadGroupInfo: groupInfo // alias
                                 });
                                 _context.prev = 1;
                                 _context.next = 4;
@@ -3102,12 +3103,12 @@ var _class = function () {
         this.globalEventDelegate = new _eventDelegate2.default(document); // 全局的事件代理
         this.log = config.log;
 
-        this._groupId = 0;
+        this._uploadGroupId = 0;
 
         this.pushQueue = function (file, groupInfo) {
             file = _this.fileFilter(file);
             if (file) {
-                file.selectFileTransactionId = _this._groupId;
+                file.selectFileTransactionId = _this._uploadGroupId;
                 pushQueue(file, groupInfo).catch(function (err) {
                     console.error(err);
                     debugger;
@@ -3233,9 +3234,9 @@ var _class = function () {
                             }
                             event.stopPropagation();
                             event.preventDefault();
-                            _this2._groupId++;
+                            _this2._uploadGroupId++;
                             var groupInfo = {
-                                id: _this2._groupId,
+                                id: _this2._uploadGroupId,
                                 count: 1,
                                 current: 1
                             };
@@ -3494,7 +3495,7 @@ var _class = function () {
             var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(e, actionType) {
                 var _this3 = this;
 
-                var tmpFileArr, groupId, files, items, filesArr, itemsArr, entryArr, pathReg, someFileName, dirName, entry, res, i, len, file, item, _entry2;
+                var tmpFileArr, uploadGroupId, files, items, filesArr, itemsArr, entryArr, pathReg, someFileName, dirName, entry, res, i, len, file, item, _entry2;
 
                 return _regenerator2.default.wrap(function _callee10$(_context10) {
                     while (1) {
@@ -3502,8 +3503,8 @@ var _class = function () {
                             case 0:
                                 tmpFileArr = [];
 
-                                this._groupId++;
-                                groupId = this._groupId;
+                                this._uploadGroupId++;
+                                uploadGroupId = this._uploadGroupId;
                                 files = e.target.files || e.dataTransfer.files; // 后者在拖拽文件的情况会存在
 
                                 items = e.dataTransfer && e.dataTransfer.items || []; // 拖拽的文件会有
@@ -3514,7 +3515,7 @@ var _class = function () {
                                     return item.getAsEntry ? item.getAsEntry() : item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
                                 });
                                 _context10.next = 10;
-                                return this.eventEmitter.emit('beforeFilesSourceQueued', { filesSource: filesArr, actionType: actionType, groupId: groupId });
+                                return this.eventEmitter.emit('beforeFilesSourceQueued', { filesSource: filesArr, actionType: actionType, uploadGroupId: uploadGroupId });
 
                             case 10:
                                 if (!(actionType === 'pickDir')) {
@@ -3543,10 +3544,10 @@ var _class = function () {
                                 entry = {};
 
                                 entry.path = entry.fullPath = '/' + dirName;
-                                entry.groupId = groupId;
+                                entry.uploadGroupId = uploadGroupId;
 
                                 _context10.next = 22;
-                                return this.eventEmitter.emit('selectDir', { entry: entry, groupId: groupId, actionType: actionType });
+                                return this.eventEmitter.emit('selectDir', { entry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                             case 22:
                                 res = _context10.sent;
@@ -3581,7 +3582,7 @@ var _class = function () {
                                 }
 
                                 _context10.next = 35;
-                                return this.folderRead({ entry: _entry2, tmpFileArr: tmpFileArr, groupId: groupId, actionType: actionType });
+                                return this.folderRead({ entry: _entry2, tmpFileArr: tmpFileArr, uploadGroupId: uploadGroupId, actionType: actionType });
 
                             case 35:
                                 return _context10.abrupt('continue', 38);
@@ -3616,7 +3617,7 @@ var _class = function () {
                                                         current = index + 1;
                                                         groupInfo = {
                                                             count: count, current: current,
-                                                            id: groupId
+                                                            id: uploadGroupId
                                                         };
                                                         _context9.next = 5;
                                                         return _this3.pushQueue(item, groupInfo);
@@ -3634,7 +3635,7 @@ var _class = function () {
                                     };
                                 }());
                                 _context10.next = 45;
-                                return this.eventEmitter.emit('filesSourceQueued', { filesSource: tmpFileArr, groupId: groupId, actionType: actionType });
+                                return this.eventEmitter.emit('filesSourceQueued', { filesSource: tmpFileArr, uploadGroupId: uploadGroupId, actionType: actionType });
 
                             case 45:
                             case 'end':
@@ -3651,7 +3652,7 @@ var _class = function () {
             return getFiles;
         }()
 
-        // add custom field: path groupId
+        // add custom field: path uploadGroupId
 
     }, {
         key: 'folderRead',
@@ -3661,7 +3662,7 @@ var _class = function () {
 
                 var entry = _ref11.entry,
                     tmpFileArr = _ref11.tmpFileArr,
-                    groupId = _ref11.groupId,
+                    uploadGroupId = _ref11.uploadGroupId,
                     actionType = _ref11.actionType;
                 var eventResFlagArr;
                 return _regenerator2.default.wrap(function _callee12$(_context13) {
@@ -3670,10 +3671,10 @@ var _class = function () {
                             case 0:
                                 // custom field
                                 entry.path = entry.fullPath;
-                                entry.groupId = groupId; // old selectFileTransactionId
+                                entry.uploadGroupId = uploadGroupId; // old selectFileTransactionId
 
                                 _context13.next = 4;
-                                return this.eventEmitter.emit('selectDir', { entry: entry, groupId: groupId, actionType: actionType });
+                                return this.eventEmitter.emit('selectDir', { entry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                             case 4:
                                 eventResFlagArr = _context13.sent;
@@ -3720,12 +3721,12 @@ var _class = function () {
                                                                             case 4:
                                                                                 file = _context11.sent;
                                                                                 _context11.next = 7;
-                                                                                return _this4.eventEmitter.emit('beforeChildFileQueued', { fileSource: file, parentEntry: entry, groupId: groupId, actionType: actionType });
+                                                                                return _this4.eventEmitter.emit('beforeChildFileQueued', { fileSource: file, parentEntry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 7:
                                                                                 tmpFileArr.push(file);
                                                                                 _context11.next = 10;
-                                                                                return _this4.eventEmitter.emit('childFileQueued', { fileSource: file, parentEntry: entry, groupId: groupId, actionType: actionType });
+                                                                                return _this4.eventEmitter.emit('childFileQueued', { fileSource: file, parentEntry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 10:
                                                                                 _context11.next = 19;
@@ -3738,15 +3739,15 @@ var _class = function () {
                                                                                 }
 
                                                                                 _context11.next = 15;
-                                                                                return _this4.eventEmitter.emit('beforeChildDirQueued', { currentEntry: _entry, parentEntry: entry, groupId: groupId, actionType: actionType });
+                                                                                return _this4.eventEmitter.emit('beforeChildDirQueued', { currentEntry: _entry, parentEntry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 15:
                                                                                 _context11.next = 17;
-                                                                                return _this4.folderRead({ entry: _entry, tmpFileArr: tmpFileArr, groupId: groupId, actionType: actionType });
+                                                                                return _this4.folderRead({ entry: _entry, tmpFileArr: tmpFileArr, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 17:
                                                                                 _context11.next = 19;
-                                                                                return _this4.eventEmitter.emit('childDirQueued', { currentEntry: _entry, parentEntry: entry, groupId: groupId, actionType: actionType });
+                                                                                return _this4.eventEmitter.emit('childDirQueued', { currentEntry: _entry, parentEntry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 19:
                                                                             case 'end':

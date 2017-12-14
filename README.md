@@ -81,7 +81,7 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 - `loaded`：上传字节数
 - `name`：文件名
 - `path`：文件路径
-- `groupId`：文件组ID
+- `uploadGroupId`：文件组ID
 - `size`：文件大小(字节数)
 - `source`：原生文件对象
 - `statusText`：文件状态，即`FileStatus`的值
@@ -105,12 +105,12 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 | error | Error | 上传错误信息 | uploadError |
 
 - `beforeFilesSourceQueued`: 选择上传一组文件之前 包含目录源信息
-	`@return Object { filesSource, actionType, groupId }`
+	`@return Object { filesSource, actionType, uploadGroupId }`
 	**demo**
     
 	```javascript
 		uploader.on('beforeFilesQueued', (obj) => {
-			let {filesSource, actionType, groupId} = obj;
+			let {filesSource, actionType, uploadGroupId} = obj;
 			if (actionType === 'pickDir') {
 				// 选择的是文件夹
 			}
@@ -118,12 +118,12 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 	```
 
 - `beforeFilesSourceQueued`: 选择上传一组文件之后 春文件
-	`@return Object { filesSource, actionType, groupId }`
+	`@return Object { filesSource, actionType, uploadGroupId }`
 	**demo**
     
 	```javascript
 		uploader.on('beforeFilesQueued', (obj) => {
-			let {filesSource, actionType, groupId} = obj;
+			let {filesSource, actionType, uploadGroupId} = obj;
 			if (actionType === 'pickDir') {
 				// 选择的是文件夹
 			}
@@ -275,19 +275,19 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 文件夹相关的事件：
     
 - `beforeChildFileQueued`：文件夹中的子文件入队列之前
-	`@return Object { fileSource, parentEntry, groupId, actionType }`
+	`@return Object { fileSource, parentEntry, uploadGroupId, actionType }`
 	
 - `childFileQueued`：文件夹中的子文件入队列之后
-	`@return Object { fileSource, parentEntry, groupId, actionType }`
+	`@return Object { fileSource, parentEntry, uploadGroupId, actionType }`
 
 - `beforeChildDirQueued`：文件夹中的子文件夹入队列之前
-	`@return Object { currentEntry, parentEntry, groupId, actionType }`
+	`@return Object { currentEntry, parentEntry, uploadGroupId, actionType }`
 
 - `childDirQueued`：文件夹中的子文件夹入队列之后
-	`@return Object { currentEntry, parentEntry, groupId, actionType }`
+	`@return Object { currentEntry, parentEntry, uploadGroupId, actionType }`
 
 - `selectDir`：选择了文件夹，参数返回entry信息，通过return false; 可以禁止
-	`@return Object { entry, groupId, actionType }`
+	`@return Object { entry, uploadGroupId, actionType }`
 
 
 

@@ -13,12 +13,12 @@ export default class {
         this.globalEventDelegate = new EventDelegate(document); // 全局的事件代理
         this.log = config.log;
 
-        this._groupId = 0;
+        this._uploadGroupId = 0;
 
         this.pushQueue = (file, groupInfo) => {
             file = this.fileFilter(file);
             if ( file ) {
-                file.selectFileTransactionId = this._groupId;
+                file.selectFileTransactionId = this._uploadGroupId;
                 pushQueue(file, groupInfo).catch((err) => {
                     console.error(err);
                     debugger;
@@ -137,9 +137,9 @@ export default class {
                         }
                         event.stopPropagation();
                         event.preventDefault();
-                        this._groupId++;
+                        this._uploadGroupId++;
                         let groupInfo = {
-                            id: this._groupId,
+                            id: this._uploadGroupId,
                             count: 1,
                             current: 1
                         };
@@ -220,8 +220,8 @@ export default class {
     // @actionType ['pick' || 'pickDir' || 'drop' ]
     async getFiles(e, actionType) {
         let tmpFileArr = [];
-        this._groupId++;
-        let groupId = this._groupId;
+        this._uploadGroupId++;
+        let uploadGroupId = this._uploadGroupId;
 
         let files = e.target.files || e.dataTransfer.files; // 后者在拖拽文件的情况会存在
         let items = (e.dataTransfer && e.dataTransfer.items) || []; // 拖拽的文件会有
@@ -231,7 +231,7 @@ export default class {
         let entryArr = itemsArr.map(item =>
             item.getAsEntry ? item.getAsEntry() : (item.webkitGetAsEntry ? item.webkitGetAsEntry() : null));
 
-        await this.eventEmitter.emit('beforeFilesSourceQueued', {filesSource: filesArr, actionType, groupId});
+        await this.eventEmitter.emit('beforeFilesSourceQueued', {filesSource: filesArr, actionType, uploadGroupId});
 
         // uploadDir
         if (actionType === 'pickDir') {
@@ -251,9 +251,9 @@ export default class {
 
             let entry = {};
             entry.path = entry.fullPath = '/' + dirName;
-            entry.groupId = groupId;
+            entry.uploadGroupId = uploadGroupId;
 
-            let res = await this.eventEmitter.emit('selectDir', {entry, groupId, actionType});
+            let res = await this.eventEmitter.emit('selectDir', {entry, uploadGroupId, actionType});
             if (res.indexOf(false) !== -1) {
                 return void 0;
             }
@@ -264,7 +264,7 @@ export default class {
                 let entry = entryArr[i];
 
                 if (entry && entry.isDirectory) {
-                    await this.folderRead({entry, tmpFileArr, groupId, actionType});
+                    await this.folderRead({entry, tmpFileArr, uploadGroupId, actionType});
                     continue;
                 }
 
@@ -285,20 +285,20 @@ export default class {
             let current = index+1;
             let groupInfo = {
                 count, current,
-                id: groupId
+                id: uploadGroupId
             };
             await this.pushQueue(item, groupInfo);
         });
-        await this.eventEmitter.emit('filesSourceQueued', {filesSource: tmpFileArr, groupId, actionType });
+        await this.eventEmitter.emit('filesSourceQueued', {filesSource: tmpFileArr, uploadGroupId, actionType });
     }
 
-    // add custom field: path groupId
-    async folderRead({entry, tmpFileArr, groupId, actionType}) {
+    // add custom field: path uploadGroupId
+    async folderRead({entry, tmpFileArr, uploadGroupId, actionType}) {
         // custom field
         entry.path = entry.fullPath;
-        entry.groupId = groupId; // old selectFileTransactionId
+        entry.uploadGroupId = uploadGroupId; // old selectFileTransactionId
 
-        let eventResFlagArr = await this.eventEmitter.emit('selectDir', {entry, groupId, actionType});
+        let eventResFlagArr = await this.eventEmitter.emit('selectDir', {entry, uploadGroupId, actionType});
         if (eventResFlagArr.indexOf(false) !== -1) {return void 0;}
 
 
@@ -312,15 +312,15 @@ export default class {
                             _entry.file(file => r(Object.defineProperty(file, 'path', {value:_entry.fullPath})) );
                         });
 
-                        await this.eventEmitter.emit('beforeChildFileQueued', {fileSource: file, parentEntry: entry, groupId, actionType});
+                        await this.eventEmitter.emit('beforeChildFileQueued', {fileSource: file, parentEntry: entry, uploadGroupId, actionType});
                         tmpFileArr.push(file);
-                        await this.eventEmitter.emit('childFileQueued', {fileSource: file, parentEntry: entry, groupId, actionType});
+                        await this.eventEmitter.emit('childFileQueued', {fileSource: file, parentEntry: entry, uploadGroupId, actionType});
 
                     } else if (_entry.isDirectory) {
 
-                        await this.eventEmitter.emit('beforeChildDirQueued', {currentEntry: _entry, parentEntry: entry, groupId, actionType});
-                        await this.folderRead({entry: _entry, tmpFileArr, groupId, actionType});
-                        await this.eventEmitter.emit('childDirQueued', {currentEntry: _entry, parentEntry: entry, groupId, actionType});
+                        await this.eventEmitter.emit('beforeChildDirQueued', {currentEntry: _entry, parentEntry: entry, uploadGroupId, actionType});
+                        await this.folderRead({entry: _entry, tmpFileArr, uploadGroupId, actionType});
+                        await this.eventEmitter.emit('childDirQueued', {currentEntry: _entry, parentEntry: entry, uploadGroupId, actionType});
                     }
                 }
                 resolve();

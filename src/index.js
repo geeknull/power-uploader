@@ -72,7 +72,8 @@ export class Uploader {
             eventEmitter: this.eventEmitter,
             setName: this.config.setName,
             fileIdPrefix: this.config.fileIdPrefix,
-            groupInfo: groupInfo || {}
+            groupInfo: groupInfo || {},
+            uploadGroupInfo: groupInfo // alias
         });
         try {
             let res = await this.eventEmitter.emit('beforeFileQueued', {file: wuFile, setContentType: (type) => {
