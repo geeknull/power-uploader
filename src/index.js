@@ -98,7 +98,7 @@ export class Uploader {
                 }
                 // TODO 不需要auto的时候还没做
             }
-            this.LOG.ERROR({
+            this.LOG.LOG({
                 lifecycle: 'pushQueue',
                 fileStatus: wuFile.statusText,
                 fileName: wuFile.name
@@ -139,7 +139,7 @@ export class Uploader {
                     await this.pushBlobQueue(blob, wuFile, shardObj); // 需要异步等待
                 }
             }
-            this.LOG.ERROR({
+            this.LOG.LOG({
                 lifecycle: 'sliceFile',
                 fileStatus: wuFile.statusText,
                 fileName: wuFile.name
@@ -200,7 +200,7 @@ export class Uploader {
             if (pendingLen < this.config.sameTimeUploadCount) {
                 await this.runBlobQueue();
             }
-            this.LOG.ERROR({
+            this.LOG.LOG({
                 lifecycle: 'pushBlobQueue',
                 fileStatus: file.statusText,
                 fileName: file.name
@@ -246,7 +246,7 @@ export class Uploader {
                 blobObj.file.statusText = WUFile.Status.PROGRESS;
                 this.runBlobQueueHandler(blobObj);
             }
-            this.LOG.ERROR({
+            this.LOG.LOG({
                 lifecycle: 'runBlobQueue',
                 fileStatus: _blobObj.file.statusText,
                 fileName: _blobObj.file.name
