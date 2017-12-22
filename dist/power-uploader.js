@@ -1985,7 +1985,7 @@ var Uploader = exports.Uploader = function () {
                                 // TODO 不需要auto的时候还没做
 
                             case 10:
-                                this.LOG.ERROR({
+                                this.LOG.INFO({
                                     lifecycle: 'pushQueue',
                                     fileStatus: wuFile.statusText,
                                     fileName: wuFile.name
@@ -2025,7 +2025,8 @@ var Uploader = exports.Uploader = function () {
         key: 'sliceFile',
         value: function () {
             var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(wuFile) {
-                var shardCount, i, len, start, end, blob, shardObj;
+                var shardCount, i, len, start, end, blob, shardObj, _shardObj;
+
                 return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
                         switch (_context2.prev = _context2.next) {
@@ -2041,7 +2042,7 @@ var Uploader = exports.Uploader = function () {
 
                             case 3:
                                 if (!this.config.chunked) {
-                                    _context2.next = 18;
+                                    _context2.next = 20;
                                     break;
                                 }
 
@@ -2080,16 +2081,28 @@ var Uploader = exports.Uploader = function () {
                                 break;
 
                             case 18:
-                                this.LOG.ERROR({
+                                _context2.next = 23;
+                                break;
+
+                            case 20:
+                                _shardObj = {
+                                    shardCount: 1,
+                                    currentShard: 1 // 分片从1开始，下标都要+1
+                                };
+                                _context2.next = 23;
+                                return this.pushBlobQueue(wuFile.source, wuFile, _shardObj);
+
+                            case 23:
+                                this.LOG.INFO({
                                     lifecycle: 'sliceFile',
                                     fileStatus: wuFile.statusText,
                                     fileName: wuFile.name
                                 });
-                                _context2.next = 24;
+                                _context2.next = 29;
                                 break;
 
-                            case 21:
-                                _context2.prev = 21;
+                            case 26:
+                                _context2.prev = 26;
                                 _context2.t0 = _context2['catch'](0);
 
                                 this.LOG.ERROR({
@@ -2099,12 +2112,12 @@ var Uploader = exports.Uploader = function () {
                                     err: _context2.t0
                                 });
 
-                            case 24:
+                            case 29:
                             case 'end':
                                 return _context2.stop();
                         }
                     }
-                }, _callee2, this, [[0, 21]]);
+                }, _callee2, this, [[0, 26]]);
             }));
 
             function sliceFile(_x4) {
@@ -2153,9 +2166,9 @@ var Uploader = exports.Uploader = function () {
                                     status: blobStatus.WAIT,
                                     loaded: 0,
                                     config: {
-                                        server: '',
-                                        headers: '',
-                                        formData: {}
+                                        server: this.config.server,
+                                        headers: this.config.headers,
+                                        formData: this.config.formData
                                     }
                                 };
 
@@ -2180,7 +2193,7 @@ var Uploader = exports.Uploader = function () {
                                 return this.runBlobQueue();
 
                             case 8:
-                                this.LOG.ERROR({
+                                this.LOG.INFO({
                                     lifecycle: 'pushBlobQueue',
                                     fileStatus: file.statusText,
                                     fileName: file.name
@@ -2279,7 +2292,7 @@ var Uploader = exports.Uploader = function () {
                                 this.runBlobQueueHandler(blobObj);
 
                             case 15:
-                                this.LOG.ERROR({
+                                this.LOG.INFO({
                                     lifecycle: 'runBlobQueue',
                                     fileStatus: _blobObj.file.statusText,
                                     fileName: _blobObj.file.name

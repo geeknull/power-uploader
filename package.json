@@ -1,6 +1,6 @@
 {
   "name": "power-uploader",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "## 引入方式",
   "main": "./dist/power-uploader.js",
   "scripts": {

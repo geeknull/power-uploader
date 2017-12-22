@@ -98,7 +98,7 @@ export class Uploader {
                 }
                 // TODO 不需要auto的时候还没做
             }
-            this.LOG.LOG({
+            this.LOG.INFO({
                 lifecycle: 'pushQueue',
                 fileStatus: wuFile.statusText,
                 fileName: wuFile.name
@@ -117,6 +117,7 @@ export class Uploader {
     async sliceFile (wuFile) {
         try {
             if ( wuFile.isFile === false ) { return null; }
+
             if ( this.config.chunked ) {
                 let shardCount = Math.ceil(wuFile.size / this.config.chunkSize);
                 if ( shardCount === 0 ) {
@@ -138,8 +139,14 @@ export class Uploader {
                     };
                     await this.pushBlobQueue(blob, wuFile, shardObj); // 需要异步等待
                 }
+            } else {
+                let shardObj = {
+                    shardCount: 1,
+                    currentShard: 1 // 分片从1开始，下标都要+1
+                };
+                await this.pushBlobQueue(wuFile.source, wuFile, shardObj); // 需要异步等待
             }
-            this.LOG.LOG({
+            this.LOG.INFO({
                 lifecycle: 'sliceFile',
                 fileStatus: wuFile.statusText,
                 fileName: wuFile.name
@@ -180,9 +187,9 @@ export class Uploader {
                 status: blobStatus.WAIT,
                 loaded: 0,
                 config: {
-                    server: '',
-                    headers: '',
-                    formData: {}
+                    server: this.config.server,
+                    headers: this.config.headers,
+                    formData: this.config.formData
                 }
             };
             this.LOG.INFO({
@@ -200,7 +207,7 @@ export class Uploader {
             if (pendingLen < this.config.sameTimeUploadCount) {
                 await this.runBlobQueue();
             }
-            this.LOG.LOG({
+            this.LOG.INFO({
                 lifecycle: 'pushBlobQueue',
                 fileStatus: file.statusText,
                 fileName: file.name
@@ -246,7 +253,7 @@ export class Uploader {
                 blobObj.file.statusText = WUFile.Status.PROGRESS;
                 this.runBlobQueueHandler(blobObj);
             }
-            this.LOG.LOG({
+            this.LOG.INFO({
                 lifecycle: 'runBlobQueue',
                 fileStatus: _blobObj.file.statusText,
                 fileName: _blobObj.file.name

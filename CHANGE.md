@@ -1,3 +1,6 @@
+# 0.2.6 2017.12.22
+[fix] 全局server、chunked失效问题
+
 # 0.2.5 2017.12.14
 groupInfo alias
 
