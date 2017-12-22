@@ -109,25 +109,25 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 	**demo**
     
 	```javascript
-		uploader.on('beforeFilesQueued', (obj) => {
-			let {filesSource, actionType, uploadGroupId} = obj;
-			if (actionType === 'pickDir') {
-				// 选择的是文件夹
-			}
-		});
+    uploader.on('beforeFilesSourceQueued', (obj) => {
+        let {filesSource, actionType, uploadGroupId} = obj;
+        if (actionType === 'pickDir') {
+            // 选择的是文件夹
+        }
+    });
 	```
 
-- `beforeFilesSourceQueued`: 选择上传一组文件之后 春文件
+- `filesSourceQueued`: 选择上传一组文件之后 文件源信息
 	`@return Object { filesSource, actionType, uploadGroupId }`
 	**demo**
     
 	```javascript
-		uploader.on('beforeFilesQueued', (obj) => {
-			let {filesSource, actionType, uploadGroupId} = obj;
-			if (actionType === 'pickDir') {
-				// 选择的是文件夹
-			}
-		});
+    uploader.on('filesSourceQueued', (obj) => {
+        let {filesSource, actionType, uploadGroupId} = obj;
+        if (actionType === 'pickDir') {
+            // 选择的是文件夹
+        }
+    });
 	```
 
 - `beforeFileQueued`：文件添加到上传队列之前，可以对文件进行一些过滤，`return false;`会阻止将该文件加入队列。
@@ -249,14 +249,20 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
 
 - `uploadSuccess`：文件上传成功。
 
-    `@return Object { file, currentShard[Number], shardCount[Number], shard[Blob] }`
+    `@return Object { file, currentShard[Number], shardCount[Number], shard[Blob], responseText[String], responseTextArr[Array] }`
         
     **demo**
     
     ```javascript
     uploader.on('uploadSuccess', (obj) => {
         console.log('uploadSuccess');
-        let { file, currendShard, shardCount, shard } = obj;
+        let { file, currendShard, shardCount, shard, responseText, responseTextArr } = obj;
+        
+        if (shardCount === 1) {
+	         // use responseText
+        } else {
+            // use responseTextArr
+        }
 
         let newFileList = this.state.fileList.map(item => file.id === item.id ? file : item);
         this.setState({fileList: newFileList});

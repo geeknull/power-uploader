@@ -2564,7 +2564,7 @@ var Uploader = exports.Uploader = function () {
         key: '_uploadSuccess',
         value: function () {
             var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(res, blobObj) {
-                var isFileUploadEnd;
+                var isFileUploadEnd, successParams;
                 return _regenerator2.default.wrap(function _callee8$(_context8) {
                     while (1) {
                         switch (_context8.prev = _context8.next) {
@@ -2576,8 +2576,19 @@ var Uploader = exports.Uploader = function () {
                                     blobObj.file.statusText = _file.WUFile.Status.COMPLETE;
                                 }
 
+                                // 不分片的时候
+                                if (blobObj.shard.shardCount === 1) {
+                                    blobObj.file.responseText = res;
+                                } else {
+                                    // 分片的时候
+                                    if (!Array.isArray(blobObj.file.responseTextArr)) {
+                                        blobObj.file.responseTextArr = Array(blobObj.shard.shardCount - 1).fill(null);
+                                    }
+                                    blobObj.file.responseTextArr[blobObj.shard.currentShard - 1] = res;
+                                }
+
                                 // 每个分片成功后的
-                                _context8.next = 5;
+                                _context8.next = 6;
                                 return this.eventEmitter.emit('uploadAccept', {
                                     file: blobObj.file,
                                     shard: blobObj.blob,
@@ -2587,22 +2598,29 @@ var Uploader = exports.Uploader = function () {
                                     responseText: res
                                 });
 
-                            case 5:
+                            case 6:
                                 if (!isFileUploadEnd) {
-                                    _context8.next = 11;
+                                    _context8.next = 14;
                                     break;
                                 }
 
-                                _context8.next = 8;
-                                return this.eventEmitter.emit('uploadSuccess', {
+                                successParams = {
                                     file: blobObj.file,
                                     shard: blobObj.blob,
                                     shardCount: blobObj.shard.shardCount,
                                     currentShard: blobObj.shard.currentShard
-                                });
+                                };
 
-                            case 8:
-                                _context8.next = 10;
+                                if (blobObj.shard.shardCount === 1) {
+                                    successParams.responseText = blobObj.file.responseText;
+                                } else {
+                                    successParams.responseTextArr = blobObj.file.responseTextArr;
+                                }
+                                _context8.next = 11;
+                                return this.eventEmitter.emit('uploadSuccess', successParams);
+
+                            case 11:
+                                _context8.next = 13;
                                 return this.eventEmitter.emit('uploadEndSend', {
                                     file: blobObj.file,
                                     shard: blobObj.blob,
@@ -2610,11 +2628,11 @@ var Uploader = exports.Uploader = function () {
                                     currentShard: blobObj.shard.currentShard
                                 });
 
-                            case 10:
+                            case 13:
                                 // 只能在成功的时候移除分片 如果提前移除分片会导致进度计算不准确
                                 this._removeFileFromQueue(blobObj.file.id);
 
-                            case 11:
+                            case 14:
                             case 'end':
                                 return _context8.stop();
                         }

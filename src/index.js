@@ -389,6 +389,17 @@ export class Uploader {
             blobObj.file.statusText = WUFile.Status.COMPLETE;
         }
 
+        // 不分片的时候
+        if (blobObj.shard.shardCount === 1) {
+            blobObj.file.responseText = res;
+        } else {
+            // 分片的时候
+            if (!Array.isArray(blobObj.file.responseTextArr)) {
+                blobObj.file.responseTextArr = Array(blobObj.shard.shardCount-1).fill(null);
+            }
+            blobObj.file.responseTextArr[blobObj.shard.currentShard-1] = res;
+        }
+
         // 每个分片成功后的
         await this.eventEmitter.emit('uploadAccept', {
             file: blobObj.file,
@@ -401,12 +412,19 @@ export class Uploader {
 
         // 文件传输是否完成
         if ( isFileUploadEnd ) {
-            await this.eventEmitter.emit('uploadSuccess', {
+            let successParams = {
                 file: blobObj.file,
                 shard: blobObj.blob,
                 shardCount: blobObj.shard.shardCount,
                 currentShard: blobObj.shard.currentShard
-            });
+            };
+            if (blobObj.shard.shardCount === 1) {
+                successParams.responseText = blobObj.file.responseText;
+            } else {
+                successParams.responseTextArr = blobObj.file.responseTextArr;
+            }
+            await this.eventEmitter.emit('uploadSuccess', successParams);
+
             await this.eventEmitter.emit('uploadEndSend', {
                 file: blobObj.file,
                 shard: blobObj.blob,

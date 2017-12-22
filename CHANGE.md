@@ -1,5 +1,6 @@
 # 0.2.6 2017.12.22
-[fix] 全局server、chunked失效问题
+[fix] 全局server、chunked失效问题 增加
+[add] uploadSuccess 会返回 responseText 或 responseTextArr
 
 # 0.2.5 2017.12.14
 groupInfo alias
