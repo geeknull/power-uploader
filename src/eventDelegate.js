@@ -4,7 +4,8 @@
 * */
 'use strict';
 
-module.exports = Delegate;
+export default Delegate;
+// module.exports = Delegate;
 
 function isArray(obj) {
     return Object.prototype.toString.call(obj) === '[object Array]';

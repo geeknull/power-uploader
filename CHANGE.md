@@ -1,3 +1,6 @@
+# 0.2.7 2017.12.23
+[add] beforeFilesSourceQueued 支持返回false阻止上传
+
 # 0.2.6 2017.12.22
 [fix] 全局server、chunked失效问题 增加
 [add] uploadSuccess 会返回 responseText 或 responseTextArr

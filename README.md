@@ -114,6 +114,10 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
         if (actionType === 'pickDir') {
             // 选择的是文件夹
         }
+        // 超过10个文件不允许上传
+        if (filesSource.length > 10) {
+            return false;
+        }
     });
 	```
 

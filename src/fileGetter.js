@@ -231,7 +231,10 @@ export default class {
         let entryArr = itemsArr.map(item =>
             item.getAsEntry ? item.getAsEntry() : (item.webkitGetAsEntry ? item.webkitGetAsEntry() : null));
 
-        await this.eventEmitter.emit('beforeFilesSourceQueued', {filesSource: filesArr, actionType, uploadGroupId});
+        let res = await this.eventEmitter.emit('beforeFilesSourceQueued', {filesSource: filesArr, actionType, uploadGroupId});
+        if (res.indexOf(false) !== -1) {
+            return void 0;
+        }
 
         // uploadDir
         if (actionType === 'pickDir') {

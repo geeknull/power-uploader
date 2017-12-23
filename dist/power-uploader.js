@@ -1161,7 +1161,11 @@ exports.default = EventEmitter;
 * */
 
 
-module.exports = Delegate;
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = Delegate;
+// module.exports = Delegate;
 
 function isArray(obj) {
     return Object.prototype.toString.call(obj) === '[object Array]';
@@ -3527,7 +3531,7 @@ var _class = function () {
             var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(e, actionType) {
                 var _this3 = this;
 
-                var tmpFileArr, uploadGroupId, files, items, filesArr, itemsArr, entryArr, pathReg, someFileName, dirName, entry, res, i, len, file, item, _entry2;
+                var tmpFileArr, uploadGroupId, files, items, filesArr, itemsArr, entryArr, res, pathReg, someFileName, dirName, entry, _res, i, len, file, item, _entry2;
 
                 return _regenerator2.default.wrap(function _callee10$(_context10) {
                     while (1) {
@@ -3550,12 +3554,9 @@ var _class = function () {
                                 return this.eventEmitter.emit('beforeFilesSourceQueued', { filesSource: filesArr, actionType: actionType, uploadGroupId: uploadGroupId });
 
                             case 10:
-                                if (!(actionType === 'pickDir')) {
-                                    _context10.next = 27;
-                                    break;
-                                }
+                                res = _context10.sent;
 
-                                if (!(filesArr.length === 0)) {
+                                if (!(res.indexOf(false) !== -1)) {
                                     _context10.next = 13;
                                     break;
                                 }
@@ -3563,6 +3564,19 @@ var _class = function () {
                                 return _context10.abrupt('return', void 0);
 
                             case 13:
+                                if (!(actionType === 'pickDir')) {
+                                    _context10.next = 30;
+                                    break;
+                                }
+
+                                if (!(filesArr.length === 0)) {
+                                    _context10.next = 16;
+                                    break;
+                                }
+
+                                return _context10.abrupt('return', void 0);
+
+                            case 16:
                                 tmpFileArr = filesArr.map(function (item) {
                                     Object.defineProperty(item, 'path', {
                                         value: '/' + item.webkitRelativePath
@@ -3578,29 +3592,29 @@ var _class = function () {
                                 entry.path = entry.fullPath = '/' + dirName;
                                 entry.uploadGroupId = uploadGroupId;
 
-                                _context10.next = 22;
+                                _context10.next = 25;
                                 return this.eventEmitter.emit('selectDir', { entry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
-                            case 22:
-                                res = _context10.sent;
+                            case 25:
+                                _res = _context10.sent;
 
-                                if (!(res.indexOf(false) !== -1)) {
-                                    _context10.next = 25;
+                                if (!(_res.indexOf(false) !== -1)) {
+                                    _context10.next = 28;
                                     break;
                                 }
 
                                 return _context10.abrupt('return', void 0);
 
-                            case 25:
-                                _context10.next = 41;
+                            case 28:
+                                _context10.next = 44;
                                 break;
 
-                            case 27:
+                            case 30:
                                 i = 0, len = filesArr.length;
 
-                            case 28:
+                            case 31:
                                 if (!(i < len)) {
-                                    _context10.next = 41;
+                                    _context10.next = 44;
                                     break;
                                 }
 
@@ -3609,29 +3623,29 @@ var _class = function () {
                                 _entry2 = entryArr[i];
 
                                 if (!(_entry2 && _entry2.isDirectory)) {
-                                    _context10.next = 36;
+                                    _context10.next = 39;
                                     break;
                                 }
 
-                                _context10.next = 35;
+                                _context10.next = 38;
                                 return this.folderRead({ entry: _entry2, tmpFileArr: tmpFileArr, uploadGroupId: uploadGroupId, actionType: actionType });
 
-                            case 35:
-                                return _context10.abrupt('continue', 38);
+                            case 38:
+                                return _context10.abrupt('continue', 41);
 
-                            case 36:
+                            case 39:
 
                                 // file.path = '/' + file.name; // PC版这种情况会有问题
                                 Object.defineProperty(file, 'path', { value: '/' + file.name });
 
                                 tmpFileArr.push(file);
 
-                            case 38:
+                            case 41:
                                 i++;
-                                _context10.next = 28;
+                                _context10.next = 31;
                                 break;
 
-                            case 41:
+                            case 44:
 
                                 // TODO this.config.multiple to break the for cycle
                                 if (this.config.multiple === false) {
@@ -3666,10 +3680,10 @@ var _class = function () {
                                         return _ref10.apply(this, arguments);
                                     };
                                 }());
-                                _context10.next = 45;
+                                _context10.next = 48;
                                 return this.eventEmitter.emit('filesSourceQueued', { filesSource: tmpFileArr, uploadGroupId: uploadGroupId, actionType: actionType });
 
-                            case 45:
+                            case 48:
                             case 'end':
                                 return _context10.stop();
                         }
