@@ -1,3 +1,6 @@
+# 0.2.8 2017.12.27
+[fix] 修复不选择支持文件夹的时候不创建冗余input标签
+
 # 0.2.7 2017.12.23
 [add] beforeFilesSourceQueued 支持返回false阻止上传
 

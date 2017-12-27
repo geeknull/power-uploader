@@ -3202,10 +3202,10 @@ var _class = function () {
     }, {
         key: 'init',
         value: function init() {
-            var input = '<input type="file" id="' + this.inputId + '" size="30" name="fileselect[]" style="position:absolute;top:-100000px;">';
+            var input = '<input type="file" id="' + this.inputId + '" name="fileselect[]" style="position:absolute;top:-100000px;">';
             var inputEle = _util2.default.parseToDOM(input)[0];
 
-            var inputDir = '<input type="file" id="' + this.inputId + 'Dir" webkitdirectory mozdirectory size="30" name="fileselect[]" style="position:absolute;top:-100000px;">';
+            var inputDir = '<input type="file" id="' + this.inputId + 'Dir" webkitdirectory mozdirectory name="fileselect[]" style="position:absolute;top:-100000px;">';
             var inputEleDir = _util2.default.parseToDOM(inputDir)[0];
 
             if (this.config.accept && this.config.accept.length > 0) {
@@ -3220,10 +3220,15 @@ var _class = function () {
                 inputEle.setAttribute('multiple', 'multiple');
             }
 
+            // normal file input
             _util2.default.removeDOM('#' + this.inputId);
-            _util2.default.removeDOM('#' + this.inputId + 'Dir');
             this.config.body.appendChild(inputEle);
-            this.config.body.appendChild(inputEleDir);
+
+            // dir file input
+            if (this.config.pickDir) {
+                _util2.default.removeDOM('#' + this.inputId + 'Dir');
+                this.config.body.appendChild(inputEleDir);
+            }
             this.reset();
             if (this.config.pick) {
                 this._pickHandle();
@@ -3247,9 +3252,10 @@ var _class = function () {
         key: 'reset',
         value: function reset() {
             var inputEle = document.querySelector('#' + this.inputId);
-            this._resetinput(inputEle);
+            inputEle && this._resetinput(inputEle);
+
             var inputEleDir = document.querySelector('#' + this.inputId + 'Dir');
-            this._resetinput(inputEleDir);
+            inputEleDir && this._resetinput(inputEleDir);
         }
     }, {
         key: '_pasteHandle',

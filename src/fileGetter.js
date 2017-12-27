@@ -74,10 +74,10 @@ export default class {
     }
 
     init () {
-        let input = `<input type="file" id="${this.inputId}" size="30" name="fileselect[]" style="position:absolute;top:-100000px;">`;
+        let input = `<input type="file" id="${this.inputId}" name="fileselect[]" style="position:absolute;top:-100000px;">`;
         let inputEle = Util.parseToDOM(input)[0];
 
-        let inputDir = `<input type="file" id="${this.inputId}Dir" webkitdirectory mozdirectory size="30" name="fileselect[]" style="position:absolute;top:-100000px;">`;
+        let inputDir = `<input type="file" id="${this.inputId}Dir" webkitdirectory mozdirectory name="fileselect[]" style="position:absolute;top:-100000px;">`;
         let inputEleDir = Util.parseToDOM(inputDir)[0];
 
         if (this.config.accept && this.config.accept.length > 0) {
@@ -92,10 +92,15 @@ export default class {
             inputEle.setAttribute('multiple','multiple');
         }
 
+        // normal file input
         Util.removeDOM(`#${this.inputId}`);
-        Util.removeDOM(`#${this.inputId}Dir`);
         this.config.body.appendChild(inputEle);
-        this.config.body.appendChild(inputEleDir);
+
+        // dir file input
+        if (this.config.pickDir) {
+            Util.removeDOM(`#${this.inputId}Dir`);
+            this.config.body.appendChild(inputEleDir);
+        }
         this.reset();
         if (this.config.pick) {
             this._pickHandle();
@@ -117,9 +122,10 @@ export default class {
 
     reset() {
         let inputEle = document.querySelector(`#${this.inputId}`);
-        this._resetinput(inputEle);
+        inputEle && this._resetinput(inputEle);
+
         let inputEleDir = document.querySelector(`#${this.inputId}Dir`);
-        this._resetinput(inputEleDir);
+        inputEleDir && this._resetinput(inputEleDir);
     }
 
     _pasteHandle() {
