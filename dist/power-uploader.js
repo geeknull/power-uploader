@@ -92,7 +92,7 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var store = __webpack_require__(32)('wks');
+var store = __webpack_require__(34)('wks');
 var uid = __webpack_require__(24);
 var Symbol = __webpack_require__(0).Symbol;
 var USE_SYMBOL = typeof Symbol == 'function';
@@ -207,7 +207,7 @@ module.exports = $export;
 
 var anObject = __webpack_require__(3);
 var IE8_DOM_DEFINE = __webpack_require__(46);
-var toPrimitive = __webpack_require__(35);
+var toPrimitive = __webpack_require__(37);
 var dP = Object.defineProperty;
 
 exports.f = __webpack_require__(4) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
@@ -275,7 +275,7 @@ module.exports = function (exec) {
 
 // to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = __webpack_require__(47);
-var defined = __webpack_require__(26);
+var defined = __webpack_require__(28);
 module.exports = function (it) {
   return IObject(defined(it));
 };
@@ -305,7 +305,7 @@ module.exports = {};
 
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys = __webpack_require__(51);
-var enumBugKeys = __webpack_require__(28);
+var enumBugKeys = __webpack_require__(30);
 
 module.exports = Object.keys || function keys(O) {
   return $keys(O, enumBugKeys);
@@ -463,6 +463,50 @@ module.exports = function (key) {
 
 exports.__esModule = true;
 
+var _promise = __webpack_require__(15);
+
+var _promise2 = _interopRequireDefault(_promise);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (fn) {
+  return function () {
+    var gen = fn.apply(this, arguments);
+    return new _promise2.default(function (resolve, reject) {
+      function step(key, arg) {
+        try {
+          var info = gen[key](arg);
+          var value = info.value;
+        } catch (error) {
+          reject(error);
+          return;
+        }
+
+        if (info.done) {
+          resolve(value);
+        } else {
+          return _promise2.default.resolve(value).then(function (value) {
+            step("next", value);
+          }, function (err) {
+            step("throw", err);
+          });
+        }
+      }
+
+      return step("next");
+    });
+  };
+};
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
 var _iterator = __webpack_require__(69);
 
 var _iterator2 = _interopRequireDefault(_iterator);
@@ -482,7 +526,14 @@ exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.d
 };
 
 /***/ }),
-/* 26 */
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(112);
+
+
+/***/ }),
+/* 28 */
 /***/ (function(module, exports) {
 
 // 7.2.1 RequireObjectCoercible(argument)
@@ -493,7 +544,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var isObject = __webpack_require__(9);
@@ -506,7 +557,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports) {
 
 // IE 8- don't enum bug keys
@@ -516,7 +567,7 @@ module.exports = (
 
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -541,17 +592,17 @@ module.exports.f = function (C) {
 
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports) {
 
 exports.f = Object.getOwnPropertySymbols;
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var shared = __webpack_require__(32)('keys');
+var shared = __webpack_require__(34)('keys');
 var uid = __webpack_require__(24);
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
@@ -559,7 +610,7 @@ module.exports = function (key) {
 
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
@@ -571,7 +622,7 @@ module.exports = function (key) {
 
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports) {
 
 // 7.1.4 ToInteger
@@ -583,18 +634,18 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.13 ToObject(argument)
-var defined = __webpack_require__(26);
+var defined = __webpack_require__(28);
 module.exports = function (it) {
   return Object(defined(it));
 };
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
@@ -612,13 +663,13 @@ module.exports = function (it, S) {
 
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
 var core = __webpack_require__(2);
 var LIBRARY = __webpack_require__(20);
-var wksExt = __webpack_require__(37);
+var wksExt = __webpack_require__(39);
 var defineProperty = __webpack_require__(6).f;
 module.exports = function (name) {
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
@@ -627,14 +678,14 @@ module.exports = function (name) {
 
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports.f = __webpack_require__(1);
 
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -656,7 +707,7 @@ var _promise = __webpack_require__(15);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _typeof2 = __webpack_require__(25);
+var _typeof2 = __webpack_require__(26);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -1151,7 +1202,7 @@ var EventEmitter = function () {
 exports.default = EventEmitter;
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1245,13 +1296,13 @@ if (typeof Element !== 'undefined' && !Element.prototype.matches) {
 }
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _typeof2 = __webpack_require__(25);
+var _typeof2 = __webpack_require__(26);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -1328,61 +1379,10 @@ module.exports = {
 };
 
 /***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = { "default": __webpack_require__(72), __esModule: true };
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.__esModule = true;
-
-var _promise = __webpack_require__(15);
-
-var _promise2 = _interopRequireDefault(_promise);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-exports.default = function (fn) {
-  return function () {
-    var gen = fn.apply(this, arguments);
-    return new _promise2.default(function (resolve, reject) {
-      function step(key, arg) {
-        try {
-          var info = gen[key](arg);
-          var value = info.value;
-        } catch (error) {
-          reject(error);
-          return;
-        }
-
-        if (info.done) {
-          resolve(value);
-        } else {
-          return _promise2.default.resolve(value).then(function (value) {
-            step("next", value);
-          }, function (err) {
-            step("throw", err);
-          });
-        }
-      }
-
-      return step("next");
-    });
-  };
-};
-
-/***/ }),
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(112);
-
+module.exports = { "default": __webpack_require__(72), __esModule: true };
 
 /***/ }),
 /* 44 */
@@ -1426,7 +1426,7 @@ module.exports = document && document.documentElement;
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = !__webpack_require__(4) && !__webpack_require__(10)(function () {
-  return Object.defineProperty(__webpack_require__(27)('div'), 'a', { get: function () { return 7; } }).a != 7;
+  return Object.defineProperty(__webpack_require__(29)('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
 
@@ -1526,15 +1526,15 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject = __webpack_require__(3);
 var dPs = __webpack_require__(91);
-var enumBugKeys = __webpack_require__(28);
-var IE_PROTO = __webpack_require__(31)('IE_PROTO');
+var enumBugKeys = __webpack_require__(30);
+var IE_PROTO = __webpack_require__(33)('IE_PROTO');
 var Empty = function () { /* empty */ };
 var PROTOTYPE = 'prototype';
 
 // Create object with fake `null` prototype: use iframe Object with cleared prototype
 var createDict = function () {
   // Thrash, waste and sodomy: IE GC bug
-  var iframe = __webpack_require__(27)('iframe');
+  var iframe = __webpack_require__(29)('iframe');
   var i = enumBugKeys.length;
   var lt = '<';
   var gt = '>';
@@ -1572,7 +1572,7 @@ module.exports = Object.create || function create(O, Properties) {
 
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 var $keys = __webpack_require__(51);
-var hiddenKeys = __webpack_require__(28).concat('length', 'prototype');
+var hiddenKeys = __webpack_require__(30).concat('length', 'prototype');
 
 exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
   return $keys(O, hiddenKeys);
@@ -1586,7 +1586,7 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
 var has = __webpack_require__(7);
 var toIObject = __webpack_require__(11);
 var arrayIndexOf = __webpack_require__(78)(false);
-var IE_PROTO = __webpack_require__(31)('IE_PROTO');
+var IE_PROTO = __webpack_require__(33)('IE_PROTO');
 
 module.exports = function (object, names) {
   var O = toIObject(object);
@@ -1621,7 +1621,7 @@ module.exports = function (exec) {
 
 var anObject = __webpack_require__(3);
 var isObject = __webpack_require__(9);
-var newPromiseCapability = __webpack_require__(29);
+var newPromiseCapability = __webpack_require__(31);
 
 module.exports = function (C, x) {
   anObject(C);
@@ -1662,7 +1662,7 @@ module.exports = function (O, D) {
 var ctx = __webpack_require__(19);
 var invoke = __webpack_require__(81);
 var html = __webpack_require__(45);
-var cel = __webpack_require__(27);
+var cel = __webpack_require__(29);
 var global = __webpack_require__(0);
 var process = global.process;
 var setTask = global.setImmediate;
@@ -1750,7 +1750,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.15 ToLength
-var toInteger = __webpack_require__(33);
+var toInteger = __webpack_require__(35);
 var min = Math.min;
 module.exports = function (it) {
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
@@ -1824,11 +1824,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.FileStatus = exports.Uploader = undefined;
 
-var _regenerator = __webpack_require__(43);
+var _regenerator = __webpack_require__(27);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _asyncToGenerator2 = __webpack_require__(42);
+var _asyncToGenerator2 = __webpack_require__(25);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
@@ -1844,11 +1844,11 @@ var _createClass2 = __webpack_require__(17);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _eventBus = __webpack_require__(38);
+var _eventBus = __webpack_require__(40);
 
 var _eventBus2 = _interopRequireDefault(_eventBus);
 
-var _eventDelegate = __webpack_require__(39);
+var _eventDelegate = __webpack_require__(41);
 
 var _eventDelegate2 = _interopRequireDefault(_eventDelegate);
 
@@ -2136,17 +2136,36 @@ var Uploader = exports.Uploader = function () {
     }, {
         key: 'pushFile',
         value: function pushFile(file) {
-            var id = 'initiative_' + new Date().getTime();
-            this.LOG.INFO({
-                lifecycle: 'initiative_pushFile',
-                fileId: id
-            });
-            file.groupId = id;
-            this.pushQueue(file, {
-                count: 1,
-                current: 1,
-                id: file.groupId
-            });
+            var _this = this;
+
+            if (Array.isArray(file)) {
+                var id = 'initiative_' + new Date().getTime();
+                this.LOG.INFO({
+                    lifecycle: 'initiative_pushFile_queue',
+                    fileId: id
+                });
+                var count = file.leading;
+                file.forEach(function (f, i) {
+                    f.groupId = id;
+                    _this.pushQueue(f, {
+                        count: count,
+                        current: i + 1,
+                        id: id
+                    });
+                });
+            } else {
+                var _id = 'initiative_' + new Date().getTime();
+                this.LOG.INFO({
+                    lifecycle: 'initiative_pushFile',
+                    fileId: _id
+                });
+                file.groupId = _id;
+                this.pushQueue(file, {
+                    count: 1,
+                    current: 1,
+                    id: file.groupId
+                });
+            }
         }
 
         // 分片队列 推进分片队列的时候还会开始上传
@@ -2301,13 +2320,14 @@ var Uploader = exports.Uploader = function () {
                                     fileStatus: _blobObj.file.statusText,
                                     fileName: _blobObj.file.name
                                 });
-                                _context4.next = 21;
+                                _context4.next = 22;
                                 break;
 
                             case 18:
                                 _context4.prev = 18;
                                 _context4.t0 = _context4['catch'](1);
 
+                                debugger;
                                 this.LOG.ERROR({
                                     lifecycle: 'runBlobQueue',
                                     fileStatus: _blobObj.file.statusText,
@@ -2315,7 +2335,7 @@ var Uploader = exports.Uploader = function () {
                                     info: _context4.t0
                                 });
 
-                            case 21:
+                            case 22:
                             case 'end':
                                 return _context4.stop();
                         }
@@ -2391,7 +2411,7 @@ var Uploader = exports.Uploader = function () {
         key: '_catchUpfileError',
         value: function () {
             var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(err, blobObj) {
-                var _this = this;
+                var _this2 = this;
 
                 return _regenerator2.default.wrap(function _callee6$(_context6) {
                     while (1) {
@@ -2434,7 +2454,7 @@ var Uploader = exports.Uploader = function () {
                                         item.transport && item.transport.abort();
                                         item.status = blobStatus.ERROR;
                                         item.loaded = 0;
-                                        _this.LOG.INFO({
+                                        _this2.LOG.INFO({
                                             lifecycle: '_catchUpfileError',
                                             msg: 'stop all shard',
                                             fileStatus: item.file.statusText,
@@ -2696,14 +2716,14 @@ var Uploader = exports.Uploader = function () {
     }, {
         key: 'reUpload',
         value: function reUpload(id) {
-            var _this2 = this;
+            var _this3 = this;
 
             // 重传的时候uploadStart事件不触发
             this.blobsQueue.forEach(function (item) {
                 if (item.file.id === id && item.status !== blobStatus.WAIT && item.status !== blobStatus.PENDING && item.status !== blobStatus.SUCCESS) {
                     item.status = blobStatus.WAIT;
                     item.file.statusText = _file.WUFile.Status.QUEUED;
-                    _this2.runBlobQueue();
+                    _this3.runBlobQueue();
                 }
             });
         }
@@ -2808,7 +2828,7 @@ var Uploader = exports.Uploader = function () {
     }, {
         key: 'fileProgressCalc',
         value: function fileProgressCalc() {
-            var _this3 = this;
+            var _this4 = this;
 
             this.eventEmitter.on('uploadBlobProgress', function (shardLoaded, shardTotal, blobObj) {
                 // 修复abort后还会抛出progress事件的问题
@@ -2820,7 +2840,7 @@ var Uploader = exports.Uploader = function () {
                 var currentLoaded = 0;
                 var fileTotalSize = blobObj.file.size;
 
-                var currentFileBlobArr = _this3.blobsQueue.filter(function (item) {
+                var currentFileBlobArr = _this4.blobsQueue.filter(function (item) {
                     return blobObj.file.id === item.file.id;
                 });
                 currentFileBlobArr.forEach(function (item) {
@@ -2829,7 +2849,7 @@ var Uploader = exports.Uploader = function () {
                 currentLoaded = currentLoaded > fileTotalSize ? fileTotalSize : currentLoaded; // 偶尔会超过整体的大小
                 blobObj.file.loaded = currentLoaded;
 
-                _this3.eventEmitter.emit('uploadProgress', {
+                _this4.eventEmitter.emit('uploadProgress', {
                     file: blobObj.file,
                     loaded: currentLoaded,
                     total: fileTotalSize,
@@ -2883,13 +2903,13 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _keys = __webpack_require__(41);
+var _keys = __webpack_require__(43);
 
 var _keys2 = _interopRequireDefault(_keys);
 
 exports.WUFile = WUFile;
 
-var _util = __webpack_require__(40);
+var _util = __webpack_require__(42);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3094,11 +3114,11 @@ var _promise = __webpack_require__(15);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _regenerator = __webpack_require__(43);
+var _regenerator = __webpack_require__(27);
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _asyncToGenerator2 = __webpack_require__(42);
+var _asyncToGenerator2 = __webpack_require__(25);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
@@ -3110,11 +3130,11 @@ var _createClass2 = __webpack_require__(17);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _eventDelegate = __webpack_require__(39);
+var _eventDelegate = __webpack_require__(41);
 
 var _eventDelegate2 = _interopRequireDefault(_eventDelegate);
 
-var _util = __webpack_require__(40);
+var _util = __webpack_require__(42);
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -3963,15 +3983,23 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Transport = undefined;
 
-var _keys = __webpack_require__(41);
+var _regenerator = __webpack_require__(27);
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _keys = __webpack_require__(43);
 
 var _keys2 = _interopRequireDefault(_keys);
+
+var _asyncToGenerator2 = __webpack_require__(25);
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 var _promise = __webpack_require__(15);
 
 var _promise2 = _interopRequireDefault(_promise);
 
-var _typeof2 = __webpack_require__(25);
+var _typeof2 = __webpack_require__(26);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
@@ -3987,7 +4015,7 @@ var _lodash = __webpack_require__(111);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _eventBus = __webpack_require__(38);
+var _eventBus = __webpack_require__(40);
 
 var _eventBus2 = _interopRequireDefault(_eventBus);
 
@@ -4054,59 +4082,93 @@ var Transport = exports.Transport = function () {
         value: function send() {
             var _this = this;
 
-            return new _promise2.default(function (res, rej) {
-                var xhr = new XMLHttpRequest();
-                _this.xhr = xhr;
-                var formData = new FormData();
-                xhr.upload.addEventListener('progress', function (e) {
-                    //TODO 这里total给的超过文件大小了
-                    _this.eventEmitter.emit('uploadBlobProgress', e.loaded, e.total, _this.blobObj);
-                }, false);
-                if (_this.config.timeout !== 0) {
-                    xhr.timeout = _this.config.timeout;
-                }
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status >= 200 && xhr.status <= 300) {
-                            _this.eventEmitter.emit('_uploadSuccess', _this._blob, xhr.responseText);
-                            _this.LOG.INFO({
-                                lifecycle: 'transport',
-                                httpCode: xhr.status,
-                                responseText: xhr.responseText,
-                                fileName: _this.blobObj.file.name
-                            });
-                            res(xhr.responseText);
-                        } else {
-                            _this.LOG.INFO({
-                                lifecycle: 'transport',
-                                httpCode: xhr.status,
-                                responseText: xhr.responseText,
-                                fileName: _this.blobObj.file.name
-                            });
-                            _this.eventEmitter.emit('_uploadError', xhr.statusText);
-                            rej(xhr.response);
+            return new _promise2.default(function () {
+                var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(res, rej) {
+                    var xhr, formData;
+                    return _regenerator2.default.wrap(function _callee$(_context) {
+                        while (1) {
+                            switch (_context.prev = _context.next) {
+                                case 0:
+                                    xhr = new XMLHttpRequest();
+
+                                    _this.xhr = xhr;
+                                    formData = new FormData();
+
+                                    xhr.upload.addEventListener('progress', function (e) {
+                                        //TODO 这里total给的超过文件大小了
+                                        _this.eventEmitter.emit('uploadBlobProgress', e.loaded, e.total, _this.blobObj);
+                                    }, false);
+                                    if (_this.config.timeout !== 0) {
+                                        xhr.timeout = _this.config.timeout;
+                                    }
+                                    xhr.onreadystatechange = function () {
+                                        if (xhr.readyState === 4) {
+                                            if (xhr.status >= 200 && xhr.status <= 300) {
+                                                _this.eventEmitter.emit('_uploadSuccess', _this._blob, xhr.responseText);
+                                                _this.LOG.INFO({
+                                                    lifecycle: 'transport',
+                                                    httpCode: xhr.status,
+                                                    responseText: xhr.responseText,
+                                                    fileName: _this.blobObj.file.name
+                                                });
+                                                res(xhr.responseText);
+                                            } else {
+                                                _this.LOG.INFO({
+                                                    lifecycle: 'transport',
+                                                    httpCode: xhr.status,
+                                                    responseText: xhr.responseText,
+                                                    fileName: _this.blobObj.file.name
+                                                });
+                                                _this.eventEmitter.emit('_uploadError', xhr.statusText);
+                                                rej(xhr.response);
+                                            }
+                                        }
+                                    };
+                                    xhr.ontimeout = function (event) {
+                                        _eventBus2.default.emit('timeout', event);
+                                    };
+
+                                    (0, _keys2.default)(_this.config.formData).forEach(function (key) {
+                                        formData.append(key, _this.config.formData[key]);
+                                    });
+
+                                    if (_this._blob instanceof Blob) {
+                                        _context.next = 12;
+                                        break;
+                                    }
+
+                                    _context.next = 11;
+                                    return _this._blob.toBlob();
+
+                                case 11:
+                                    _this._blob = _context.sent;
+
+                                case 12:
+
+                                    formData.append(_this.config.fileVal, _this._blob, _this.config.fileName);
+                                    xhr.open(_this.config.method, _this.config.server, true);
+
+                                    if (_this.config.withCredentials === true) {
+                                        xhr.withCredentials = true;
+                                    }
+
+                                    _this.config.headers && (0, _keys2.default)(_this.config.headers).forEach(function (key) {
+                                        xhr.setRequestHeader(key, _this.config.headers[key]);
+                                    });
+                                    xhr.send(formData);
+
+                                case 17:
+                                case 'end':
+                                    return _context.stop();
+                            }
                         }
-                    }
+                    }, _callee, _this);
+                }));
+
+                return function (_x2, _x3) {
+                    return _ref.apply(this, arguments);
                 };
-                xhr.ontimeout = function (event) {
-                    _eventBus2.default.emit('timeout', event);
-                };
-
-                (0, _keys2.default)(_this.config.formData).forEach(function (key) {
-                    formData.append(key, _this.config.formData[key]);
-                });
-                formData.append(_this.config.fileVal, _this._blob, _this.config.fileName);
-                xhr.open(_this.config.method, _this.config.server, true);
-
-                if (_this.config.withCredentials === true) {
-                    xhr.withCredentials = true;
-                }
-
-                _this.config.headers && (0, _keys2.default)(_this.config.headers).forEach(function (key) {
-                    xhr.setRequestHeader(key, _this.config.headers[key]);
-                });
-                xhr.send(formData);
-            });
+            }());
         }
     }]);
     return Transport;
@@ -4193,7 +4255,7 @@ module.exports = __webpack_require__(2).Symbol;
 
 __webpack_require__(59);
 __webpack_require__(60);
-module.exports = __webpack_require__(37).f('iterator');
+module.exports = __webpack_require__(39).f('iterator');
 
 
 /***/ }),
@@ -4249,7 +4311,7 @@ module.exports = function (IS_INCLUDES) {
 
 // all enumerable object keys, includes symbols
 var getKeys = __webpack_require__(14);
-var gOPS = __webpack_require__(30);
+var gOPS = __webpack_require__(32);
 var pIE = __webpack_require__(21);
 module.exports = function (it) {
   var result = getKeys(it);
@@ -4558,9 +4620,9 @@ module.exports = function () {
 
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys = __webpack_require__(14);
-var gOPS = __webpack_require__(30);
+var gOPS = __webpack_require__(32);
 var pIE = __webpack_require__(21);
-var toObject = __webpack_require__(34);
+var toObject = __webpack_require__(36);
 var IObject = __webpack_require__(47);
 var $assign = Object.assign;
 
@@ -4617,7 +4679,7 @@ module.exports = __webpack_require__(4) ? Object.defineProperties : function def
 var pIE = __webpack_require__(21);
 var createDesc = __webpack_require__(22);
 var toIObject = __webpack_require__(11);
-var toPrimitive = __webpack_require__(35);
+var toPrimitive = __webpack_require__(37);
 var has = __webpack_require__(7);
 var IE8_DOM_DEFINE = __webpack_require__(46);
 var gOPD = Object.getOwnPropertyDescriptor;
@@ -4663,8 +4725,8 @@ module.exports.f = function getOwnPropertyNames(it) {
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has = __webpack_require__(7);
-var toObject = __webpack_require__(34);
-var IE_PROTO = __webpack_require__(31)('IE_PROTO');
+var toObject = __webpack_require__(36);
+var IE_PROTO = __webpack_require__(33)('IE_PROTO');
 var ObjectProto = Object.prototype;
 
 module.exports = Object.getPrototypeOf || function (O) {
@@ -4730,8 +4792,8 @@ module.exports = function (KEY) {
 /* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(33);
-var defined = __webpack_require__(26);
+var toInteger = __webpack_require__(35);
+var defined = __webpack_require__(28);
 // true  -> String#at
 // false -> String#codePointAt
 module.exports = function (TO_STRING) {
@@ -4753,7 +4815,7 @@ module.exports = function (TO_STRING) {
 /* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(33);
+var toInteger = __webpack_require__(35);
 var max = Math.max;
 var min = Math.min;
 module.exports = function (index, length) {
@@ -4841,7 +4903,7 @@ $export($export.S + $export.F * !__webpack_require__(4), 'Object', { definePrope
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(34);
+var toObject = __webpack_require__(36);
 var $keys = __webpack_require__(14);
 
 __webpack_require__(95)('keys', function () {
@@ -4869,7 +4931,7 @@ var forOf = __webpack_require__(80);
 var speciesConstructor = __webpack_require__(55);
 var task = __webpack_require__(56).set;
 var microtask = __webpack_require__(89)();
-var newPromiseCapabilityModule = __webpack_require__(29);
+var newPromiseCapabilityModule = __webpack_require__(31);
 var perform = __webpack_require__(52);
 var promiseResolve = __webpack_require__(53);
 var PROMISE = 'Promise';
@@ -5145,18 +5207,18 @@ var $export = __webpack_require__(5);
 var redefine = __webpack_require__(54);
 var META = __webpack_require__(88).KEY;
 var $fails = __webpack_require__(10);
-var shared = __webpack_require__(32);
+var shared = __webpack_require__(34);
 var setToStringTag = __webpack_require__(23);
 var uid = __webpack_require__(24);
 var wks = __webpack_require__(1);
-var wksExt = __webpack_require__(37);
-var wksDefine = __webpack_require__(36);
+var wksExt = __webpack_require__(39);
+var wksDefine = __webpack_require__(38);
 var enumKeys = __webpack_require__(79);
 var isArray = __webpack_require__(83);
 var anObject = __webpack_require__(3);
 var isObject = __webpack_require__(9);
 var toIObject = __webpack_require__(11);
-var toPrimitive = __webpack_require__(35);
+var toPrimitive = __webpack_require__(37);
 var createDesc = __webpack_require__(22);
 var _create = __webpack_require__(49);
 var gOPNExt = __webpack_require__(93);
@@ -5287,7 +5349,7 @@ if (!USE_NATIVE) {
   $DP.f = $defineProperty;
   __webpack_require__(50).f = gOPNExt.f = $getOwnPropertyNames;
   __webpack_require__(21).f = $propertyIsEnumerable;
-  __webpack_require__(30).f = $getOwnPropertySymbols;
+  __webpack_require__(32).f = $getOwnPropertySymbols;
 
   if (DESCRIPTORS && !__webpack_require__(20)) {
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
@@ -5407,7 +5469,7 @@ $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
 
 // https://github.com/tc39/proposal-promise-try
 var $export = __webpack_require__(5);
-var newPromiseCapability = __webpack_require__(29);
+var newPromiseCapability = __webpack_require__(31);
 var perform = __webpack_require__(52);
 
 $export($export.S, 'Promise', { 'try': function (callbackfn) {
@@ -5422,14 +5484,14 @@ $export($export.S, 'Promise', { 'try': function (callbackfn) {
 /* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(36)('asyncIterator');
+__webpack_require__(38)('asyncIterator');
 
 
 /***/ }),
 /* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(36)('observable');
+__webpack_require__(38)('observable');
 
 
 /***/ }),

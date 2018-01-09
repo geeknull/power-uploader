@@ -163,17 +163,34 @@ export class Uploader {
 
     // 业务方自己传进来的文件
     pushFile (file) {
-        let id = 'initiative_' + new Date().getTime();
-        this.LOG.INFO({
-            lifecycle: 'initiative_pushFile',
-            fileId: id
-        });
-        file.groupId = id;
-        this.pushQueue(file, {
-            count: 1,
-            current: 1,
-            id: file.groupId
-        });
+        if (Array.isArray(file)) {
+            let id = 'initiative_' + new Date().getTime();
+            this.LOG.INFO({
+                lifecycle: 'initiative_pushFile_queue',
+                fileId: id
+            });
+            let count = file.leading;
+            file.forEach((f, i) => {
+                f.groupId = id;
+                this.pushQueue(f, {
+                    count: count,
+                    current: i+1,
+                    id: id
+                });
+            });
+        } else {
+            let id = 'initiative_' + new Date().getTime();
+            this.LOG.INFO({
+                lifecycle: 'initiative_pushFile',
+                fileId: id
+            });
+            file.groupId = id;
+            this.pushQueue(file, {
+                count: 1,
+                current: 1,
+                id: file.groupId
+            });
+        }
     }
 
     // 分片队列 推进分片队列的时候还会开始上传
@@ -259,6 +276,7 @@ export class Uploader {
                 fileName: _blobObj.file.name
             });
         } catch (err) {
+            debugger
             this.LOG.ERROR({
                 lifecycle: 'runBlobQueue',
                 fileStatus: _blobObj.file.statusText,

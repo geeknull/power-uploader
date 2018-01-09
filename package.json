@@ -1,7 +1,7 @@
 {
   "name": "power-uploader",
-  "version": "0.2.8",
-  "description": "## 引入方式",
+  "version": "0.3.0",
+  "description": "power-uploader is powerfull",
   "main": "./dist/power-uploader.js",
   "scripts": {
     "build": "webpack",

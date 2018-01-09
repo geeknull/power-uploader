@@ -52,7 +52,7 @@ export class Transport {
     }
 
     send () {
-        return new Promise((res, rej)=> {
+        return new Promise(async (res, rej)=> {
             let xhr = new XMLHttpRequest();
             this.xhr = xhr;
             let formData = new FormData();
@@ -93,6 +93,11 @@ export class Transport {
             Object.keys(this.config.formData).forEach((key)=>{
                 formData.append(key, this.config.formData[key]);
             });
+
+            if (!(this._blob instanceof Blob)) {
+                this._blob = await this._blob.toBlob(); // for Electron
+            }
+
             formData.append(this.config.fileVal, this._blob, this.config.fileName);
             xhr.open(this.config.method, this.config.server, true);
 
