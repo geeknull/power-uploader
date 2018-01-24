@@ -2268,11 +2268,16 @@ var Uploader = exports.Uploader = function () {
                                     return item.status === blobStatus.PENDING;
                                 }).length;
 
-                                if (!(currentUploadCount < this.config.sameTimeUploadCount)) {
-                                    _context4.next = 15;
+                                // 数量超过就不再处理
+
+                                if (!(currentUploadCount >= this.config.sameTimeUploadCount)) {
+                                    _context4.next = 5;
                                     break;
                                 }
 
+                                return _context4.abrupt('return', void 0);
+
+                            case 5:
                                 blobObj = this.blobsQueue.find(function (item) {
                                     return item.status === blobStatus.WAIT;
                                 });
@@ -2280,26 +2285,26 @@ var Uploader = exports.Uploader = function () {
                                 _blobObj = blobObj;
 
                                 if (blobObj) {
-                                    _context4.next = 8;
+                                    _context4.next = 9;
                                     break;
                                 }
 
                                 return _context4.abrupt('return', void 0);
 
-                            case 8:
+                            case 9:
                                 // 只有一个分片的时候
                                 blobObj.status = blobStatus.PENDING; // 由于是异步的关系 这个必须提前
 
                                 // 检测文件开始上传
-                                _context4.next = 11;
+                                _context4.next = 12;
                                 return this.checkFileUploadStart({
                                     file: blobObj.file, // 私有文件对象
                                     shardCount: blobObj.shard.shardCount, // 总分片数
                                     config: blobObj.config
                                 });
 
-                            case 11:
-                                _context4.next = 13;
+                            case 12:
+                                _context4.next = 14;
                                 return this.eventEmitter.emit('uploadBeforeSend', {
                                     file: blobObj.file, // 私有文件对象
                                     shard: blobObj.blob, // 文件blob
@@ -2308,13 +2313,12 @@ var Uploader = exports.Uploader = function () {
                                     config: blobObj.config
                                 });
 
-                            case 13:
+                            case 14:
 
                                 // 真正的上传
                                 blobObj.file.statusText = _file.WUFile.Status.PROGRESS;
                                 this.runBlobQueueHandler(blobObj);
 
-                            case 15:
                                 this.LOG.INFO({
                                     lifecycle: 'runBlobQueue',
                                     fileStatus: _blobObj.file.statusText,
@@ -2323,11 +2327,10 @@ var Uploader = exports.Uploader = function () {
                                 _context4.next = 22;
                                 break;
 
-                            case 18:
-                                _context4.prev = 18;
+                            case 19:
+                                _context4.prev = 19;
                                 _context4.t0 = _context4['catch'](1);
 
-                                debugger;
                                 this.LOG.ERROR({
                                     lifecycle: 'runBlobQueue',
                                     fileStatus: _blobObj.file.statusText,
@@ -2340,7 +2343,7 @@ var Uploader = exports.Uploader = function () {
                                 return _context4.stop();
                         }
                     }
-                }, _callee4, this, [[1, 18]]);
+                }, _callee4, this, [[1, 19]]);
             }));
 
             function runBlobQueue() {
@@ -2432,6 +2435,7 @@ var Uploader = exports.Uploader = function () {
                                 return _context6.abrupt('return', void 0);
 
                             case 3:
+
                                 this.LOG.INFO({
                                     lifecycle: '_catchUpfileError',
                                     fileStatus: blobObj.file.statusText,
@@ -2806,7 +2810,7 @@ var Uploader = exports.Uploader = function () {
                                     fileName: blobObj.file.name,
                                     err: _context9.t1
                                 });
-                                throw new Error(_context9.t1);
+                                throw _context9.t1;
 
                             case 31:
                             case 'end':
@@ -4120,7 +4124,7 @@ var Transport = exports.Transport = function () {
                                                     fileName: _this.blobObj.file.name
                                                 });
                                                 _this.eventEmitter.emit('_uploadError', xhr.statusText);
-                                                rej(xhr.response);
+                                                rej(xhr.response || 'initiative abort');
                                             }
                                         }
                                     };

@@ -82,7 +82,7 @@ export class Transport {
                             fileName: this.blobObj.file.name
                         });
                         this.eventEmitter.emit('_uploadError', xhr.statusText);
-                        rej(xhr.response);
+                        rej(xhr.response || 'initiative abort');
                     }
                 }
             };

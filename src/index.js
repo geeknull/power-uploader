@@ -217,9 +217,7 @@ export class Uploader {
             this.blobsQueue.push(blobObj);
 
             // 正在上传的文件个数
-            let pendingLen = this.blobsQueue.filter(item => {
-                return item.status === blobStatus.PENDING;
-            }).length;
+            let pendingLen = this.blobsQueue.filter(item => item.status === blobStatus.PENDING).length;
 
             if (pendingLen < this.config.sameTimeUploadCount) {
                 await this.runBlobQueue();
@@ -245,38 +243,41 @@ export class Uploader {
         try {
             let currentUploadCount = this.blobsQueue.filter(item => item.status === blobStatus.PENDING).length;
 
-            if ( currentUploadCount < this.config.sameTimeUploadCount ) {
-                let blobObj = this.blobsQueue.find(item => item.status === blobStatus.WAIT);
-                _blobObj = blobObj;
-                if ( !blobObj ) { return void 0; } // 只有一个分片的时候
-                blobObj.status = blobStatus.PENDING; // 由于是异步的关系 这个必须提前
-
-                // 检测文件开始上传
-                await this.checkFileUploadStart({
-                    file: blobObj.file, // 私有文件对象
-                    shardCount: blobObj.shard.shardCount, // 总分片数
-                    config: blobObj.config
-                });
-
-                await this.eventEmitter.emit('uploadBeforeSend', {
-                    file: blobObj.file, // 私有文件对象
-                    shard: blobObj.blob, // 文件blob
-                    shardCount: blobObj.shard.shardCount, // 总分片数
-                    currentShard: blobObj.shard.currentShard, // 当前片数
-                    config: blobObj.config
-                });
-
-                // 真正的上传
-                blobObj.file.statusText = WUFile.Status.PROGRESS;
-                this.runBlobQueueHandler(blobObj);
+            // 数量超过就不再处理
+            if (currentUploadCount >= this.config.sameTimeUploadCount) {
+                return void 0;
             }
+
+            let blobObj = this.blobsQueue.find(item => item.status === blobStatus.WAIT);
+            _blobObj = blobObj;
+            if ( !blobObj ) { return void 0; } // 只有一个分片的时候
+            blobObj.status = blobStatus.PENDING; // 由于是异步的关系 这个必须提前
+
+            // 检测文件开始上传
+            await this.checkFileUploadStart({
+                file: blobObj.file, // 私有文件对象
+                shardCount: blobObj.shard.shardCount, // 总分片数
+                config: blobObj.config
+            });
+
+            await this.eventEmitter.emit('uploadBeforeSend', {
+                file: blobObj.file, // 私有文件对象
+                shard: blobObj.blob, // 文件blob
+                shardCount: blobObj.shard.shardCount, // 总分片数
+                currentShard: blobObj.shard.currentShard, // 当前片数
+                config: blobObj.config
+            });
+
+            // 真正的上传
+            blobObj.file.statusText = WUFile.Status.PROGRESS;
+            this.runBlobQueueHandler(blobObj);
+
             this.LOG.INFO({
                 lifecycle: 'runBlobQueue',
                 fileStatus: _blobObj.file.statusText,
                 fileName: _blobObj.file.name
             });
         } catch (err) {
-            debugger
             this.LOG.ERROR({
                 lifecycle: 'runBlobQueue',
                 fileStatus: _blobObj.file.statusText,
@@ -313,6 +314,7 @@ export class Uploader {
             });
             return void 0;
         }
+
         this.LOG.INFO({
             lifecycle: '_catchUpfileError',
             fileStatus: blobObj.file.statusText,
@@ -541,7 +543,7 @@ export class Uploader {
                 fileName: blobObj.file.name,
                 err
             });
-            throw new Error(err);
+            throw err;
         }
     }
 
