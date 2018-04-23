@@ -63,31 +63,72 @@ export class Transport {
             if(this.config.timeout !== 0) {
                 xhr.timeout = this.config.timeout;
             }
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4) {
-                    if (xhr.status >= 200 && xhr.status <= 300) {
-                        this.eventEmitter.emit('_uploadSuccess', this._blob, xhr.responseText);
-                        this.LOG.INFO({
-                            lifecycle: 'transport',
-                            httpCode: xhr.status,
-                            responseText: xhr.responseText,
-                            fileName: this.blobObj.file.name
-                        });
-                        res(xhr.responseText);
-                    } else {
-                        this.LOG.INFO({
-                            lifecycle: 'transport',
-                            httpCode: xhr.status,
-                            responseText: xhr.responseText,
-                            fileName: this.blobObj.file.name
-                        });
-                        this.eventEmitter.emit('_uploadError', xhr.statusText);
-                        rej(xhr.response || 'initiative abort');
-                    }
-                }
+
+            let endFlag = false;
+
+            xhr.onabort = () => {
+                endFlag = true;
+                this.LOG.ERROR({
+                    lifecycle: 'transport',
+                    httpCode: xhr.status,
+                    responseText: xhr.responseText,
+                    fileName: this.blobObj.file.name,
+                    type: 'abort'
+                });
+                rej(`abort|${xhr.status}|${xhr.responseText}`);
+                this.eventEmitter.emit('abort', this.blobObj, event);
             };
-            xhr.ontimeout = function (event) {
-                eventEmitter.emit('timeout', event);
+            xhr.onerror = () => {
+                endFlag = true;
+                this.LOG.ERROR({
+                    lifecycle: 'transport',
+                    httpCode: xhr.status,
+                    responseText: xhr.responseText,
+                    fileName: this.blobObj.file.name,
+                    type: 'error'
+                });
+                rej(`error|${xhr.status}|${xhr.responseText}`);
+                this.eventEmitter.emit('error', this.blobObj, event);
+            };
+            xhr.ontimeout = (event) => {
+                endFlag = true;
+                this.LOG.ERROR({
+                    lifecycle: 'transport',
+                    httpCode: xhr.status,
+                    responseText: xhr.responseText,
+                    fileName: this.blobObj.file.name,
+                    type: 'timeout'
+                });
+                rej(`timeout|${xhr.status}|${xhr.responseText}`);
+                this.eventEmitter.emit('timeout', this.blobObj, event);
+            };
+            xhr.onreadystatechange = () => {
+                // next loop for wait other event handler
+                setTimeout(() => {
+                    if (endFlag === true) {return void 0;}
+
+                    if (xhr.readyState === 4) {
+                        if (xhr.status >= 200 && xhr.status <= 300) {
+                            this.eventEmitter.emit('_uploadSuccess', this._blob, xhr.responseText);
+                            this.LOG.INFO({
+                                lifecycle: 'transport',
+                                httpCode: xhr.status,
+                                responseText: xhr.responseText,
+                                fileName: this.blobObj.file.name
+                            });
+                            res(xhr.responseText);
+                        } else {
+                            this.LOG.ERROR({
+                                lifecycle: 'transport',
+                                httpCode: xhr.status,
+                                responseText: xhr.responseText,
+                                fileName: this.blobObj.file.name
+                            });
+                            this.eventEmitter.emit('_uploadError', xhr.statusText);
+                            rej(`other|${xhr.status}|${xhr.responseText}`);
+                        }
+                    }
+                }, 0);
             };
 
             Object.keys(this.config.formData).forEach((key)=>{

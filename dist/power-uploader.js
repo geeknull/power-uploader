@@ -4088,7 +4088,7 @@ var Transport = exports.Transport = function () {
 
             return new _promise2.default(function () {
                 var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(res, rej) {
-                    var xhr, formData;
+                    var xhr, formData, endFlag;
                     return _regenerator2.default.wrap(function _callee$(_context) {
                         while (1) {
                             switch (_context.prev = _context.next) {
@@ -4105,31 +4105,75 @@ var Transport = exports.Transport = function () {
                                     if (_this.config.timeout !== 0) {
                                         xhr.timeout = _this.config.timeout;
                                     }
-                                    xhr.onreadystatechange = function () {
-                                        if (xhr.readyState === 4) {
-                                            if (xhr.status >= 200 && xhr.status <= 300) {
-                                                _this.eventEmitter.emit('_uploadSuccess', _this._blob, xhr.responseText);
-                                                _this.LOG.INFO({
-                                                    lifecycle: 'transport',
-                                                    httpCode: xhr.status,
-                                                    responseText: xhr.responseText,
-                                                    fileName: _this.blobObj.file.name
-                                                });
-                                                res(xhr.responseText);
-                                            } else {
-                                                _this.LOG.INFO({
-                                                    lifecycle: 'transport',
-                                                    httpCode: xhr.status,
-                                                    responseText: xhr.responseText,
-                                                    fileName: _this.blobObj.file.name
-                                                });
-                                                _this.eventEmitter.emit('_uploadError', xhr.statusText);
-                                                rej(xhr.response || 'initiative abort');
-                                            }
-                                        }
+
+                                    endFlag = false;
+
+
+                                    xhr.onabort = function () {
+                                        endFlag = true;
+                                        _this.LOG.ERROR({
+                                            lifecycle: 'transport',
+                                            httpCode: xhr.status,
+                                            responseText: xhr.responseText,
+                                            fileName: _this.blobObj.file.name,
+                                            type: 'abort'
+                                        });
+                                        rej('abort|' + xhr.status + '|' + xhr.responseText);
+                                        _this.eventEmitter.emit('abort', _this.blobObj, event);
+                                    };
+                                    xhr.onerror = function () {
+                                        endFlag = true;
+                                        _this.LOG.ERROR({
+                                            lifecycle: 'transport',
+                                            httpCode: xhr.status,
+                                            responseText: xhr.responseText,
+                                            fileName: _this.blobObj.file.name,
+                                            type: 'error'
+                                        });
+                                        rej('error|' + xhr.status + '|' + xhr.responseText);
+                                        _this.eventEmitter.emit('error', _this.blobObj, event);
                                     };
                                     xhr.ontimeout = function (event) {
-                                        _eventBus2.default.emit('timeout', event);
+                                        endFlag = true;
+                                        _this.LOG.ERROR({
+                                            lifecycle: 'transport',
+                                            httpCode: xhr.status,
+                                            responseText: xhr.responseText,
+                                            fileName: _this.blobObj.file.name,
+                                            type: 'timeout'
+                                        });
+                                        rej('timeout|' + xhr.status + '|' + xhr.responseText);
+                                        _this.eventEmitter.emit('timeout', _this.blobObj, event);
+                                    };
+                                    xhr.onreadystatechange = function () {
+                                        // next loop for wait other event handler
+                                        setTimeout(function () {
+                                            if (endFlag === true) {
+                                                return void 0;
+                                            }
+
+                                            if (xhr.readyState === 4) {
+                                                if (xhr.status >= 200 && xhr.status <= 300) {
+                                                    _this.eventEmitter.emit('_uploadSuccess', _this._blob, xhr.responseText);
+                                                    _this.LOG.INFO({
+                                                        lifecycle: 'transport',
+                                                        httpCode: xhr.status,
+                                                        responseText: xhr.responseText,
+                                                        fileName: _this.blobObj.file.name
+                                                    });
+                                                    res(xhr.responseText);
+                                                } else {
+                                                    _this.LOG.ERROR({
+                                                        lifecycle: 'transport',
+                                                        httpCode: xhr.status,
+                                                        responseText: xhr.responseText,
+                                                        fileName: _this.blobObj.file.name
+                                                    });
+                                                    _this.eventEmitter.emit('_uploadError', xhr.statusText);
+                                                    rej('other|' + xhr.status + '|' + xhr.responseText);
+                                                }
+                                            }
+                                        }, 0);
                                     };
 
                                     (0, _keys2.default)(_this.config.formData).forEach(function (key) {
@@ -4137,17 +4181,17 @@ var Transport = exports.Transport = function () {
                                     });
 
                                     if (_this._blob instanceof Blob) {
-                                        _context.next = 12;
+                                        _context.next = 15;
                                         break;
                                     }
 
-                                    _context.next = 11;
+                                    _context.next = 14;
                                     return _this._blob.toBlob();
 
-                                case 11:
+                                case 14:
                                     _this._blob = _context.sent;
 
-                                case 12:
+                                case 15:
 
                                     formData.append(_this.config.fileVal, _this._blob, _this.config.fileName);
                                     xhr.open(_this.config.method, _this.config.server, true);
@@ -4161,7 +4205,7 @@ var Transport = exports.Transport = function () {
                                     });
                                     xhr.send(formData);
 
-                                case 17:
+                                case 20:
                                 case 'end':
                                     return _context.stop();
                             }
