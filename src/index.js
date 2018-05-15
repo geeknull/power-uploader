@@ -6,6 +6,11 @@ import {Transport} from './transport.js';
 import {WUFile} from './file.js';
 import FileGetter from './fileGetter.js';
 import createLog from './log.js';
+import Worker from './md5.worker.js';
+
+export let CONSTANTS = {
+    MD5_HAS: 'MD5_HAS'
+};
 
 let _config = {
     timeout: 0,
@@ -34,7 +39,9 @@ let _config = {
     setName: (id) => new Date().getTime() + id,
     log: (...args) => {console.log(...args);},
     logLevel: 1,
-    fileIdPrefix: 'WU_FILE_'
+    fileIdPrefix: 'WU_FILE_',
+    md5Calc: true,
+    md5LimitSize: 1024 * 1024 * 1,
 };
 
 // 分片状态
@@ -111,6 +118,24 @@ export class Uploader {
                 err
             });
         }
+    }
+
+    calcMd5 (file) {
+        return new Promise((resolve, reject) => {
+            let worker = new Worker('./md5.worker.js');
+            worker.postMessage(file);
+            worker.addEventListener('message', (message) => {
+                resolve(message.data);
+            });
+            worker.addEventListener('error', (err) => {
+                this.LOG.ERROR({
+                    lifecycle: 'calcMd5_worker',
+                    fileName: file.name,
+                    fileStatus: file.statusText,
+                    msg: 'md5 worker 错误'
+                });
+            });
+        });
     }
 
     // 对文件进行分片 哈哈哈
@@ -304,7 +329,8 @@ export class Uploader {
 
     // 错误处理
     async _catchUpfileError(err, blobObj) {
-        if ( err.message.indexOf('initiative interrupt') !== -1 ) {
+        let errText = (err.message ? err.message : err) || 'no error message';
+        if ( errText.indexOf('initiative interrupt') !== -1 ) {
             this.LOG.INFO({
                 lifecycle: '_catchUpfileError',
                 msg: 'initiative interrupt',
@@ -358,6 +384,15 @@ export class Uploader {
                 currentShard: blobObj.shard.currentShard
             });
         }
+
+        // uploadSuccess callback error catch
+        if (blobObj.status === blobStatus.SUCCESS) {
+            await this.eventEmitter.emit('uploadError', {
+                file: blobObj.file,
+                error: err
+            });
+            return void 0;
+        }
     }
 
     // 检测文件是否第一次开始上传分片
@@ -375,13 +410,32 @@ export class Uploader {
                 successCount++;
             }
         });
-        // 正在上传的只有一个文件 并且没有文件上传成功 注意次条件不应该触发多次 重传的策略再想
+        // 正在上传的只有一个文件 并且没有文件上传成功 注意此条件不应该触发多次 重传的策略再想
         if ( pendingCount === 1 && successCount === 0 ) {
             if ( file.statusText === WUFile.Status.QUEUED ) {
                 file.statusText = WUFile.Status.PROGRESS;
                 await this.eventEmitter.emit('uploadStart', {file: file, shardCount: shardCount, config: config}); // 导出wuFile对象
+                if (this.config.md5Calc && file.size > this.config.md5LimitSize) {
+                    this.calcMd5(file.source).then(async (value) => {
+                        file.md5 = value;
+                        // emit 的事件 处理完成后会回来，回来后一定是当前文件的
+                        let md5HandlerRes = await this.eventEmitter.emit('fileMd5Finished', {file: file, md5: value});
+                        if (md5HandlerRes.indexOf(CONSTANTS.MD5_HAS) !== -1) {
+                            this.interruptFile(file.id, 'initiative_finished');
+                            // file.statusText = FileStatus.COMPLETE;
+                            console.log(file.name, value, 'emit fileMd5Finished');
+                        }
+                    }).catch((err) => {
+                        this.LOG.ERROR({
+                            lifecycle: 'checkFileUploadStart',
+                            fileName: file.name,
+                            fileStatus: file.statusText,
+                            msg: 'md5 事件错误'
+                        });
+                    });
+                }
             } else {
-                this.LOG.INFO({
+                this.LOG.ERROR({
                     lifecycle: 'checkFileUploadStart',
                     fileName: file.name,
                     fileStatus: file.statusText,
@@ -460,7 +514,7 @@ export class Uploader {
         this.blobsQueue = this.blobsQueue.filter(blobObj => blobObj.file.id !== id);
     }
 
-    interruptFile(id) {
+    interruptFile(id, type = 'interrupted') {
         let fileObj = null;
         this.blobsQueue.forEach(item => {
             if ( item.file.id === id && item.status !== blobStatus.SUCCESS ) {
@@ -474,9 +528,8 @@ export class Uploader {
         });
 
         if ( fileObj ) {
-            this.eventEmitter.emit('interrupted', {
-                file: fileObj.file
-            });
+            // interrupted(中断) initiative_finished(主动完成 秒传用)
+            this.eventEmitter.emit(type, {file: fileObj.file});
         }
     }
 
@@ -590,3 +643,7 @@ export class Uploader {
 }
 
 export let FileStatus = WUFile.Status;
+
+Uploader.CONSTANTS = CONSTANTS;
+Uploader.FileStatus = FileStatus;
+export default Uploader;

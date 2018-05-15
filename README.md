@@ -32,7 +32,7 @@ let uploader = new Uploader({
     chunked: true,
     chunkSize: 20971520,
     multiple: true,
-    withCredentials: true
+    withCredentials: false
 });
 ```
 
@@ -206,14 +206,13 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
     ```javascript
     uploader.on('uploadBeforeSend', (obj)=> {
         console.log('uploadBeforeSend');
-        let { file, currentShard, shard, shardCount } = obj;
+        let { file, currentShard, shard, shardCount, config } = obj;
 
-        uploader.config.headers = {
-            'cfp': encode(JSON.stringify({
-                path: `/person/126222/测试/图片${new Date().getTime()}.jpg`
-            }))
+        config.headers = {
+            'name': file.name,
+            'path': '/person/img'
         };
-        uploader.config.server = 'http://api.neixin.cn/pan/ul/6/storage/create.json';
+        config.server = 'http://xxx.com/file/upload';
     });
     ```
 
@@ -234,6 +233,26 @@ file对象封装在事件回调函数中返回的参数对象里为`file`的`key
         this.setState({
             fileList: this.state.fileList.map(item => item.id === file.id ? file : item)
         });
+    });
+    ```
+
+- `fileMd5Finished`：上传进度回调。
+
+    `@return Object { file, md5 }`
+
+    **demo**
+
+    ```javascript
+    uploader.on('fileMd5Finished', async (obj) => {
+        let {file, md5} = obj;
+        let res = await api.md5Check(md5);
+        if (res.ok === true) {
+            file.url = res.url;
+            file.loaded = file.size;
+            file.statusText = FileStatus.COMPLETE;
+            render(file); // 渲染文件
+            return Uploader.CONSTANTS.MD5_HAS;
+        }
     });
     ```
 
