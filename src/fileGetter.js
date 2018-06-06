@@ -130,9 +130,14 @@ export default class {
 
     _pasteHandle() {
         if (this.config.paste) {
-            this.eventDelegate.on('paste', this.config.paste, (event) => {
-                let clipboardData = event.clipboardData;
+            this.eventDelegate.on('paste', this.config.paste, async (event) => {
 
+                let res = await this.eventEmitter.emit('onPaste', {event});
+                if (res.indexOf(false) !== -1) {
+                    return void 0;
+                }
+
+                let clipboardData = event.clipboardData;
                 if (!!clipboardData) {
                     let items = clipboardData.items;
                     for (let i = 0; i < items.length; ++i) {
@@ -152,6 +157,7 @@ export default class {
                         this.pushQueue(blob, groupInfo);
                     }
                 }
+
             });
         }
     }
