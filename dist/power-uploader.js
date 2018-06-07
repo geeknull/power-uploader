@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 116);
+/******/ 	return __webpack_require__(__webpack_require__.s = 117);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -90,6 +90,14 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports) {
+
+var core = module.exports = { version: '2.5.7' };
+if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var store = __webpack_require__(34)('wks');
@@ -103,14 +111,6 @@ var $exports = module.exports = function (name) {
 };
 
 $exports.store = store;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-var core = module.exports = { version: '2.5.3' };
-if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
 /***/ }),
@@ -139,9 +139,10 @@ module.exports = !__webpack_require__(10)(function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var core = __webpack_require__(2);
-var ctx = __webpack_require__(19);
+var core = __webpack_require__(1);
+var ctx = __webpack_require__(20);
 var hide = __webpack_require__(8);
+var has = __webpack_require__(7);
 var PROTOTYPE = 'prototype';
 
 var $export = function (type, name, source) {
@@ -159,7 +160,7 @@ var $export = function (type, name, source) {
   for (key in source) {
     // contains in native
     own = !IS_FORCED && target && target[key] !== undefined;
-    if (own && key in exports) continue;
+    if (own && has(exports, key)) continue;
     // export native or passed
     out = own ? target[key] : source[key];
     // prevent global pollution for namespaces
@@ -307,6 +308,13 @@ module.exports = {};
 
 /***/ }),
 /* 15 */
+/***/ (function(module, exports) {
+
+module.exports = true;
+
+
+/***/ }),
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
@@ -319,7 +327,7 @@ module.exports = Object.keys || function keys(O) {
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -334,7 +342,7 @@ exports.default = function (instance, Constructor) {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -367,7 +375,7 @@ exports.default = function () {
 }();
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = function (it) {
@@ -377,11 +385,11 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // optional / simple context binding
-var aFunction = __webpack_require__(18);
+var aFunction = __webpack_require__(19);
 module.exports = function (fn, that, length) {
   aFunction(fn);
   if (that === undefined) return fn;
@@ -400,13 +408,6 @@ module.exports = function (fn, that, length) {
     return fn.apply(that, arguments);
   };
 };
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-module.exports = true;
 
 
 /***/ }),
@@ -436,7 +437,7 @@ module.exports = function (bitmap, value) {
 
 var def = __webpack_require__(6).f;
 var has = __webpack_require__(7);
-var TAG = __webpack_require__(1)('toStringTag');
+var TAG = __webpack_require__(2)('toStringTag');
 
 module.exports = function (it, tag, stat) {
   if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });
@@ -529,7 +530,7 @@ exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.d
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(112);
+module.exports = __webpack_require__(113);
 
 
 /***/ }),
@@ -573,7 +574,7 @@ module.exports = (
 "use strict";
 
 // 25.4.1.5 NewPromiseCapability(C)
-var aFunction = __webpack_require__(18);
+var aFunction = __webpack_require__(19);
 
 function PromiseCapability(C) {
   var resolve, reject;
@@ -613,12 +614,18 @@ module.exports = function (key) {
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var core = __webpack_require__(1);
 var global = __webpack_require__(0);
 var SHARED = '__core-js_shared__';
 var store = global[SHARED] || (global[SHARED] = {});
-module.exports = function (key) {
-  return store[key] || (store[key] = {});
-};
+
+(module.exports = function (key, value) {
+  return store[key] || (store[key] = value !== undefined ? value : {});
+})('versions', []).push({
+  version: core.version,
+  mode: __webpack_require__(15) ? 'pure' : 'global',
+  copyright: '© 2018 Denis Pushkarev (zloirock.ru)'
+});
 
 
 /***/ }),
@@ -667,8 +674,8 @@ module.exports = function (it, S) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(0);
-var core = __webpack_require__(2);
-var LIBRARY = __webpack_require__(20);
+var core = __webpack_require__(1);
+var LIBRARY = __webpack_require__(15);
 var wksExt = __webpack_require__(39);
 var defineProperty = __webpack_require__(6).f;
 module.exports = function (name) {
@@ -681,7 +688,7 @@ module.exports = function (name) {
 /* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports.f = __webpack_require__(1);
+exports.f = __webpack_require__(2);
 
 
 /***/ }),
@@ -711,11 +718,11 @@ var _typeof2 = __webpack_require__(26);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
-var _classCallCheck2 = __webpack_require__(16);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(17);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
@@ -1390,7 +1397,7 @@ module.exports = { "default": __webpack_require__(72), __esModule: true };
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = __webpack_require__(13);
-var TAG = __webpack_require__(1)('toStringTag');
+var TAG = __webpack_require__(2)('toStringTag');
 // ES3 wrong here
 var ARG = cof(function () { return arguments; }()) == 'Arguments';
 
@@ -1448,16 +1455,15 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 
 "use strict";
 
-var LIBRARY = __webpack_require__(20);
+var LIBRARY = __webpack_require__(15);
 var $export = __webpack_require__(5);
 var redefine = __webpack_require__(54);
 var hide = __webpack_require__(8);
-var has = __webpack_require__(7);
 var Iterators = __webpack_require__(14);
 var $iterCreate = __webpack_require__(85);
 var setToStringTag = __webpack_require__(23);
 var getPrototypeOf = __webpack_require__(94);
-var ITERATOR = __webpack_require__(1)('iterator');
+var ITERATOR = __webpack_require__(2)('iterator');
 var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
 var FF_ITERATOR = '@@iterator';
 var KEYS = 'keys';
@@ -1479,7 +1485,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
   var VALUES_BUG = false;
   var proto = Base.prototype;
   var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];
-  var $default = (!BUGGY && $native) || getMethod(DEFAULT);
+  var $default = $native || getMethod(DEFAULT);
   var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;
   var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;
   var methods, key, IteratorPrototype;
@@ -1490,7 +1496,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
       // Set @@toStringTag to native iterators
       setToStringTag(IteratorPrototype, TAG, true);
       // fix for some old engines
-      if (!LIBRARY && !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
+      if (!LIBRARY && typeof IteratorPrototype[ITERATOR] != 'function') hide(IteratorPrototype, ITERATOR, returnThis);
     }
   }
   // fix Array#{values, @@iterator}.name in V8 / FF
@@ -1646,8 +1652,8 @@ module.exports = __webpack_require__(8);
 
 // 7.3.20 SpeciesConstructor(O, defaultConstructor)
 var anObject = __webpack_require__(3);
-var aFunction = __webpack_require__(18);
-var SPECIES = __webpack_require__(1)('species');
+var aFunction = __webpack_require__(19);
+var SPECIES = __webpack_require__(2)('species');
 module.exports = function (O, D) {
   var C = anObject(O).constructor;
   var S;
@@ -1659,7 +1665,7 @@ module.exports = function (O, D) {
 /* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx = __webpack_require__(19);
+var ctx = __webpack_require__(20);
 var invoke = __webpack_require__(81);
 var html = __webpack_require__(45);
 var cel = __webpack_require__(29);
@@ -1791,11 +1797,11 @@ __webpack_require__(48)(String, 'String', function (iterated) {
 /* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(101);
+__webpack_require__(102);
 var global = __webpack_require__(0);
 var hide = __webpack_require__(8);
 var Iterators = __webpack_require__(14);
-var TO_STRING_TAG = __webpack_require__(1)('toStringTag');
+var TO_STRING_TAG = __webpack_require__(2)('toStringTag');
 
 var DOMIterables = ('CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,' +
   'DOMTokenList,DataTransferItemList,FileList,HTMLAllCollection,HTMLCollection,HTMLFormElement,HTMLSelectElement,' +
@@ -1840,11 +1846,11 @@ var _assign = __webpack_require__(66);
 
 var _assign2 = _interopRequireDefault(_assign);
 
-var _classCallCheck2 = __webpack_require__(16);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(17);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
@@ -1868,7 +1874,7 @@ var _log = __webpack_require__(64);
 
 var _log2 = _interopRequireDefault(_log);
 
-var _md5Worker = __webpack_require__(114);
+var _md5Worker = __webpack_require__(115);
 
 var _md5Worker2 = _interopRequireDefault(_md5Worker);
 
@@ -3229,11 +3235,11 @@ var _asyncToGenerator2 = __webpack_require__(25);
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _classCallCheck2 = __webpack_require__(16);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(17);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
@@ -3390,29 +3396,82 @@ var _class = function () {
             var _this2 = this;
 
             if (this.config.paste) {
-                this.eventDelegate.on('paste', this.config.paste, function (event) {
-                    var clipboardData = event.clipboardData;
+                this.eventDelegate.on('paste', this.config.paste, function () {
+                    var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(event) {
+                        var res, clipboardData, items, i, item, blob, groupInfo;
+                        return _regenerator2.default.wrap(function _callee$(_context) {
+                            while (1) {
+                                switch (_context.prev = _context.next) {
+                                    case 0:
+                                        _context.next = 2;
+                                        return _this2.eventEmitter.emit('onPaste', { event: event });
 
-                    if (!!clipboardData) {
-                        var items = clipboardData.items;
-                        for (var i = 0; i < items.length; ++i) {
-                            var item = items[i];
-                            var blob = null;
-                            if (item.kind !== 'file' || !(blob = item.getAsFile())) {
-                                continue;
+                                    case 2:
+                                        res = _context.sent;
+
+                                        if (!(res.indexOf(false) !== -1)) {
+                                            _context.next = 5;
+                                            break;
+                                        }
+
+                                        return _context.abrupt('return', void 0);
+
+                                    case 5:
+                                        clipboardData = event.clipboardData;
+
+                                        if (!clipboardData) {
+                                            _context.next = 22;
+                                            break;
+                                        }
+
+                                        items = clipboardData.items;
+                                        i = 0;
+
+                                    case 9:
+                                        if (!(i < items.length)) {
+                                            _context.next = 22;
+                                            break;
+                                        }
+
+                                        item = items[i];
+                                        blob = null;
+
+                                        if (!(item.kind !== 'file' || !(blob = item.getAsFile()))) {
+                                            _context.next = 14;
+                                            break;
+                                        }
+
+                                        return _context.abrupt('continue', 19);
+
+                                    case 14:
+                                        event.stopPropagation();
+                                        event.preventDefault();
+                                        _this2._uploadGroupId++;
+                                        groupInfo = {
+                                            id: _this2._uploadGroupId,
+                                            count: 1,
+                                            current: 1
+                                        };
+
+                                        _this2.pushQueue(blob, groupInfo);
+
+                                    case 19:
+                                        ++i;
+                                        _context.next = 9;
+                                        break;
+
+                                    case 22:
+                                    case 'end':
+                                        return _context.stop();
+                                }
                             }
-                            event.stopPropagation();
-                            event.preventDefault();
-                            _this2._uploadGroupId++;
-                            var groupInfo = {
-                                id: _this2._uploadGroupId,
-                                count: 1,
-                                current: 1
-                            };
-                            _this2.pushQueue(blob, groupInfo);
-                        }
-                    }
-                });
+                        }, _callee, _this2);
+                    }));
+
+                    return function (_x2) {
+                        return _ref.apply(this, arguments);
+                    };
+                }());
             }
         }
     }, {
@@ -3430,36 +3489,6 @@ var _class = function () {
     }, {
         key: '_pickOnChange',
         value: function () {
-            var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(e) {
-                return _regenerator2.default.wrap(function _callee$(_context) {
-                    while (1) {
-                        switch (_context.prev = _context.next) {
-                            case 0:
-                                e.stopPropagation();
-                                e.preventDefault();
-                                _context.next = 4;
-                                return this.getFiles(e, 'pick');
-
-                            case 4:
-                                this.reset(); // 重复文件会不触发
-
-                            case 5:
-                            case 'end':
-                                return _context.stop();
-                        }
-                    }
-                }, _callee, this);
-            }));
-
-            function _pickOnChange(_x2) {
-                return _ref.apply(this, arguments);
-            }
-
-            return _pickOnChange;
-        }()
-    }, {
-        key: '_pickOnClick',
-        value: function () {
             var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(e) {
                 return _regenerator2.default.wrap(function _callee2$(_context2) {
                     while (1) {
@@ -3467,9 +3496,13 @@ var _class = function () {
                             case 0:
                                 e.stopPropagation();
                                 e.preventDefault();
-                                document.querySelector('#' + this.inputId).click();
+                                _context2.next = 4;
+                                return this.getFiles(e, 'pick');
 
-                            case 3:
+                            case 4:
+                                this.reset(); // 重复文件会不触发
+
+                            case 5:
                             case 'end':
                                 return _context2.stop();
                         }
@@ -3477,14 +3510,14 @@ var _class = function () {
                 }, _callee2, this);
             }));
 
-            function _pickOnClick(_x3) {
+            function _pickOnChange(_x3) {
                 return _ref2.apply(this, arguments);
             }
 
-            return _pickOnClick;
+            return _pickOnChange;
         }()
     }, {
-        key: '_pickDirOnChange',
+        key: '_pickOnClick',
         value: function () {
             var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(e) {
                 return _regenerator2.default.wrap(function _callee3$(_context3) {
@@ -3493,13 +3526,9 @@ var _class = function () {
                             case 0:
                                 e.stopPropagation();
                                 e.preventDefault();
-                                _context3.next = 4;
-                                return this.getFiles(e, 'pickDir');
+                                document.querySelector('#' + this.inputId).click();
 
-                            case 4:
-                                this.reset(); // 重复文件会不触发
-
-                            case 5:
+                            case 3:
                             case 'end':
                                 return _context3.stop();
                         }
@@ -3507,14 +3536,14 @@ var _class = function () {
                 }, _callee3, this);
             }));
 
-            function _pickDirOnChange(_x4) {
+            function _pickOnClick(_x4) {
                 return _ref3.apply(this, arguments);
             }
 
-            return _pickDirOnChange;
+            return _pickOnClick;
         }()
     }, {
-        key: '_pickDirOnClick',
+        key: '_pickDirOnChange',
         value: function () {
             var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(e) {
                 return _regenerator2.default.wrap(function _callee4$(_context4) {
@@ -3523,9 +3552,13 @@ var _class = function () {
                             case 0:
                                 e.stopPropagation();
                                 e.preventDefault();
-                                document.querySelector('#' + this.inputId + 'Dir').click();
+                                _context4.next = 4;
+                                return this.getFiles(e, 'pickDir');
 
-                            case 3:
+                            case 4:
+                                this.reset(); // 重复文件会不触发
+
+                            case 5:
                             case 'end':
                                 return _context4.stop();
                         }
@@ -3533,8 +3566,34 @@ var _class = function () {
                 }, _callee4, this);
             }));
 
-            function _pickDirOnClick(_x5) {
+            function _pickDirOnChange(_x5) {
                 return _ref4.apply(this, arguments);
+            }
+
+            return _pickDirOnChange;
+        }()
+    }, {
+        key: '_pickDirOnClick',
+        value: function () {
+            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(e) {
+                return _regenerator2.default.wrap(function _callee5$(_context5) {
+                    while (1) {
+                        switch (_context5.prev = _context5.next) {
+                            case 0:
+                                e.stopPropagation();
+                                e.preventDefault();
+                                document.querySelector('#' + this.inputId + 'Dir').click();
+
+                            case 3:
+                            case 'end':
+                                return _context5.stop();
+                        }
+                    }
+                }, _callee5, this);
+            }));
+
+            function _pickDirOnClick(_x6) {
+                return _ref5.apply(this, arguments);
             }
 
             return _pickDirOnClick;
@@ -3552,24 +3611,24 @@ var _class = function () {
     }, {
         key: '_dndHandleDragenter',
         value: function () {
-            var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(e) {
-                return _regenerator2.default.wrap(function _callee5$(_context5) {
+            var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(e) {
+                return _regenerator2.default.wrap(function _callee6$(_context6) {
                     while (1) {
-                        switch (_context5.prev = _context5.next) {
+                        switch (_context6.prev = _context6.next) {
                             case 0:
                                 e.stopPropagation();
                                 e.preventDefault();
 
                             case 2:
                             case 'end':
-                                return _context5.stop();
+                                return _context6.stop();
                         }
                     }
-                }, _callee5, this);
+                }, _callee6, this);
             }));
 
-            function _dndHandleDragenter(_x6) {
-                return _ref5.apply(this, arguments);
+            function _dndHandleDragenter(_x7) {
+                return _ref6.apply(this, arguments);
             }
 
             return _dndHandleDragenter;
@@ -3577,10 +3636,10 @@ var _class = function () {
     }, {
         key: '_dndHandleDragover',
         value: function () {
-            var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(e) {
-                return _regenerator2.default.wrap(function _callee6$(_context6) {
+            var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(e) {
+                return _regenerator2.default.wrap(function _callee7$(_context7) {
                     while (1) {
-                        switch (_context6.prev = _context6.next) {
+                        switch (_context7.prev = _context7.next) {
                             case 0:
                                 e.dataTransfer.dropEffect = 'copy'; // 兼容圈点APP
                                 e.stopPropagation();
@@ -3589,46 +3648,20 @@ var _class = function () {
 
                             case 4:
                             case 'end':
-                                return _context6.stop();
-                        }
-                    }
-                }, _callee6, this);
-            }));
-
-            function _dndHandleDragover(_x7) {
-                return _ref6.apply(this, arguments);
-            }
-
-            return _dndHandleDragover;
-        }()
-    }, {
-        key: '_dndHandleDragleave',
-        value: function () {
-            var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(e) {
-                return _regenerator2.default.wrap(function _callee7$(_context7) {
-                    while (1) {
-                        switch (_context7.prev = _context7.next) {
-                            case 0:
-                                e.stopPropagation();
-                                e.preventDefault();
-                                this.eventEmitter.emit('dragleave');
-
-                            case 3:
-                            case 'end':
                                 return _context7.stop();
                         }
                     }
                 }, _callee7, this);
             }));
 
-            function _dndHandleDragleave(_x8) {
+            function _dndHandleDragover(_x8) {
                 return _ref7.apply(this, arguments);
             }
 
-            return _dndHandleDragleave;
+            return _dndHandleDragover;
         }()
     }, {
-        key: '_dndHandleDrop',
+        key: '_dndHandleDragleave',
         value: function () {
             var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(e) {
                 return _regenerator2.default.wrap(function _callee8$(_context8) {
@@ -3637,10 +3670,9 @@ var _class = function () {
                             case 0:
                                 e.stopPropagation();
                                 e.preventDefault();
-                                _context8.next = 4;
-                                return this.getFiles(e, 'drop');
+                                this.eventEmitter.emit('dragleave');
 
-                            case 4:
+                            case 3:
                             case 'end':
                                 return _context8.stop();
                         }
@@ -3648,8 +3680,35 @@ var _class = function () {
                 }, _callee8, this);
             }));
 
-            function _dndHandleDrop(_x9) {
+            function _dndHandleDragleave(_x9) {
                 return _ref8.apply(this, arguments);
+            }
+
+            return _dndHandleDragleave;
+        }()
+    }, {
+        key: '_dndHandleDrop',
+        value: function () {
+            var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(e) {
+                return _regenerator2.default.wrap(function _callee9$(_context9) {
+                    while (1) {
+                        switch (_context9.prev = _context9.next) {
+                            case 0:
+                                e.stopPropagation();
+                                e.preventDefault();
+                                _context9.next = 4;
+                                return this.getFiles(e, 'drop');
+
+                            case 4:
+                            case 'end':
+                                return _context9.stop();
+                        }
+                    }
+                }, _callee9, this);
+            }));
+
+            function _dndHandleDrop(_x10) {
+                return _ref9.apply(this, arguments);
             }
 
             return _dndHandleDrop;
@@ -3661,14 +3720,14 @@ var _class = function () {
     }, {
         key: 'getFiles',
         value: function () {
-            var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(e, actionType) {
+            var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(e, actionType) {
                 var _this3 = this;
 
                 var tmpFileArr, uploadGroupId, files, items, filesArr, itemsArr, entryArr, res, pathReg, someFileName, dirName, entry, _res, i, len, file, item, _entry2;
 
-                return _regenerator2.default.wrap(function _callee10$(_context10) {
+                return _regenerator2.default.wrap(function _callee11$(_context11) {
                     while (1) {
-                        switch (_context10.prev = _context10.next) {
+                        switch (_context11.prev = _context11.next) {
                             case 0:
                                 tmpFileArr = [];
 
@@ -3683,31 +3742,31 @@ var _class = function () {
                                 entryArr = itemsArr.map(function (item) {
                                     return item.getAsEntry ? item.getAsEntry() : item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
                                 });
-                                _context10.next = 10;
+                                _context11.next = 10;
                                 return this.eventEmitter.emit('beforeFilesSourceQueued', { filesSource: filesArr, actionType: actionType, uploadGroupId: uploadGroupId });
 
                             case 10:
-                                res = _context10.sent;
+                                res = _context11.sent;
 
                                 if (!(res.indexOf(false) !== -1)) {
-                                    _context10.next = 13;
+                                    _context11.next = 13;
                                     break;
                                 }
 
-                                return _context10.abrupt('return', void 0);
+                                return _context11.abrupt('return', void 0);
 
                             case 13:
                                 if (!(actionType === 'pickDir')) {
-                                    _context10.next = 30;
+                                    _context11.next = 30;
                                     break;
                                 }
 
                                 if (!(filesArr.length === 0)) {
-                                    _context10.next = 16;
+                                    _context11.next = 16;
                                     break;
                                 }
 
-                                return _context10.abrupt('return', void 0);
+                                return _context11.abrupt('return', void 0);
 
                             case 16:
                                 tmpFileArr = filesArr.map(function (item) {
@@ -3725,21 +3784,21 @@ var _class = function () {
                                 entry.path = entry.fullPath = '/' + dirName;
                                 entry.uploadGroupId = uploadGroupId;
 
-                                _context10.next = 25;
+                                _context11.next = 25;
                                 return this.eventEmitter.emit('selectDir', { entry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                             case 25:
-                                _res = _context10.sent;
+                                _res = _context11.sent;
 
                                 if (!(_res.indexOf(false) !== -1)) {
-                                    _context10.next = 28;
+                                    _context11.next = 28;
                                     break;
                                 }
 
-                                return _context10.abrupt('return', void 0);
+                                return _context11.abrupt('return', void 0);
 
                             case 28:
-                                _context10.next = 44;
+                                _context11.next = 44;
                                 break;
 
                             case 30:
@@ -3747,7 +3806,7 @@ var _class = function () {
 
                             case 31:
                                 if (!(i < len)) {
-                                    _context10.next = 44;
+                                    _context11.next = 44;
                                     break;
                                 }
 
@@ -3756,15 +3815,15 @@ var _class = function () {
                                 _entry2 = entryArr[i];
 
                                 if (!(_entry2 && _entry2.isDirectory)) {
-                                    _context10.next = 39;
+                                    _context11.next = 39;
                                     break;
                                 }
 
-                                _context10.next = 38;
+                                _context11.next = 38;
                                 return this.folderRead({ entry: _entry2, tmpFileArr: tmpFileArr, uploadGroupId: uploadGroupId, actionType: actionType });
 
                             case 38:
-                                return _context10.abrupt('continue', 41);
+                                return _context11.abrupt('continue', 41);
 
                             case 39:
 
@@ -3775,7 +3834,7 @@ var _class = function () {
 
                             case 41:
                                 i++;
-                                _context10.next = 31;
+                                _context11.next = 31;
                                 break;
 
                             case 44:
@@ -3786,11 +3845,11 @@ var _class = function () {
                                 }
 
                                 tmpFileArr.forEach(function () {
-                                    var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(item, index, array) {
+                                    var _ref11 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(item, index, array) {
                                         var count, current, groupInfo;
-                                        return _regenerator2.default.wrap(function _callee9$(_context9) {
+                                        return _regenerator2.default.wrap(function _callee10$(_context10) {
                                             while (1) {
-                                                switch (_context9.prev = _context9.next) {
+                                                switch (_context10.prev = _context10.next) {
                                                     case 0:
                                                         count = array.length;
                                                         current = index + 1;
@@ -3798,34 +3857,34 @@ var _class = function () {
                                                             count: count, current: current,
                                                             id: uploadGroupId
                                                         };
-                                                        _context9.next = 5;
+                                                        _context10.next = 5;
                                                         return _this3.pushQueue(item, groupInfo);
 
                                                     case 5:
                                                     case 'end':
-                                                        return _context9.stop();
+                                                        return _context10.stop();
                                                 }
                                             }
-                                        }, _callee9, _this3);
+                                        }, _callee10, _this3);
                                     }));
 
-                                    return function (_x12, _x13, _x14) {
-                                        return _ref10.apply(this, arguments);
+                                    return function (_x13, _x14, _x15) {
+                                        return _ref11.apply(this, arguments);
                                     };
                                 }());
-                                _context10.next = 48;
+                                _context11.next = 48;
                                 return this.eventEmitter.emit('filesSourceQueued', { filesSource: tmpFileArr, uploadGroupId: uploadGroupId, actionType: actionType });
 
                             case 48:
                             case 'end':
-                                return _context10.stop();
+                                return _context11.stop();
                         }
                     }
-                }, _callee10, this);
+                }, _callee11, this);
             }));
 
-            function getFiles(_x10, _x11) {
-                return _ref9.apply(this, arguments);
+            function getFiles(_x11, _x12) {
+                return _ref10.apply(this, arguments);
             }
 
             return getFiles;
@@ -3836,61 +3895,61 @@ var _class = function () {
     }, {
         key: 'folderRead',
         value: function () {
-            var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(_ref11) {
+            var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee13(_ref12) {
                 var _this4 = this;
 
-                var entry = _ref11.entry,
-                    tmpFileArr = _ref11.tmpFileArr,
-                    uploadGroupId = _ref11.uploadGroupId,
-                    actionType = _ref11.actionType;
+                var entry = _ref12.entry,
+                    tmpFileArr = _ref12.tmpFileArr,
+                    uploadGroupId = _ref12.uploadGroupId,
+                    actionType = _ref12.actionType;
                 var eventResFlagArr;
-                return _regenerator2.default.wrap(function _callee12$(_context13) {
+                return _regenerator2.default.wrap(function _callee13$(_context14) {
                     while (1) {
-                        switch (_context13.prev = _context13.next) {
+                        switch (_context14.prev = _context14.next) {
                             case 0:
                                 // custom field
                                 entry.path = entry.fullPath;
                                 entry.uploadGroupId = uploadGroupId; // old selectFileTransactionId
 
-                                _context13.next = 4;
+                                _context14.next = 4;
                                 return this.eventEmitter.emit('selectDir', { entry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                             case 4:
-                                eventResFlagArr = _context13.sent;
+                                eventResFlagArr = _context14.sent;
 
                                 if (!(eventResFlagArr.indexOf(false) !== -1)) {
-                                    _context13.next = 7;
+                                    _context14.next = 7;
                                     break;
                                 }
 
-                                return _context13.abrupt('return', void 0);
+                                return _context14.abrupt('return', void 0);
 
                             case 7:
-                                _context13.next = 9;
+                                _context14.next = 9;
                                 return new _promise2.default(function (resolve) {
                                     entry.createReader().readEntries(function () {
-                                        var _ref13 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee11(entries) {
+                                        var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(entries) {
                                             var _loop, i;
 
-                                            return _regenerator2.default.wrap(function _callee11$(_context12) {
+                                            return _regenerator2.default.wrap(function _callee12$(_context13) {
                                                 while (1) {
-                                                    switch (_context12.prev = _context12.next) {
+                                                    switch (_context13.prev = _context13.next) {
                                                         case 0:
                                                             _loop = /*#__PURE__*/_regenerator2.default.mark(function _loop(i) {
                                                                 var _entry, file;
 
-                                                                return _regenerator2.default.wrap(function _loop$(_context11) {
+                                                                return _regenerator2.default.wrap(function _loop$(_context12) {
                                                                     while (1) {
-                                                                        switch (_context11.prev = _context11.next) {
+                                                                        switch (_context12.prev = _context12.next) {
                                                                             case 0:
                                                                                 _entry = entries[i];
 
                                                                                 if (!_entry.isFile) {
-                                                                                    _context11.next = 12;
+                                                                                    _context12.next = 12;
                                                                                     break;
                                                                                 }
 
-                                                                                _context11.next = 4;
+                                                                                _context12.next = 4;
                                                                                 return new _promise2.default(function (r) {
                                                                                     _entry.file(function (file) {
                                                                                         return r(Object.defineProperty(file, 'path', { value: _entry.fullPath }));
@@ -3898,39 +3957,39 @@ var _class = function () {
                                                                                 });
 
                                                                             case 4:
-                                                                                file = _context11.sent;
-                                                                                _context11.next = 7;
+                                                                                file = _context12.sent;
+                                                                                _context12.next = 7;
                                                                                 return _this4.eventEmitter.emit('beforeChildFileQueued', { fileSource: file, parentEntry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 7:
                                                                                 tmpFileArr.push(file);
-                                                                                _context11.next = 10;
+                                                                                _context12.next = 10;
                                                                                 return _this4.eventEmitter.emit('childFileQueued', { fileSource: file, parentEntry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 10:
-                                                                                _context11.next = 19;
+                                                                                _context12.next = 19;
                                                                                 break;
 
                                                                             case 12:
                                                                                 if (!_entry.isDirectory) {
-                                                                                    _context11.next = 19;
+                                                                                    _context12.next = 19;
                                                                                     break;
                                                                                 }
 
-                                                                                _context11.next = 15;
+                                                                                _context12.next = 15;
                                                                                 return _this4.eventEmitter.emit('beforeChildDirQueued', { currentEntry: _entry, parentEntry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 15:
-                                                                                _context11.next = 17;
+                                                                                _context12.next = 17;
                                                                                 return _this4.folderRead({ entry: _entry, tmpFileArr: tmpFileArr, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 17:
-                                                                                _context11.next = 19;
+                                                                                _context12.next = 19;
                                                                                 return _this4.eventEmitter.emit('childDirQueued', { currentEntry: _entry, parentEntry: entry, uploadGroupId: uploadGroupId, actionType: actionType });
 
                                                                             case 19:
                                                                             case 'end':
-                                                                                return _context11.stop();
+                                                                                return _context12.stop();
                                                                         }
                                                                     }
                                                                 }, _loop, _this4);
@@ -3939,15 +3998,15 @@ var _class = function () {
 
                                                         case 2:
                                                             if (!(i < entries.length)) {
-                                                                _context12.next = 7;
+                                                                _context13.next = 7;
                                                                 break;
                                                             }
 
-                                                            return _context12.delegateYield(_loop(i), 't0', 4);
+                                                            return _context13.delegateYield(_loop(i), 't0', 4);
 
                                                         case 4:
                                                             i++;
-                                                            _context12.next = 2;
+                                                            _context13.next = 2;
                                                             break;
 
                                                         case 7:
@@ -3955,28 +4014,28 @@ var _class = function () {
 
                                                         case 8:
                                                         case 'end':
-                                                            return _context12.stop();
+                                                            return _context13.stop();
                                                     }
                                                 }
-                                            }, _callee11, _this4);
+                                            }, _callee12, _this4);
                                         }));
 
-                                        return function (_x16) {
-                                            return _ref13.apply(this, arguments);
+                                        return function (_x17) {
+                                            return _ref14.apply(this, arguments);
                                         };
                                     }());
                                 });
 
                             case 9:
                             case 'end':
-                                return _context13.stop();
+                                return _context14.stop();
                         }
                     }
-                }, _callee12, this);
+                }, _callee13, this);
             }));
 
-            function folderRead(_x15) {
-                return _ref12.apply(this, arguments);
+            function folderRead(_x16) {
+                return _ref13.apply(this, arguments);
             }
 
             return folderRead;
@@ -4110,15 +4169,15 @@ var _typeof2 = __webpack_require__(26);
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
-var _classCallCheck2 = __webpack_require__(16);
+var _classCallCheck2 = __webpack_require__(17);
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__(17);
+var _createClass2 = __webpack_require__(18);
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _lodash = __webpack_require__(111);
+var _lodash = __webpack_require__(112);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
@@ -4353,16 +4412,16 @@ module.exports = { "default": __webpack_require__(75), __esModule: true };
 /* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(102);
-module.exports = __webpack_require__(2).Object.assign;
+__webpack_require__(103);
+module.exports = __webpack_require__(1).Object.assign;
 
 
 /***/ }),
 /* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(103);
-var $Object = __webpack_require__(2).Object;
+__webpack_require__(104);
+var $Object = __webpack_require__(1).Object;
 module.exports = function defineProperty(it, key, desc) {
   return $Object.defineProperty(it, key, desc);
 };
@@ -4372,8 +4431,8 @@ module.exports = function defineProperty(it, key, desc) {
 /* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(104);
-module.exports = __webpack_require__(2).Object.keys;
+__webpack_require__(105);
+module.exports = __webpack_require__(1).Object.keys;
 
 
 /***/ }),
@@ -4383,21 +4442,21 @@ module.exports = __webpack_require__(2).Object.keys;
 __webpack_require__(58);
 __webpack_require__(59);
 __webpack_require__(60);
-__webpack_require__(105);
-__webpack_require__(107);
+__webpack_require__(106);
 __webpack_require__(108);
-module.exports = __webpack_require__(2).Promise;
+__webpack_require__(109);
+module.exports = __webpack_require__(1).Promise;
 
 
 /***/ }),
 /* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(106);
+__webpack_require__(107);
 __webpack_require__(58);
-__webpack_require__(109);
 __webpack_require__(110);
-module.exports = __webpack_require__(2).Symbol;
+__webpack_require__(111);
+module.exports = __webpack_require__(1).Symbol;
 
 
 /***/ }),
@@ -4461,7 +4520,7 @@ module.exports = function (IS_INCLUDES) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // all enumerable object keys, includes symbols
-var getKeys = __webpack_require__(15);
+var getKeys = __webpack_require__(16);
 var gOPS = __webpack_require__(32);
 var pIE = __webpack_require__(21);
 module.exports = function (it) {
@@ -4481,12 +4540,12 @@ module.exports = function (it) {
 /* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ctx = __webpack_require__(19);
+var ctx = __webpack_require__(20);
 var call = __webpack_require__(84);
 var isArrayIter = __webpack_require__(82);
 var anObject = __webpack_require__(3);
 var toLength = __webpack_require__(57);
-var getIterFn = __webpack_require__(100);
+var getIterFn = __webpack_require__(101);
 var BREAK = {};
 var RETURN = {};
 var exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {
@@ -4536,7 +4595,7 @@ module.exports = function (fn, args, that) {
 
 // check on default Array iterator
 var Iterators = __webpack_require__(14);
-var ITERATOR = __webpack_require__(1)('iterator');
+var ITERATOR = __webpack_require__(2)('iterator');
 var ArrayProto = Array.prototype;
 
 module.exports = function (it) {
@@ -4585,7 +4644,7 @@ var setToStringTag = __webpack_require__(23);
 var IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-__webpack_require__(8)(IteratorPrototype, __webpack_require__(1)('iterator'), function () { return this; });
+__webpack_require__(8)(IteratorPrototype, __webpack_require__(2)('iterator'), function () { return this; });
 
 module.exports = function (Constructor, NAME, next) {
   Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
@@ -4597,7 +4656,7 @@ module.exports = function (Constructor, NAME, next) {
 /* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ITERATOR = __webpack_require__(1)('iterator');
+var ITERATOR = __webpack_require__(2)('iterator');
 var SAFE_CLOSING = false;
 
 try {
@@ -4735,7 +4794,8 @@ module.exports = function () {
     };
   // environments with maybe non-completely correct, but existent Promise
   } else if (Promise && Promise.resolve) {
-    var promise = Promise.resolve();
+    // Promise.resolve without an argument throws an error in LG WebOS 2
+    var promise = Promise.resolve(undefined);
     notify = function () {
       promise.then(flush);
     };
@@ -4770,7 +4830,7 @@ module.exports = function () {
 "use strict";
 
 // 19.1.2.1 Object.assign(target, source, ...)
-var getKeys = __webpack_require__(15);
+var getKeys = __webpack_require__(16);
 var gOPS = __webpack_require__(32);
 var pIE = __webpack_require__(21);
 var toObject = __webpack_require__(36);
@@ -4810,7 +4870,7 @@ module.exports = !$assign || __webpack_require__(10)(function () {
 
 var dP = __webpack_require__(6);
 var anObject = __webpack_require__(3);
-var getKeys = __webpack_require__(15);
+var getKeys = __webpack_require__(16);
 
 module.exports = __webpack_require__(4) ? Object.defineProperties : function defineProperties(O, Properties) {
   anObject(O);
@@ -4895,7 +4955,7 @@ module.exports = Object.getPrototypeOf || function (O) {
 
 // most Object methods by ES6 should accept primitives
 var $export = __webpack_require__(5);
-var core = __webpack_require__(2);
+var core = __webpack_require__(1);
 var fails = __webpack_require__(10);
 module.exports = function (KEY, exec) {
   var fn = (core.Object || {})[KEY] || Object[KEY];
@@ -4925,10 +4985,10 @@ module.exports = function (target, src, safe) {
 "use strict";
 
 var global = __webpack_require__(0);
-var core = __webpack_require__(2);
+var core = __webpack_require__(1);
 var dP = __webpack_require__(6);
 var DESCRIPTORS = __webpack_require__(4);
-var SPECIES = __webpack_require__(1)('species');
+var SPECIES = __webpack_require__(2)('species');
 
 module.exports = function (KEY) {
   var C = typeof core[KEY] == 'function' ? core[KEY] : global[KEY];
@@ -4979,10 +5039,20 @@ module.exports = function (index, length) {
 /* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var global = __webpack_require__(0);
+var navigator = global.navigator;
+
+module.exports = navigator && navigator.userAgent || '';
+
+
+/***/ }),
+/* 101 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var classof = __webpack_require__(44);
-var ITERATOR = __webpack_require__(1)('iterator');
+var ITERATOR = __webpack_require__(2)('iterator');
 var Iterators = __webpack_require__(14);
-module.exports = __webpack_require__(2).getIteratorMethod = function (it) {
+module.exports = __webpack_require__(1).getIteratorMethod = function (it) {
   if (it != undefined) return it[ITERATOR]
     || it['@@iterator']
     || Iterators[classof(it)];
@@ -4990,7 +5060,7 @@ module.exports = __webpack_require__(2).getIteratorMethod = function (it) {
 
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5031,7 +5101,7 @@ addToUnscopables('entries');
 
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.3.1 Object.assign(target, source)
@@ -5041,7 +5111,7 @@ $export($export.S + $export.F, 'Object', { assign: __webpack_require__(90) });
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(5);
@@ -5050,12 +5120,12 @@ $export($export.S + $export.F * !__webpack_require__(4), 'Object', { definePrope
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
 var toObject = __webpack_require__(36);
-var $keys = __webpack_require__(15);
+var $keys = __webpack_require__(16);
 
 __webpack_require__(95)('keys', function () {
   return function keys(it) {
@@ -5065,18 +5135,18 @@ __webpack_require__(95)('keys', function () {
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var LIBRARY = __webpack_require__(20);
+var LIBRARY = __webpack_require__(15);
 var global = __webpack_require__(0);
-var ctx = __webpack_require__(19);
+var ctx = __webpack_require__(20);
 var classof = __webpack_require__(44);
 var $export = __webpack_require__(5);
 var isObject = __webpack_require__(9);
-var aFunction = __webpack_require__(18);
+var aFunction = __webpack_require__(19);
 var anInstance = __webpack_require__(77);
 var forOf = __webpack_require__(80);
 var speciesConstructor = __webpack_require__(55);
@@ -5084,10 +5154,13 @@ var task = __webpack_require__(56).set;
 var microtask = __webpack_require__(89)();
 var newPromiseCapabilityModule = __webpack_require__(31);
 var perform = __webpack_require__(52);
+var userAgent = __webpack_require__(100);
 var promiseResolve = __webpack_require__(53);
 var PROMISE = 'Promise';
 var TypeError = global.TypeError;
 var process = global.process;
+var versions = process && process.versions;
+var v8 = versions && versions.v8 || '';
 var $Promise = global[PROMISE];
 var isNode = classof(process) == 'process';
 var empty = function () { /* empty */ };
@@ -5098,11 +5171,17 @@ var USE_NATIVE = !!function () {
   try {
     // correct subclassing with @@species support
     var promise = $Promise.resolve(1);
-    var FakePromise = (promise.constructor = {})[__webpack_require__(1)('species')] = function (exec) {
+    var FakePromise = (promise.constructor = {})[__webpack_require__(2)('species')] = function (exec) {
       exec(empty, empty);
     };
     // unhandled rejections tracking support, NodeJS Promise without it fails @@species test
-    return (isNode || typeof PromiseRejectionEvent == 'function') && promise.then(empty) instanceof FakePromise;
+    return (isNode || typeof PromiseRejectionEvent == 'function')
+      && promise.then(empty) instanceof FakePromise
+      // v8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=830565
+      // we can't detect it synchronously, so just check versions
+      && v8.indexOf('6.6') !== 0
+      && userAgent.indexOf('Chrome/66') === -1;
   } catch (e) { /* empty */ }
 }();
 
@@ -5124,7 +5203,7 @@ var notify = function (promise, isReject) {
       var resolve = reaction.resolve;
       var reject = reaction.reject;
       var domain = reaction.domain;
-      var result, then;
+      var result, then, exited;
       try {
         if (handler) {
           if (!ok) {
@@ -5134,8 +5213,11 @@ var notify = function (promise, isReject) {
           if (handler === true) result = value;
           else {
             if (domain) domain.enter();
-            result = handler(value);
-            if (domain) domain.exit();
+            result = handler(value); // may throw
+            if (domain) {
+              domain.exit();
+              exited = true;
+            }
           }
           if (result === reaction.promise) {
             reject(TypeError('Promise-chain cycle'));
@@ -5144,6 +5226,7 @@ var notify = function (promise, isReject) {
           } else resolve(result);
         } else reject(value);
       } catch (e) {
+        if (domain && !exited) domain.exit();
         reject(e);
       }
     };
@@ -5280,7 +5363,7 @@ if (!USE_NATIVE) {
 $export($export.G + $export.W + $export.F * !USE_NATIVE, { Promise: $Promise });
 __webpack_require__(23)($Promise, PROMISE);
 __webpack_require__(97)(PROMISE);
-Wrapper = __webpack_require__(2)[PROMISE];
+Wrapper = __webpack_require__(1)[PROMISE];
 
 // statics
 $export($export.S + $export.F * !USE_NATIVE, PROMISE, {
@@ -5345,7 +5428,7 @@ $export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(86)(function
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5361,7 +5444,7 @@ var $fails = __webpack_require__(10);
 var shared = __webpack_require__(34);
 var setToStringTag = __webpack_require__(23);
 var uid = __webpack_require__(24);
-var wks = __webpack_require__(1);
+var wks = __webpack_require__(2);
 var wksExt = __webpack_require__(39);
 var wksDefine = __webpack_require__(38);
 var enumKeys = __webpack_require__(79);
@@ -5375,7 +5458,7 @@ var _create = __webpack_require__(49);
 var gOPNExt = __webpack_require__(93);
 var $GOPD = __webpack_require__(92);
 var $DP = __webpack_require__(6);
-var $keys = __webpack_require__(15);
+var $keys = __webpack_require__(16);
 var gOPD = $GOPD.f;
 var dP = $DP.f;
 var gOPN = gOPNExt.f;
@@ -5502,7 +5585,7 @@ if (!USE_NATIVE) {
   __webpack_require__(21).f = $propertyIsEnumerable;
   __webpack_require__(32).f = $getOwnPropertySymbols;
 
-  if (DESCRIPTORS && !__webpack_require__(20)) {
+  if (DESCRIPTORS && !__webpack_require__(15)) {
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
   }
 
@@ -5586,14 +5669,14 @@ setToStringTag(global.JSON, 'JSON', true);
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // https://github.com/tc39/proposal-promise-finally
 
 var $export = __webpack_require__(5);
-var core = __webpack_require__(2);
+var core = __webpack_require__(1);
 var global = __webpack_require__(0);
 var speciesConstructor = __webpack_require__(55);
 var promiseResolve = __webpack_require__(53);
@@ -5613,7 +5696,7 @@ $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
 
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5632,21 +5715,21 @@ $export($export.S, 'Promise', { 'try': function (callbackfn) {
 
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(38)('asyncIterator');
 
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(38)('observable');
 
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports) {
 
 /**
@@ -6289,7 +6372,7 @@ module.exports = assign;
 
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -6314,7 +6397,7 @@ var oldRuntime = hadRuntime && g.regeneratorRuntime;
 // Force reevalutation of runtime.js.
 g.regeneratorRuntime = undefined;
 
-module.exports = __webpack_require__(113);
+module.exports = __webpack_require__(114);
 
 if (hadRuntime) {
   // Restore the original runtime.
@@ -6330,7 +6413,7 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports) {
 
 /**
@@ -7063,15 +7146,15 @@ if (hadRuntime) {
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = function() {
-  return __webpack_require__(115)("/******/ (function(modules) { // webpackBootstrap\n/******/ \t// The module cache\n/******/ \tvar installedModules = {};\n/******/\n/******/ \t// The require function\n/******/ \tfunction __webpack_require__(moduleId) {\n/******/\n/******/ \t\t// Check if module is in cache\n/******/ \t\tif(installedModules[moduleId]) {\n/******/ \t\t\treturn installedModules[moduleId].exports;\n/******/ \t\t}\n/******/ \t\t// Create a new module (and put it into the cache)\n/******/ \t\tvar module = installedModules[moduleId] = {\n/******/ \t\t\ti: moduleId,\n/******/ \t\t\tl: false,\n/******/ \t\t\texports: {}\n/******/ \t\t};\n/******/\n/******/ \t\t// Execute the module function\n/******/ \t\tmodules[moduleId].call(module.exports, module, module.exports, __webpack_require__);\n/******/\n/******/ \t\t// Flag the module as loaded\n/******/ \t\tmodule.l = true;\n/******/\n/******/ \t\t// Return the exports of the module\n/******/ \t\treturn module.exports;\n/******/ \t}\n/******/\n/******/\n/******/ \t// expose the modules object (__webpack_modules__)\n/******/ \t__webpack_require__.m = modules;\n/******/\n/******/ \t// expose the module cache\n/******/ \t__webpack_require__.c = installedModules;\n/******/\n/******/ \t// identity function for calling harmony imports with the correct context\n/******/ \t__webpack_require__.i = function(value) { return value; };\n/******/\n/******/ \t// define getter function for harmony exports\n/******/ \t__webpack_require__.d = function(exports, name, getter) {\n/******/ \t\tif(!__webpack_require__.o(exports, name)) {\n/******/ \t\t\tObject.defineProperty(exports, name, {\n/******/ \t\t\t\tconfigurable: false,\n/******/ \t\t\t\tenumerable: true,\n/******/ \t\t\t\tget: getter\n/******/ \t\t\t});\n/******/ \t\t}\n/******/ \t};\n/******/\n/******/ \t// getDefaultExport function for compatibility with non-harmony modules\n/******/ \t__webpack_require__.n = function(module) {\n/******/ \t\tvar getter = module && module.__esModule ?\n/******/ \t\t\tfunction getDefault() { return module['default']; } :\n/******/ \t\t\tfunction getModuleExports() { return module; };\n/******/ \t\t__webpack_require__.d(getter, 'a', getter);\n/******/ \t\treturn getter;\n/******/ \t};\n/******/\n/******/ \t// Object.prototype.hasOwnProperty.call\n/******/ \t__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };\n/******/\n/******/ \t// __webpack_public_path__\n/******/ \t__webpack_require__.p = \"\";\n/******/\n/******/ \t// Load entry module and return exports\n/******/ \treturn __webpack_require__(__webpack_require__.s = 37);\n/******/ })\n/************************************************************************/\n/******/ ([\n/* 0 */\n/***/ (function(module, exports) {\n\n// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028\nvar global = module.exports = typeof window != 'undefined' && window.Math == Math\n  ? window : typeof self != 'undefined' && self.Math == Math ? self\n  // eslint-disable-next-line no-new-func\n  : Function('return this')();\nif (typeof __g == 'number') __g = global; // eslint-disable-line no-undef\n\n\n/***/ }),\n/* 1 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar store = __webpack_require__(30)('wks');\nvar uid = __webpack_require__(34);\nvar Symbol = __webpack_require__(0).Symbol;\nvar USE_SYMBOL = typeof Symbol == 'function';\n\nvar $exports = module.exports = function (name) {\n  return store[name] || (store[name] =\n    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));\n};\n\n$exports.store = store;\n\n\n/***/ }),\n/* 2 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar isObject = __webpack_require__(6);\nmodule.exports = function (it) {\n  if (!isObject(it)) throw TypeError(it + ' is not an object!');\n  return it;\n};\n\n\n/***/ }),\n/* 3 */\n/***/ (function(module, exports) {\n\nvar core = module.exports = { version: '2.5.3' };\nif (typeof __e == 'number') __e = core; // eslint-disable-line no-undef\n\n\n/***/ }),\n/* 4 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar dP = __webpack_require__(13);\nvar createDesc = __webpack_require__(29);\nmodule.exports = __webpack_require__(5) ? function (object, key, value) {\n  return dP.f(object, key, createDesc(1, value));\n} : function (object, key, value) {\n  object[key] = value;\n  return object;\n};\n\n\n/***/ }),\n/* 5 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// Thank's IE8 for his funny defineProperty\nmodule.exports = !__webpack_require__(23)(function () {\n  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;\n});\n\n\n/***/ }),\n/* 6 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (it) {\n  return typeof it === 'object' ? it !== null : typeof it === 'function';\n};\n\n\n/***/ }),\n/* 7 */\n/***/ (function(module, exports) {\n\nmodule.exports = {};\n\n\n/***/ }),\n/* 8 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (it) {\n  if (typeof it != 'function') throw TypeError(it + ' is not a function!');\n  return it;\n};\n\n\n/***/ }),\n/* 9 */\n/***/ (function(module, exports) {\n\nvar toString = {}.toString;\n\nmodule.exports = function (it) {\n  return toString.call(it).slice(8, -1);\n};\n\n\n/***/ }),\n/* 10 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// optional / simple context binding\nvar aFunction = __webpack_require__(8);\nmodule.exports = function (fn, that, length) {\n  aFunction(fn);\n  if (that === undefined) return fn;\n  switch (length) {\n    case 1: return function (a) {\n      return fn.call(that, a);\n    };\n    case 2: return function (a, b) {\n      return fn.call(that, a, b);\n    };\n    case 3: return function (a, b, c) {\n      return fn.call(that, a, b, c);\n    };\n  }\n  return function (/* ...args */) {\n    return fn.apply(that, arguments);\n  };\n};\n\n\n/***/ }),\n/* 11 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar global = __webpack_require__(0);\nvar core = __webpack_require__(3);\nvar ctx = __webpack_require__(10);\nvar hide = __webpack_require__(4);\nvar PROTOTYPE = 'prototype';\n\nvar $export = function (type, name, source) {\n  var IS_FORCED = type & $export.F;\n  var IS_GLOBAL = type & $export.G;\n  var IS_STATIC = type & $export.S;\n  var IS_PROTO = type & $export.P;\n  var IS_BIND = type & $export.B;\n  var IS_WRAP = type & $export.W;\n  var exports = IS_GLOBAL ? core : core[name] || (core[name] = {});\n  var expProto = exports[PROTOTYPE];\n  var target = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE];\n  var key, own, out;\n  if (IS_GLOBAL) source = name;\n  for (key in source) {\n    // contains in native\n    own = !IS_FORCED && target && target[key] !== undefined;\n    if (own && key in exports) continue;\n    // export native or passed\n    out = own ? target[key] : source[key];\n    // prevent global pollution for namespaces\n    exports[key] = IS_GLOBAL && typeof target[key] != 'function' ? source[key]\n    // bind timers to global for call from export context\n    : IS_BIND && own ? ctx(out, global)\n    // wrap global constructors for prevent change them in library\n    : IS_WRAP && target[key] == out ? (function (C) {\n      var F = function (a, b, c) {\n        if (this instanceof C) {\n          switch (arguments.length) {\n            case 0: return new C();\n            case 1: return new C(a);\n            case 2: return new C(a, b);\n          } return new C(a, b, c);\n        } return C.apply(this, arguments);\n      };\n      F[PROTOTYPE] = C[PROTOTYPE];\n      return F;\n    // make static versions for prototype methods\n    })(out) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;\n    // export proto methods to core.%CONSTRUCTOR%.methods.%NAME%\n    if (IS_PROTO) {\n      (exports.virtual || (exports.virtual = {}))[key] = out;\n      // export proto methods to core.%CONSTRUCTOR%.prototype.%NAME%\n      if (type & $export.R && expProto && !expProto[key]) hide(expProto, key, out);\n    }\n  }\n};\n// type bitmap\n$export.F = 1;   // forced\n$export.G = 2;   // global\n$export.S = 4;   // static\n$export.P = 8;   // proto\n$export.B = 16;  // bind\n$export.W = 32;  // wrap\n$export.U = 64;  // safe\n$export.R = 128; // real proto method for `library`\nmodule.exports = $export;\n\n\n/***/ }),\n/* 12 */\n/***/ (function(module, exports) {\n\nvar hasOwnProperty = {}.hasOwnProperty;\nmodule.exports = function (it, key) {\n  return hasOwnProperty.call(it, key);\n};\n\n\n/***/ }),\n/* 13 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar anObject = __webpack_require__(2);\nvar IE8_DOM_DEFINE = __webpack_require__(43);\nvar toPrimitive = __webpack_require__(63);\nvar dP = Object.defineProperty;\n\nexports.f = __webpack_require__(5) ? Object.defineProperty : function defineProperty(O, P, Attributes) {\n  anObject(O);\n  P = toPrimitive(P, true);\n  anObject(Attributes);\n  if (IE8_DOM_DEFINE) try {\n    return dP(O, P, Attributes);\n  } catch (e) { /* empty */ }\n  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');\n  if ('value' in Attributes) O[P] = Attributes.value;\n  return O;\n};\n\n\n/***/ }),\n/* 14 */\n/***/ (function(module, exports) {\n\n// 7.2.1 RequireObjectCoercible(argument)\nmodule.exports = function (it) {\n  if (it == undefined) throw TypeError(\"Can't call method on  \" + it);\n  return it;\n};\n\n\n/***/ }),\n/* 15 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar isObject = __webpack_require__(6);\nvar document = __webpack_require__(0).document;\n// typeof document.createElement is 'object' in old IE\nvar is = isObject(document) && isObject(document.createElement);\nmodule.exports = function (it) {\n  return is ? document.createElement(it) : {};\n};\n\n\n/***/ }),\n/* 16 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\n// 25.4.1.5 NewPromiseCapability(C)\nvar aFunction = __webpack_require__(8);\n\nfunction PromiseCapability(C) {\n  var resolve, reject;\n  this.promise = new C(function ($$resolve, $$reject) {\n    if (resolve !== undefined || reject !== undefined) throw TypeError('Bad Promise constructor');\n    resolve = $$resolve;\n    reject = $$reject;\n  });\n  this.resolve = aFunction(resolve);\n  this.reject = aFunction(reject);\n}\n\nmodule.exports.f = function (C) {\n  return new PromiseCapability(C);\n};\n\n\n/***/ }),\n/* 17 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar def = __webpack_require__(13).f;\nvar has = __webpack_require__(12);\nvar TAG = __webpack_require__(1)('toStringTag');\n\nmodule.exports = function (it, tag, stat) {\n  if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });\n};\n\n\n/***/ }),\n/* 18 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar shared = __webpack_require__(30)('keys');\nvar uid = __webpack_require__(34);\nmodule.exports = function (key) {\n  return shared[key] || (shared[key] = uid(key));\n};\n\n\n/***/ }),\n/* 19 */\n/***/ (function(module, exports) {\n\n// 7.1.4 ToInteger\nvar ceil = Math.ceil;\nvar floor = Math.floor;\nmodule.exports = function (it) {\n  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);\n};\n\n\n/***/ }),\n/* 20 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// to indexed object, toObject with fallback for non-array-like ES3 strings\nvar IObject = __webpack_require__(45);\nvar defined = __webpack_require__(14);\nmodule.exports = function (it) {\n  return IObject(defined(it));\n};\n\n\n/***/ }),\n/* 21 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// getting tag from 19.1.3.6 Object.prototype.toString()\nvar cof = __webpack_require__(9);\nvar TAG = __webpack_require__(1)('toStringTag');\n// ES3 wrong here\nvar ARG = cof(function () { return arguments; }()) == 'Arguments';\n\n// fallback for IE11 Script Access Denied error\nvar tryGet = function (it, key) {\n  try {\n    return it[key];\n  } catch (e) { /* empty */ }\n};\n\nmodule.exports = function (it) {\n  var O, T, B;\n  return it === undefined ? 'Undefined' : it === null ? 'Null'\n    // @@toStringTag case\n    : typeof (T = tryGet(O = Object(it), TAG)) == 'string' ? T\n    // builtinTag case\n    : ARG ? cof(O)\n    // ES3 arguments fallback\n    : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;\n};\n\n\n/***/ }),\n/* 22 */\n/***/ (function(module, exports) {\n\n// IE 8- don't enum bug keys\nmodule.exports = (\n  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'\n).split(',');\n\n\n/***/ }),\n/* 23 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (exec) {\n  try {\n    return !!exec();\n  } catch (e) {\n    return true;\n  }\n};\n\n\n/***/ }),\n/* 24 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar document = __webpack_require__(0).document;\nmodule.exports = document && document.documentElement;\n\n\n/***/ }),\n/* 25 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar LIBRARY = __webpack_require__(26);\nvar $export = __webpack_require__(11);\nvar redefine = __webpack_require__(58);\nvar hide = __webpack_require__(4);\nvar has = __webpack_require__(12);\nvar Iterators = __webpack_require__(7);\nvar $iterCreate = __webpack_require__(48);\nvar setToStringTag = __webpack_require__(17);\nvar getPrototypeOf = __webpack_require__(54);\nvar ITERATOR = __webpack_require__(1)('iterator');\nvar BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`\nvar FF_ITERATOR = '@@iterator';\nvar KEYS = 'keys';\nvar VALUES = 'values';\n\nvar returnThis = function () { return this; };\n\nmodule.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {\n  $iterCreate(Constructor, NAME, next);\n  var getMethod = function (kind) {\n    if (!BUGGY && kind in proto) return proto[kind];\n    switch (kind) {\n      case KEYS: return function keys() { return new Constructor(this, kind); };\n      case VALUES: return function values() { return new Constructor(this, kind); };\n    } return function entries() { return new Constructor(this, kind); };\n  };\n  var TAG = NAME + ' Iterator';\n  var DEF_VALUES = DEFAULT == VALUES;\n  var VALUES_BUG = false;\n  var proto = Base.prototype;\n  var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];\n  var $default = (!BUGGY && $native) || getMethod(DEFAULT);\n  var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;\n  var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;\n  var methods, key, IteratorPrototype;\n  // Fix native\n  if ($anyNative) {\n    IteratorPrototype = getPrototypeOf($anyNative.call(new Base()));\n    if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {\n      // Set @@toStringTag to native iterators\n      setToStringTag(IteratorPrototype, TAG, true);\n      // fix for some old engines\n      if (!LIBRARY && !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);\n    }\n  }\n  // fix Array#{values, @@iterator}.name in V8 / FF\n  if (DEF_VALUES && $native && $native.name !== VALUES) {\n    VALUES_BUG = true;\n    $default = function values() { return $native.call(this); };\n  }\n  // Define iterator\n  if ((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])) {\n    hide(proto, ITERATOR, $default);\n  }\n  // Plug for library\n  Iterators[NAME] = $default;\n  Iterators[TAG] = returnThis;\n  if (DEFAULT) {\n    methods = {\n      values: DEF_VALUES ? $default : getMethod(VALUES),\n      keys: IS_SET ? $default : getMethod(KEYS),\n      entries: $entries\n    };\n    if (FORCED) for (key in methods) {\n      if (!(key in proto)) redefine(proto, key, methods[key]);\n    } else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);\n  }\n  return methods;\n};\n\n\n/***/ }),\n/* 26 */\n/***/ (function(module, exports) {\n\nmodule.exports = true;\n\n\n/***/ }),\n/* 27 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (exec) {\n  try {\n    return { e: false, v: exec() };\n  } catch (e) {\n    return { e: true, v: e };\n  }\n};\n\n\n/***/ }),\n/* 28 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar anObject = __webpack_require__(2);\nvar isObject = __webpack_require__(6);\nvar newPromiseCapability = __webpack_require__(16);\n\nmodule.exports = function (C, x) {\n  anObject(C);\n  if (isObject(x) && x.constructor === C) return x;\n  var promiseCapability = newPromiseCapability.f(C);\n  var resolve = promiseCapability.resolve;\n  resolve(x);\n  return promiseCapability.promise;\n};\n\n\n/***/ }),\n/* 29 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (bitmap, value) {\n  return {\n    enumerable: !(bitmap & 1),\n    configurable: !(bitmap & 2),\n    writable: !(bitmap & 4),\n    value: value\n  };\n};\n\n\n/***/ }),\n/* 30 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar global = __webpack_require__(0);\nvar SHARED = '__core-js_shared__';\nvar store = global[SHARED] || (global[SHARED] = {});\nmodule.exports = function (key) {\n  return store[key] || (store[key] = {});\n};\n\n\n/***/ }),\n/* 31 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 7.3.20 SpeciesConstructor(O, defaultConstructor)\nvar anObject = __webpack_require__(2);\nvar aFunction = __webpack_require__(8);\nvar SPECIES = __webpack_require__(1)('species');\nmodule.exports = function (O, D) {\n  var C = anObject(O).constructor;\n  var S;\n  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);\n};\n\n\n/***/ }),\n/* 32 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar ctx = __webpack_require__(10);\nvar invoke = __webpack_require__(44);\nvar html = __webpack_require__(24);\nvar cel = __webpack_require__(15);\nvar global = __webpack_require__(0);\nvar process = global.process;\nvar setTask = global.setImmediate;\nvar clearTask = global.clearImmediate;\nvar MessageChannel = global.MessageChannel;\nvar Dispatch = global.Dispatch;\nvar counter = 0;\nvar queue = {};\nvar ONREADYSTATECHANGE = 'onreadystatechange';\nvar defer, channel, port;\nvar run = function () {\n  var id = +this;\n  // eslint-disable-next-line no-prototype-builtins\n  if (queue.hasOwnProperty(id)) {\n    var fn = queue[id];\n    delete queue[id];\n    fn();\n  }\n};\nvar listener = function (event) {\n  run.call(event.data);\n};\n// Node.js 0.9+ & IE10+ has setImmediate, otherwise:\nif (!setTask || !clearTask) {\n  setTask = function setImmediate(fn) {\n    var args = [];\n    var i = 1;\n    while (arguments.length > i) args.push(arguments[i++]);\n    queue[++counter] = function () {\n      // eslint-disable-next-line no-new-func\n      invoke(typeof fn == 'function' ? fn : Function(fn), args);\n    };\n    defer(counter);\n    return counter;\n  };\n  clearTask = function clearImmediate(id) {\n    delete queue[id];\n  };\n  // Node.js 0.8-\n  if (__webpack_require__(9)(process) == 'process') {\n    defer = function (id) {\n      process.nextTick(ctx(run, id, 1));\n    };\n  // Sphere (JS game engine) Dispatch API\n  } else if (Dispatch && Dispatch.now) {\n    defer = function (id) {\n      Dispatch.now(ctx(run, id, 1));\n    };\n  // Browsers with MessageChannel, includes WebWorkers\n  } else if (MessageChannel) {\n    channel = new MessageChannel();\n    port = channel.port2;\n    channel.port1.onmessage = listener;\n    defer = ctx(port.postMessage, port, 1);\n  // Browsers with postMessage, skip WebWorkers\n  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'\n  } else if (global.addEventListener && typeof postMessage == 'function' && !global.importScripts) {\n    defer = function (id) {\n      global.postMessage(id + '', '*');\n    };\n    global.addEventListener('message', listener, false);\n  // IE8-\n  } else if (ONREADYSTATECHANGE in cel('script')) {\n    defer = function (id) {\n      html.appendChild(cel('script'))[ONREADYSTATECHANGE] = function () {\n        html.removeChild(this);\n        run.call(id);\n      };\n    };\n  // Rest old browsers\n  } else {\n    defer = function (id) {\n      setTimeout(ctx(run, id, 1), 0);\n    };\n  }\n}\nmodule.exports = {\n  set: setTask,\n  clear: clearTask\n};\n\n\n/***/ }),\n/* 33 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 7.1.15 ToLength\nvar toInteger = __webpack_require__(19);\nvar min = Math.min;\nmodule.exports = function (it) {\n  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991\n};\n\n\n/***/ }),\n/* 34 */\n/***/ (function(module, exports) {\n\nvar id = 0;\nvar px = Math.random();\nmodule.exports = function (key) {\n  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));\n};\n\n\n/***/ }),\n/* 35 */\n/***/ (function(module, exports, __webpack_require__) {\n\nmodule.exports = { \"default\": __webpack_require__(38), __esModule: true };\n\n/***/ }),\n/* 36 */\n/***/ (function(module, exports, __webpack_require__) {\n\n(function (factory) {\n    if (true) {\n        // Node/CommonJS\n        module.exports = factory();\n    } else if (typeof define === 'function' && define.amd) {\n        // AMD\n        define(factory);\n    } else {\n        // Browser globals (with support for web workers)\n        var glob;\n\n        try {\n            glob = window;\n        } catch (e) {\n            glob = self;\n        }\n\n        glob.SparkMD5 = factory();\n    }\n}(function (undefined) {\n\n    'use strict';\n\n    /*\n     * Fastest md5 implementation around (JKM md5).\n     * Credits: Joseph Myers\n     *\n     * @see http://www.myersdaily.org/joseph/javascript/md5-text.html\n     * @see http://jsperf.com/md5-shootout/7\n     */\n\n    /* this function is much faster,\n      so if possible we use it. Some IEs\n      are the only ones I know of that\n      need the idiotic second function,\n      generated by an if clause.  */\n    var add32 = function (a, b) {\n        return (a + b) & 0xFFFFFFFF;\n    },\n        hex_chr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];\n\n\n    function cmn(q, a, b, x, s, t) {\n        a = add32(add32(a, q), add32(x, t));\n        return add32((a << s) | (a >>> (32 - s)), b);\n    }\n\n    function md5cycle(x, k) {\n        var a = x[0],\n            b = x[1],\n            c = x[2],\n            d = x[3];\n\n        a += (b & c | ~b & d) + k[0] - 680876936 | 0;\n        a  = (a << 7 | a >>> 25) + b | 0;\n        d += (a & b | ~a & c) + k[1] - 389564586 | 0;\n        d  = (d << 12 | d >>> 20) + a | 0;\n        c += (d & a | ~d & b) + k[2] + 606105819 | 0;\n        c  = (c << 17 | c >>> 15) + d | 0;\n        b += (c & d | ~c & a) + k[3] - 1044525330 | 0;\n        b  = (b << 22 | b >>> 10) + c | 0;\n        a += (b & c | ~b & d) + k[4] - 176418897 | 0;\n        a  = (a << 7 | a >>> 25) + b | 0;\n        d += (a & b | ~a & c) + k[5] + 1200080426 | 0;\n        d  = (d << 12 | d >>> 20) + a | 0;\n        c += (d & a | ~d & b) + k[6] - 1473231341 | 0;\n        c  = (c << 17 | c >>> 15) + d | 0;\n        b += (c & d | ~c & a) + k[7] - 45705983 | 0;\n        b  = (b << 22 | b >>> 10) + c | 0;\n        a += (b & c | ~b & d) + k[8] + 1770035416 | 0;\n        a  = (a << 7 | a >>> 25) + b | 0;\n        d += (a & b | ~a & c) + k[9] - 1958414417 | 0;\n        d  = (d << 12 | d >>> 20) + a | 0;\n        c += (d & a | ~d & b) + k[10] - 42063 | 0;\n        c  = (c << 17 | c >>> 15) + d | 0;\n        b += (c & d | ~c & a) + k[11] - 1990404162 | 0;\n        b  = (b << 22 | b >>> 10) + c | 0;\n        a += (b & c | ~b & d) + k[12] + 1804603682 | 0;\n        a  = (a << 7 | a >>> 25) + b | 0;\n        d += (a & b | ~a & c) + k[13] - 40341101 | 0;\n        d  = (d << 12 | d >>> 20) + a | 0;\n        c += (d & a | ~d & b) + k[14] - 1502002290 | 0;\n        c  = (c << 17 | c >>> 15) + d | 0;\n        b += (c & d | ~c & a) + k[15] + 1236535329 | 0;\n        b  = (b << 22 | b >>> 10) + c | 0;\n\n        a += (b & d | c & ~d) + k[1] - 165796510 | 0;\n        a  = (a << 5 | a >>> 27) + b | 0;\n        d += (a & c | b & ~c) + k[6] - 1069501632 | 0;\n        d  = (d << 9 | d >>> 23) + a | 0;\n        c += (d & b | a & ~b) + k[11] + 643717713 | 0;\n        c  = (c << 14 | c >>> 18) + d | 0;\n        b += (c & a | d & ~a) + k[0] - 373897302 | 0;\n        b  = (b << 20 | b >>> 12) + c | 0;\n        a += (b & d | c & ~d) + k[5] - 701558691 | 0;\n        a  = (a << 5 | a >>> 27) + b | 0;\n        d += (a & c | b & ~c) + k[10] + 38016083 | 0;\n        d  = (d << 9 | d >>> 23) + a | 0;\n        c += (d & b | a & ~b) + k[15] - 660478335 | 0;\n        c  = (c << 14 | c >>> 18) + d | 0;\n        b += (c & a | d & ~a) + k[4] - 405537848 | 0;\n        b  = (b << 20 | b >>> 12) + c | 0;\n        a += (b & d | c & ~d) + k[9] + 568446438 | 0;\n        a  = (a << 5 | a >>> 27) + b | 0;\n        d += (a & c | b & ~c) + k[14] - 1019803690 | 0;\n        d  = (d << 9 | d >>> 23) + a | 0;\n        c += (d & b | a & ~b) + k[3] - 187363961 | 0;\n        c  = (c << 14 | c >>> 18) + d | 0;\n        b += (c & a | d & ~a) + k[8] + 1163531501 | 0;\n        b  = (b << 20 | b >>> 12) + c | 0;\n        a += (b & d | c & ~d) + k[13] - 1444681467 | 0;\n        a  = (a << 5 | a >>> 27) + b | 0;\n        d += (a & c | b & ~c) + k[2] - 51403784 | 0;\n        d  = (d << 9 | d >>> 23) + a | 0;\n        c += (d & b | a & ~b) + k[7] + 1735328473 | 0;\n        c  = (c << 14 | c >>> 18) + d | 0;\n        b += (c & a | d & ~a) + k[12] - 1926607734 | 0;\n        b  = (b << 20 | b >>> 12) + c | 0;\n\n        a += (b ^ c ^ d) + k[5] - 378558 | 0;\n        a  = (a << 4 | a >>> 28) + b | 0;\n        d += (a ^ b ^ c) + k[8] - 2022574463 | 0;\n        d  = (d << 11 | d >>> 21) + a | 0;\n        c += (d ^ a ^ b) + k[11] + 1839030562 | 0;\n        c  = (c << 16 | c >>> 16) + d | 0;\n        b += (c ^ d ^ a) + k[14] - 35309556 | 0;\n        b  = (b << 23 | b >>> 9) + c | 0;\n        a += (b ^ c ^ d) + k[1] - 1530992060 | 0;\n        a  = (a << 4 | a >>> 28) + b | 0;\n        d += (a ^ b ^ c) + k[4] + 1272893353 | 0;\n        d  = (d << 11 | d >>> 21) + a | 0;\n        c += (d ^ a ^ b) + k[7] - 155497632 | 0;\n        c  = (c << 16 | c >>> 16) + d | 0;\n        b += (c ^ d ^ a) + k[10] - 1094730640 | 0;\n        b  = (b << 23 | b >>> 9) + c | 0;\n        a += (b ^ c ^ d) + k[13] + 681279174 | 0;\n        a  = (a << 4 | a >>> 28) + b | 0;\n        d += (a ^ b ^ c) + k[0] - 358537222 | 0;\n        d  = (d << 11 | d >>> 21) + a | 0;\n        c += (d ^ a ^ b) + k[3] - 722521979 | 0;\n        c  = (c << 16 | c >>> 16) + d | 0;\n        b += (c ^ d ^ a) + k[6] + 76029189 | 0;\n        b  = (b << 23 | b >>> 9) + c | 0;\n        a += (b ^ c ^ d) + k[9] - 640364487 | 0;\n        a  = (a << 4 | a >>> 28) + b | 0;\n        d += (a ^ b ^ c) + k[12] - 421815835 | 0;\n        d  = (d << 11 | d >>> 21) + a | 0;\n        c += (d ^ a ^ b) + k[15] + 530742520 | 0;\n        c  = (c << 16 | c >>> 16) + d | 0;\n        b += (c ^ d ^ a) + k[2] - 995338651 | 0;\n        b  = (b << 23 | b >>> 9) + c | 0;\n\n        a += (c ^ (b | ~d)) + k[0] - 198630844 | 0;\n        a  = (a << 6 | a >>> 26) + b | 0;\n        d += (b ^ (a | ~c)) + k[7] + 1126891415 | 0;\n        d  = (d << 10 | d >>> 22) + a | 0;\n        c += (a ^ (d | ~b)) + k[14] - 1416354905 | 0;\n        c  = (c << 15 | c >>> 17) + d | 0;\n        b += (d ^ (c | ~a)) + k[5] - 57434055 | 0;\n        b  = (b << 21 |b >>> 11) + c | 0;\n        a += (c ^ (b | ~d)) + k[12] + 1700485571 | 0;\n        a  = (a << 6 | a >>> 26) + b | 0;\n        d += (b ^ (a | ~c)) + k[3] - 1894986606 | 0;\n        d  = (d << 10 | d >>> 22) + a | 0;\n        c += (a ^ (d | ~b)) + k[10] - 1051523 | 0;\n        c  = (c << 15 | c >>> 17) + d | 0;\n        b += (d ^ (c | ~a)) + k[1] - 2054922799 | 0;\n        b  = (b << 21 |b >>> 11) + c | 0;\n        a += (c ^ (b | ~d)) + k[8] + 1873313359 | 0;\n        a  = (a << 6 | a >>> 26) + b | 0;\n        d += (b ^ (a | ~c)) + k[15] - 30611744 | 0;\n        d  = (d << 10 | d >>> 22) + a | 0;\n        c += (a ^ (d | ~b)) + k[6] - 1560198380 | 0;\n        c  = (c << 15 | c >>> 17) + d | 0;\n        b += (d ^ (c | ~a)) + k[13] + 1309151649 | 0;\n        b  = (b << 21 |b >>> 11) + c | 0;\n        a += (c ^ (b | ~d)) + k[4] - 145523070 | 0;\n        a  = (a << 6 | a >>> 26) + b | 0;\n        d += (b ^ (a | ~c)) + k[11] - 1120210379 | 0;\n        d  = (d << 10 | d >>> 22) + a | 0;\n        c += (a ^ (d | ~b)) + k[2] + 718787259 | 0;\n        c  = (c << 15 | c >>> 17) + d | 0;\n        b += (d ^ (c | ~a)) + k[9] - 343485551 | 0;\n        b  = (b << 21 | b >>> 11) + c | 0;\n\n        x[0] = a + x[0] | 0;\n        x[1] = b + x[1] | 0;\n        x[2] = c + x[2] | 0;\n        x[3] = d + x[3] | 0;\n    }\n\n    function md5blk(s) {\n        var md5blks = [],\n            i; /* Andy King said do it this way. */\n\n        for (i = 0; i < 64; i += 4) {\n            md5blks[i >> 2] = s.charCodeAt(i) + (s.charCodeAt(i + 1) << 8) + (s.charCodeAt(i + 2) << 16) + (s.charCodeAt(i + 3) << 24);\n        }\n        return md5blks;\n    }\n\n    function md5blk_array(a) {\n        var md5blks = [],\n            i; /* Andy King said do it this way. */\n\n        for (i = 0; i < 64; i += 4) {\n            md5blks[i >> 2] = a[i] + (a[i + 1] << 8) + (a[i + 2] << 16) + (a[i + 3] << 24);\n        }\n        return md5blks;\n    }\n\n    function md51(s) {\n        var n = s.length,\n            state = [1732584193, -271733879, -1732584194, 271733878],\n            i,\n            length,\n            tail,\n            tmp,\n            lo,\n            hi;\n\n        for (i = 64; i <= n; i += 64) {\n            md5cycle(state, md5blk(s.substring(i - 64, i)));\n        }\n        s = s.substring(i - 64);\n        length = s.length;\n        tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];\n        for (i = 0; i < length; i += 1) {\n            tail[i >> 2] |= s.charCodeAt(i) << ((i % 4) << 3);\n        }\n        tail[i >> 2] |= 0x80 << ((i % 4) << 3);\n        if (i > 55) {\n            md5cycle(state, tail);\n            for (i = 0; i < 16; i += 1) {\n                tail[i] = 0;\n            }\n        }\n\n        // Beware that the final length might not fit in 32 bits so we take care of that\n        tmp = n * 8;\n        tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);\n        lo = parseInt(tmp[2], 16);\n        hi = parseInt(tmp[1], 16) || 0;\n\n        tail[14] = lo;\n        tail[15] = hi;\n\n        md5cycle(state, tail);\n        return state;\n    }\n\n    function md51_array(a) {\n        var n = a.length,\n            state = [1732584193, -271733879, -1732584194, 271733878],\n            i,\n            length,\n            tail,\n            tmp,\n            lo,\n            hi;\n\n        for (i = 64; i <= n; i += 64) {\n            md5cycle(state, md5blk_array(a.subarray(i - 64, i)));\n        }\n\n        // Not sure if it is a bug, however IE10 will always produce a sub array of length 1\n        // containing the last element of the parent array if the sub array specified starts\n        // beyond the length of the parent array - weird.\n        // https://connect.microsoft.com/IE/feedback/details/771452/typed-array-subarray-issue\n        a = (i - 64) < n ? a.subarray(i - 64) : new Uint8Array(0);\n\n        length = a.length;\n        tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];\n        for (i = 0; i < length; i += 1) {\n            tail[i >> 2] |= a[i] << ((i % 4) << 3);\n        }\n\n        tail[i >> 2] |= 0x80 << ((i % 4) << 3);\n        if (i > 55) {\n            md5cycle(state, tail);\n            for (i = 0; i < 16; i += 1) {\n                tail[i] = 0;\n            }\n        }\n\n        // Beware that the final length might not fit in 32 bits so we take care of that\n        tmp = n * 8;\n        tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);\n        lo = parseInt(tmp[2], 16);\n        hi = parseInt(tmp[1], 16) || 0;\n\n        tail[14] = lo;\n        tail[15] = hi;\n\n        md5cycle(state, tail);\n\n        return state;\n    }\n\n    function rhex(n) {\n        var s = '',\n            j;\n        for (j = 0; j < 4; j += 1) {\n            s += hex_chr[(n >> (j * 8 + 4)) & 0x0F] + hex_chr[(n >> (j * 8)) & 0x0F];\n        }\n        return s;\n    }\n\n    function hex(x) {\n        var i;\n        for (i = 0; i < x.length; i += 1) {\n            x[i] = rhex(x[i]);\n        }\n        return x.join('');\n    }\n\n    // In some cases the fast add32 function cannot be used..\n    if (hex(md51('hello')) !== '5d41402abc4b2a76b9719d911017c592') {\n        add32 = function (x, y) {\n            var lsw = (x & 0xFFFF) + (y & 0xFFFF),\n                msw = (x >> 16) + (y >> 16) + (lsw >> 16);\n            return (msw << 16) | (lsw & 0xFFFF);\n        };\n    }\n\n    // ---------------------------------------------------\n\n    /**\n     * ArrayBuffer slice polyfill.\n     *\n     * @see https://github.com/ttaubert/node-arraybuffer-slice\n     */\n\n    if (typeof ArrayBuffer !== 'undefined' && !ArrayBuffer.prototype.slice) {\n        (function () {\n            function clamp(val, length) {\n                val = (val | 0) || 0;\n\n                if (val < 0) {\n                    return Math.max(val + length, 0);\n                }\n\n                return Math.min(val, length);\n            }\n\n            ArrayBuffer.prototype.slice = function (from, to) {\n                var length = this.byteLength,\n                    begin = clamp(from, length),\n                    end = length,\n                    num,\n                    target,\n                    targetArray,\n                    sourceArray;\n\n                if (to !== undefined) {\n                    end = clamp(to, length);\n                }\n\n                if (begin > end) {\n                    return new ArrayBuffer(0);\n                }\n\n                num = end - begin;\n                target = new ArrayBuffer(num);\n                targetArray = new Uint8Array(target);\n\n                sourceArray = new Uint8Array(this, begin, num);\n                targetArray.set(sourceArray);\n\n                return target;\n            };\n        })();\n    }\n\n    // ---------------------------------------------------\n\n    /**\n     * Helpers.\n     */\n\n    function toUtf8(str) {\n        if (/[\\u0080-\\uFFFF]/.test(str)) {\n            str = unescape(encodeURIComponent(str));\n        }\n\n        return str;\n    }\n\n    function utf8Str2ArrayBuffer(str, returnUInt8Array) {\n        var length = str.length,\n           buff = new ArrayBuffer(length),\n           arr = new Uint8Array(buff),\n           i;\n\n        for (i = 0; i < length; i += 1) {\n            arr[i] = str.charCodeAt(i);\n        }\n\n        return returnUInt8Array ? arr : buff;\n    }\n\n    function arrayBuffer2Utf8Str(buff) {\n        return String.fromCharCode.apply(null, new Uint8Array(buff));\n    }\n\n    function concatenateArrayBuffers(first, second, returnUInt8Array) {\n        var result = new Uint8Array(first.byteLength + second.byteLength);\n\n        result.set(new Uint8Array(first));\n        result.set(new Uint8Array(second), first.byteLength);\n\n        return returnUInt8Array ? result : result.buffer;\n    }\n\n    function hexToBinaryString(hex) {\n        var bytes = [],\n            length = hex.length,\n            x;\n\n        for (x = 0; x < length - 1; x += 2) {\n            bytes.push(parseInt(hex.substr(x, 2), 16));\n        }\n\n        return String.fromCharCode.apply(String, bytes);\n    }\n\n    // ---------------------------------------------------\n\n    /**\n     * SparkMD5 OOP implementation.\n     *\n     * Use this class to perform an incremental md5, otherwise use the\n     * static methods instead.\n     */\n\n    function SparkMD5() {\n        // call reset to init the instance\n        this.reset();\n    }\n\n    /**\n     * Appends a string.\n     * A conversion will be applied if an utf8 string is detected.\n     *\n     * @param {String} str The string to be appended\n     *\n     * @return {SparkMD5} The instance itself\n     */\n    SparkMD5.prototype.append = function (str) {\n        // Converts the string to utf8 bytes if necessary\n        // Then append as binary\n        this.appendBinary(toUtf8(str));\n\n        return this;\n    };\n\n    /**\n     * Appends a binary string.\n     *\n     * @param {String} contents The binary string to be appended\n     *\n     * @return {SparkMD5} The instance itself\n     */\n    SparkMD5.prototype.appendBinary = function (contents) {\n        this._buff += contents;\n        this._length += contents.length;\n\n        var length = this._buff.length,\n            i;\n\n        for (i = 64; i <= length; i += 64) {\n            md5cycle(this._hash, md5blk(this._buff.substring(i - 64, i)));\n        }\n\n        this._buff = this._buff.substring(i - 64);\n\n        return this;\n    };\n\n    /**\n     * Finishes the incremental computation, reseting the internal state and\n     * returning the result.\n     *\n     * @param {Boolean} raw True to get the raw string, false to get the hex string\n     *\n     * @return {String} The result\n     */\n    SparkMD5.prototype.end = function (raw) {\n        var buff = this._buff,\n            length = buff.length,\n            i,\n            tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n            ret;\n\n        for (i = 0; i < length; i += 1) {\n            tail[i >> 2] |= buff.charCodeAt(i) << ((i % 4) << 3);\n        }\n\n        this._finish(tail, length);\n        ret = hex(this._hash);\n\n        if (raw) {\n            ret = hexToBinaryString(ret);\n        }\n\n        this.reset();\n\n        return ret;\n    };\n\n    /**\n     * Resets the internal state of the computation.\n     *\n     * @return {SparkMD5} The instance itself\n     */\n    SparkMD5.prototype.reset = function () {\n        this._buff = '';\n        this._length = 0;\n        this._hash = [1732584193, -271733879, -1732584194, 271733878];\n\n        return this;\n    };\n\n    /**\n     * Gets the internal state of the computation.\n     *\n     * @return {Object} The state\n     */\n    SparkMD5.prototype.getState = function () {\n        return {\n            buff: this._buff,\n            length: this._length,\n            hash: this._hash\n        };\n    };\n\n    /**\n     * Gets the internal state of the computation.\n     *\n     * @param {Object} state The state\n     *\n     * @return {SparkMD5} The instance itself\n     */\n    SparkMD5.prototype.setState = function (state) {\n        this._buff = state.buff;\n        this._length = state.length;\n        this._hash = state.hash;\n\n        return this;\n    };\n\n    /**\n     * Releases memory used by the incremental buffer and other additional\n     * resources. If you plan to use the instance again, use reset instead.\n     */\n    SparkMD5.prototype.destroy = function () {\n        delete this._hash;\n        delete this._buff;\n        delete this._length;\n    };\n\n    /**\n     * Finish the final calculation based on the tail.\n     *\n     * @param {Array}  tail   The tail (will be modified)\n     * @param {Number} length The length of the remaining buffer\n     */\n    SparkMD5.prototype._finish = function (tail, length) {\n        var i = length,\n            tmp,\n            lo,\n            hi;\n\n        tail[i >> 2] |= 0x80 << ((i % 4) << 3);\n        if (i > 55) {\n            md5cycle(this._hash, tail);\n            for (i = 0; i < 16; i += 1) {\n                tail[i] = 0;\n            }\n        }\n\n        // Do the final computation based on the tail and length\n        // Beware that the final length may not fit in 32 bits so we take care of that\n        tmp = this._length * 8;\n        tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);\n        lo = parseInt(tmp[2], 16);\n        hi = parseInt(tmp[1], 16) || 0;\n\n        tail[14] = lo;\n        tail[15] = hi;\n        md5cycle(this._hash, tail);\n    };\n\n    /**\n     * Performs the md5 hash on a string.\n     * A conversion will be applied if utf8 string is detected.\n     *\n     * @param {String}  str The string\n     * @param {Boolean} raw True to get the raw string, false to get the hex string\n     *\n     * @return {String} The result\n     */\n    SparkMD5.hash = function (str, raw) {\n        // Converts the string to utf8 bytes if necessary\n        // Then compute it using the binary function\n        return SparkMD5.hashBinary(toUtf8(str), raw);\n    };\n\n    /**\n     * Performs the md5 hash on a binary string.\n     *\n     * @param {String}  content The binary string\n     * @param {Boolean} raw     True to get the raw string, false to get the hex string\n     *\n     * @return {String} The result\n     */\n    SparkMD5.hashBinary = function (content, raw) {\n        var hash = md51(content),\n            ret = hex(hash);\n\n        return raw ? hexToBinaryString(ret) : ret;\n    };\n\n    // ---------------------------------------------------\n\n    /**\n     * SparkMD5 OOP implementation for array buffers.\n     *\n     * Use this class to perform an incremental md5 ONLY for array buffers.\n     */\n    SparkMD5.ArrayBuffer = function () {\n        // call reset to init the instance\n        this.reset();\n    };\n\n    /**\n     * Appends an array buffer.\n     *\n     * @param {ArrayBuffer} arr The array to be appended\n     *\n     * @return {SparkMD5.ArrayBuffer} The instance itself\n     */\n    SparkMD5.ArrayBuffer.prototype.append = function (arr) {\n        var buff = concatenateArrayBuffers(this._buff.buffer, arr, true),\n            length = buff.length,\n            i;\n\n        this._length += arr.byteLength;\n\n        for (i = 64; i <= length; i += 64) {\n            md5cycle(this._hash, md5blk_array(buff.subarray(i - 64, i)));\n        }\n\n        this._buff = (i - 64) < length ? new Uint8Array(buff.buffer.slice(i - 64)) : new Uint8Array(0);\n\n        return this;\n    };\n\n    /**\n     * Finishes the incremental computation, reseting the internal state and\n     * returning the result.\n     *\n     * @param {Boolean} raw True to get the raw string, false to get the hex string\n     *\n     * @return {String} The result\n     */\n    SparkMD5.ArrayBuffer.prototype.end = function (raw) {\n        var buff = this._buff,\n            length = buff.length,\n            tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n            i,\n            ret;\n\n        for (i = 0; i < length; i += 1) {\n            tail[i >> 2] |= buff[i] << ((i % 4) << 3);\n        }\n\n        this._finish(tail, length);\n        ret = hex(this._hash);\n\n        if (raw) {\n            ret = hexToBinaryString(ret);\n        }\n\n        this.reset();\n\n        return ret;\n    };\n\n    /**\n     * Resets the internal state of the computation.\n     *\n     * @return {SparkMD5.ArrayBuffer} The instance itself\n     */\n    SparkMD5.ArrayBuffer.prototype.reset = function () {\n        this._buff = new Uint8Array(0);\n        this._length = 0;\n        this._hash = [1732584193, -271733879, -1732584194, 271733878];\n\n        return this;\n    };\n\n    /**\n     * Gets the internal state of the computation.\n     *\n     * @return {Object} The state\n     */\n    SparkMD5.ArrayBuffer.prototype.getState = function () {\n        var state = SparkMD5.prototype.getState.call(this);\n\n        // Convert buffer to a string\n        state.buff = arrayBuffer2Utf8Str(state.buff);\n\n        return state;\n    };\n\n    /**\n     * Gets the internal state of the computation.\n     *\n     * @param {Object} state The state\n     *\n     * @return {SparkMD5.ArrayBuffer} The instance itself\n     */\n    SparkMD5.ArrayBuffer.prototype.setState = function (state) {\n        // Convert string to buffer\n        state.buff = utf8Str2ArrayBuffer(state.buff, true);\n\n        return SparkMD5.prototype.setState.call(this, state);\n    };\n\n    SparkMD5.ArrayBuffer.prototype.destroy = SparkMD5.prototype.destroy;\n\n    SparkMD5.ArrayBuffer.prototype._finish = SparkMD5.prototype._finish;\n\n    /**\n     * Performs the md5 hash on an array buffer.\n     *\n     * @param {ArrayBuffer} arr The array buffer\n     * @param {Boolean}     raw True to get the raw string, false to get the hex one\n     *\n     * @return {String} The result\n     */\n    SparkMD5.ArrayBuffer.hash = function (arr, raw) {\n        var hash = md51_array(new Uint8Array(arr)),\n            ret = hex(hash);\n\n        return raw ? hexToBinaryString(ret) : ret;\n    };\n\n    return SparkMD5;\n}));\n\n\n/***/ }),\n/* 37 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\n// self.importScripts('./spark-md5');\n\nvar _promise = __webpack_require__(35);\n\nvar _promise2 = _interopRequireDefault(_promise);\n\nvar _sparkMd = __webpack_require__(36);\n\nvar _sparkMd2 = _interopRequireDefault(_sparkMd);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n// for webpack\n\n// TODO 占用大量CPU限速\n// TODO 计算完成后worker销毁\nvar calcMd5 = function calcMd5(file) {\n    return new _promise2.default(function (resolve, reject) {\n        var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;\n        var spark = new _sparkMd2.default.ArrayBuffer();\n        var fileReader = new FileReader();\n\n        var currentChunk = 0;\n        var chunkSize = 1 * 1024 * 1024; // 1MB\n        var chunks = Math.ceil(file.size / chunkSize);\n\n        fileReader.onload = function (e) {\n            // console.log('read chunk nr', currentChunk + 1, 'of', chunks);\n            spark.append(e.target.result); // Append array buffer\n\n            // 计算百分比\n            var start = currentChunk * chunkSize;\n            var end = start + chunkSize >= file.size ? file.size : start + chunkSize;\n            var percent = parseInt(end / file.size * 100) + '%';\n            // self.postMessage({percent});\n\n            currentChunk++;\n            if (currentChunk < chunks) {\n                loadNext();\n            } else {\n                var md5Res = spark.end();\n                // console.log('finished loading');\n                // console.info('computed hash', md5Res);  // Compute hash\n                resolve(md5Res);\n            }\n        };\n\n        fileReader.onerror = function () {\n            console.warn('oops, something went wrong.');\n        };\n\n        function loadNext() {\n            var start = currentChunk * chunkSize;\n            var end = start + chunkSize >= file.size ? file.size : start + chunkSize;\n            fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));\n        }\n        loadNext();\n    });\n};\n\nself.addEventListener('message', function (message) {\n    var file = message.data;\n    calcMd5(file).then(function (md5Res) {\n        self.postMessage(md5Res);\n    });\n});\n\n/***/ }),\n/* 38 */\n/***/ (function(module, exports, __webpack_require__) {\n\n__webpack_require__(66);\n__webpack_require__(68);\n__webpack_require__(71);\n__webpack_require__(67);\n__webpack_require__(69);\n__webpack_require__(70);\nmodule.exports = __webpack_require__(3).Promise;\n\n\n/***/ }),\n/* 39 */\n/***/ (function(module, exports) {\n\nmodule.exports = function () { /* empty */ };\n\n\n/***/ }),\n/* 40 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (it, Constructor, name, forbiddenField) {\n  if (!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)) {\n    throw TypeError(name + ': incorrect invocation!');\n  } return it;\n};\n\n\n/***/ }),\n/* 41 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// false -> Array#indexOf\n// true  -> Array#includes\nvar toIObject = __webpack_require__(20);\nvar toLength = __webpack_require__(33);\nvar toAbsoluteIndex = __webpack_require__(61);\nmodule.exports = function (IS_INCLUDES) {\n  return function ($this, el, fromIndex) {\n    var O = toIObject($this);\n    var length = toLength(O.length);\n    var index = toAbsoluteIndex(fromIndex, length);\n    var value;\n    // Array#includes uses SameValueZero equality algorithm\n    // eslint-disable-next-line no-self-compare\n    if (IS_INCLUDES && el != el) while (length > index) {\n      value = O[index++];\n      // eslint-disable-next-line no-self-compare\n      if (value != value) return true;\n    // Array#indexOf ignores holes, Array#includes - not\n    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {\n      if (O[index] === el) return IS_INCLUDES || index || 0;\n    } return !IS_INCLUDES && -1;\n  };\n};\n\n\n/***/ }),\n/* 42 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar ctx = __webpack_require__(10);\nvar call = __webpack_require__(47);\nvar isArrayIter = __webpack_require__(46);\nvar anObject = __webpack_require__(2);\nvar toLength = __webpack_require__(33);\nvar getIterFn = __webpack_require__(64);\nvar BREAK = {};\nvar RETURN = {};\nvar exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {\n  var iterFn = ITERATOR ? function () { return iterable; } : getIterFn(iterable);\n  var f = ctx(fn, that, entries ? 2 : 1);\n  var index = 0;\n  var length, step, iterator, result;\n  if (typeof iterFn != 'function') throw TypeError(iterable + ' is not iterable!');\n  // fast case for arrays with default iterator\n  if (isArrayIter(iterFn)) for (length = toLength(iterable.length); length > index; index++) {\n    result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);\n    if (result === BREAK || result === RETURN) return result;\n  } else for (iterator = iterFn.call(iterable); !(step = iterator.next()).done;) {\n    result = call(iterator, f, step.value, entries);\n    if (result === BREAK || result === RETURN) return result;\n  }\n};\nexports.BREAK = BREAK;\nexports.RETURN = RETURN;\n\n\n/***/ }),\n/* 43 */\n/***/ (function(module, exports, __webpack_require__) {\n\nmodule.exports = !__webpack_require__(5) && !__webpack_require__(23)(function () {\n  return Object.defineProperty(__webpack_require__(15)('div'), 'a', { get: function () { return 7; } }).a != 7;\n});\n\n\n/***/ }),\n/* 44 */\n/***/ (function(module, exports) {\n\n// fast apply, http://jsperf.lnkit.com/fast-apply/5\nmodule.exports = function (fn, args, that) {\n  var un = that === undefined;\n  switch (args.length) {\n    case 0: return un ? fn()\n                      : fn.call(that);\n    case 1: return un ? fn(args[0])\n                      : fn.call(that, args[0]);\n    case 2: return un ? fn(args[0], args[1])\n                      : fn.call(that, args[0], args[1]);\n    case 3: return un ? fn(args[0], args[1], args[2])\n                      : fn.call(that, args[0], args[1], args[2]);\n    case 4: return un ? fn(args[0], args[1], args[2], args[3])\n                      : fn.call(that, args[0], args[1], args[2], args[3]);\n  } return fn.apply(that, args);\n};\n\n\n/***/ }),\n/* 45 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// fallback for non-array-like ES3 and non-enumerable old V8 strings\nvar cof = __webpack_require__(9);\n// eslint-disable-next-line no-prototype-builtins\nmodule.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {\n  return cof(it) == 'String' ? it.split('') : Object(it);\n};\n\n\n/***/ }),\n/* 46 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// check on default Array iterator\nvar Iterators = __webpack_require__(7);\nvar ITERATOR = __webpack_require__(1)('iterator');\nvar ArrayProto = Array.prototype;\n\nmodule.exports = function (it) {\n  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);\n};\n\n\n/***/ }),\n/* 47 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// call something on iterator step with safe closing on error\nvar anObject = __webpack_require__(2);\nmodule.exports = function (iterator, fn, value, entries) {\n  try {\n    return entries ? fn(anObject(value)[0], value[1]) : fn(value);\n  // 7.4.6 IteratorClose(iterator, completion)\n  } catch (e) {\n    var ret = iterator['return'];\n    if (ret !== undefined) anObject(ret.call(iterator));\n    throw e;\n  }\n};\n\n\n/***/ }),\n/* 48 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar create = __webpack_require__(52);\nvar descriptor = __webpack_require__(29);\nvar setToStringTag = __webpack_require__(17);\nvar IteratorPrototype = {};\n\n// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()\n__webpack_require__(4)(IteratorPrototype, __webpack_require__(1)('iterator'), function () { return this; });\n\nmodule.exports = function (Constructor, NAME, next) {\n  Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });\n  setToStringTag(Constructor, NAME + ' Iterator');\n};\n\n\n/***/ }),\n/* 49 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar ITERATOR = __webpack_require__(1)('iterator');\nvar SAFE_CLOSING = false;\n\ntry {\n  var riter = [7][ITERATOR]();\n  riter['return'] = function () { SAFE_CLOSING = true; };\n  // eslint-disable-next-line no-throw-literal\n  Array.from(riter, function () { throw 2; });\n} catch (e) { /* empty */ }\n\nmodule.exports = function (exec, skipClosing) {\n  if (!skipClosing && !SAFE_CLOSING) return false;\n  var safe = false;\n  try {\n    var arr = [7];\n    var iter = arr[ITERATOR]();\n    iter.next = function () { return { done: safe = true }; };\n    arr[ITERATOR] = function () { return iter; };\n    exec(arr);\n  } catch (e) { /* empty */ }\n  return safe;\n};\n\n\n/***/ }),\n/* 50 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (done, value) {\n  return { value: value, done: !!done };\n};\n\n\n/***/ }),\n/* 51 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar global = __webpack_require__(0);\nvar macrotask = __webpack_require__(32).set;\nvar Observer = global.MutationObserver || global.WebKitMutationObserver;\nvar process = global.process;\nvar Promise = global.Promise;\nvar isNode = __webpack_require__(9)(process) == 'process';\n\nmodule.exports = function () {\n  var head, last, notify;\n\n  var flush = function () {\n    var parent, fn;\n    if (isNode && (parent = process.domain)) parent.exit();\n    while (head) {\n      fn = head.fn;\n      head = head.next;\n      try {\n        fn();\n      } catch (e) {\n        if (head) notify();\n        else last = undefined;\n        throw e;\n      }\n    } last = undefined;\n    if (parent) parent.enter();\n  };\n\n  // Node.js\n  if (isNode) {\n    notify = function () {\n      process.nextTick(flush);\n    };\n  // browsers with MutationObserver, except iOS Safari - https://github.com/zloirock/core-js/issues/339\n  } else if (Observer && !(global.navigator && global.navigator.standalone)) {\n    var toggle = true;\n    var node = document.createTextNode('');\n    new Observer(flush).observe(node, { characterData: true }); // eslint-disable-line no-new\n    notify = function () {\n      node.data = toggle = !toggle;\n    };\n  // environments with maybe non-completely correct, but existent Promise\n  } else if (Promise && Promise.resolve) {\n    var promise = Promise.resolve();\n    notify = function () {\n      promise.then(flush);\n    };\n  // for other environments - macrotask based on:\n  // - setImmediate\n  // - MessageChannel\n  // - window.postMessag\n  // - onreadystatechange\n  // - setTimeout\n  } else {\n    notify = function () {\n      // strange IE + webpack dev server bug - use .call(global)\n      macrotask.call(global, flush);\n    };\n  }\n\n  return function (fn) {\n    var task = { fn: fn, next: undefined };\n    if (last) last.next = task;\n    if (!head) {\n      head = task;\n      notify();\n    } last = task;\n  };\n};\n\n\n/***/ }),\n/* 52 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])\nvar anObject = __webpack_require__(2);\nvar dPs = __webpack_require__(53);\nvar enumBugKeys = __webpack_require__(22);\nvar IE_PROTO = __webpack_require__(18)('IE_PROTO');\nvar Empty = function () { /* empty */ };\nvar PROTOTYPE = 'prototype';\n\n// Create object with fake `null` prototype: use iframe Object with cleared prototype\nvar createDict = function () {\n  // Thrash, waste and sodomy: IE GC bug\n  var iframe = __webpack_require__(15)('iframe');\n  var i = enumBugKeys.length;\n  var lt = '<';\n  var gt = '>';\n  var iframeDocument;\n  iframe.style.display = 'none';\n  __webpack_require__(24).appendChild(iframe);\n  iframe.src = 'javascript:'; // eslint-disable-line no-script-url\n  // createDict = iframe.contentWindow.Object;\n  // html.removeChild(iframe);\n  iframeDocument = iframe.contentWindow.document;\n  iframeDocument.open();\n  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);\n  iframeDocument.close();\n  createDict = iframeDocument.F;\n  while (i--) delete createDict[PROTOTYPE][enumBugKeys[i]];\n  return createDict();\n};\n\nmodule.exports = Object.create || function create(O, Properties) {\n  var result;\n  if (O !== null) {\n    Empty[PROTOTYPE] = anObject(O);\n    result = new Empty();\n    Empty[PROTOTYPE] = null;\n    // add \"__proto__\" for Object.getPrototypeOf polyfill\n    result[IE_PROTO] = O;\n  } else result = createDict();\n  return Properties === undefined ? result : dPs(result, Properties);\n};\n\n\n/***/ }),\n/* 53 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar dP = __webpack_require__(13);\nvar anObject = __webpack_require__(2);\nvar getKeys = __webpack_require__(56);\n\nmodule.exports = __webpack_require__(5) ? Object.defineProperties : function defineProperties(O, Properties) {\n  anObject(O);\n  var keys = getKeys(Properties);\n  var length = keys.length;\n  var i = 0;\n  var P;\n  while (length > i) dP.f(O, P = keys[i++], Properties[P]);\n  return O;\n};\n\n\n/***/ }),\n/* 54 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)\nvar has = __webpack_require__(12);\nvar toObject = __webpack_require__(62);\nvar IE_PROTO = __webpack_require__(18)('IE_PROTO');\nvar ObjectProto = Object.prototype;\n\nmodule.exports = Object.getPrototypeOf || function (O) {\n  O = toObject(O);\n  if (has(O, IE_PROTO)) return O[IE_PROTO];\n  if (typeof O.constructor == 'function' && O instanceof O.constructor) {\n    return O.constructor.prototype;\n  } return O instanceof Object ? ObjectProto : null;\n};\n\n\n/***/ }),\n/* 55 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar has = __webpack_require__(12);\nvar toIObject = __webpack_require__(20);\nvar arrayIndexOf = __webpack_require__(41)(false);\nvar IE_PROTO = __webpack_require__(18)('IE_PROTO');\n\nmodule.exports = function (object, names) {\n  var O = toIObject(object);\n  var i = 0;\n  var result = [];\n  var key;\n  for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);\n  // Don't enum bug & hidden keys\n  while (names.length > i) if (has(O, key = names[i++])) {\n    ~arrayIndexOf(result, key) || result.push(key);\n  }\n  return result;\n};\n\n\n/***/ }),\n/* 56 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 19.1.2.14 / 15.2.3.14 Object.keys(O)\nvar $keys = __webpack_require__(55);\nvar enumBugKeys = __webpack_require__(22);\n\nmodule.exports = Object.keys || function keys(O) {\n  return $keys(O, enumBugKeys);\n};\n\n\n/***/ }),\n/* 57 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar hide = __webpack_require__(4);\nmodule.exports = function (target, src, safe) {\n  for (var key in src) {\n    if (safe && target[key]) target[key] = src[key];\n    else hide(target, key, src[key]);\n  } return target;\n};\n\n\n/***/ }),\n/* 58 */\n/***/ (function(module, exports, __webpack_require__) {\n\nmodule.exports = __webpack_require__(4);\n\n\n/***/ }),\n/* 59 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar global = __webpack_require__(0);\nvar core = __webpack_require__(3);\nvar dP = __webpack_require__(13);\nvar DESCRIPTORS = __webpack_require__(5);\nvar SPECIES = __webpack_require__(1)('species');\n\nmodule.exports = function (KEY) {\n  var C = typeof core[KEY] == 'function' ? core[KEY] : global[KEY];\n  if (DESCRIPTORS && C && !C[SPECIES]) dP.f(C, SPECIES, {\n    configurable: true,\n    get: function () { return this; }\n  });\n};\n\n\n/***/ }),\n/* 60 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar toInteger = __webpack_require__(19);\nvar defined = __webpack_require__(14);\n// true  -> String#at\n// false -> String#codePointAt\nmodule.exports = function (TO_STRING) {\n  return function (that, pos) {\n    var s = String(defined(that));\n    var i = toInteger(pos);\n    var l = s.length;\n    var a, b;\n    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;\n    a = s.charCodeAt(i);\n    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff\n      ? TO_STRING ? s.charAt(i) : a\n      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;\n  };\n};\n\n\n/***/ }),\n/* 61 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar toInteger = __webpack_require__(19);\nvar max = Math.max;\nvar min = Math.min;\nmodule.exports = function (index, length) {\n  index = toInteger(index);\n  return index < 0 ? max(index + length, 0) : min(index, length);\n};\n\n\n/***/ }),\n/* 62 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 7.1.13 ToObject(argument)\nvar defined = __webpack_require__(14);\nmodule.exports = function (it) {\n  return Object(defined(it));\n};\n\n\n/***/ }),\n/* 63 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 7.1.1 ToPrimitive(input [, PreferredType])\nvar isObject = __webpack_require__(6);\n// instead of the ES6 spec version, we didn't implement @@toPrimitive case\n// and the second argument - flag - preferred type is a string\nmodule.exports = function (it, S) {\n  if (!isObject(it)) return it;\n  var fn, val;\n  if (S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;\n  if (typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it))) return val;\n  if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;\n  throw TypeError(\"Can't convert object to primitive value\");\n};\n\n\n/***/ }),\n/* 64 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar classof = __webpack_require__(21);\nvar ITERATOR = __webpack_require__(1)('iterator');\nvar Iterators = __webpack_require__(7);\nmodule.exports = __webpack_require__(3).getIteratorMethod = function (it) {\n  if (it != undefined) return it[ITERATOR]\n    || it['@@iterator']\n    || Iterators[classof(it)];\n};\n\n\n/***/ }),\n/* 65 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar addToUnscopables = __webpack_require__(39);\nvar step = __webpack_require__(50);\nvar Iterators = __webpack_require__(7);\nvar toIObject = __webpack_require__(20);\n\n// 22.1.3.4 Array.prototype.entries()\n// 22.1.3.13 Array.prototype.keys()\n// 22.1.3.29 Array.prototype.values()\n// 22.1.3.30 Array.prototype[@@iterator]()\nmodule.exports = __webpack_require__(25)(Array, 'Array', function (iterated, kind) {\n  this._t = toIObject(iterated); // target\n  this._i = 0;                   // next index\n  this._k = kind;                // kind\n// 22.1.5.2.1 %ArrayIteratorPrototype%.next()\n}, function () {\n  var O = this._t;\n  var kind = this._k;\n  var index = this._i++;\n  if (!O || index >= O.length) {\n    this._t = undefined;\n    return step(1);\n  }\n  if (kind == 'keys') return step(0, index);\n  if (kind == 'values') return step(0, O[index]);\n  return step(0, [index, O[index]]);\n}, 'values');\n\n// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)\nIterators.Arguments = Iterators.Array;\n\naddToUnscopables('keys');\naddToUnscopables('values');\naddToUnscopables('entries');\n\n\n/***/ }),\n/* 66 */\n/***/ (function(module, exports) {\n\n\n\n/***/ }),\n/* 67 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar LIBRARY = __webpack_require__(26);\nvar global = __webpack_require__(0);\nvar ctx = __webpack_require__(10);\nvar classof = __webpack_require__(21);\nvar $export = __webpack_require__(11);\nvar isObject = __webpack_require__(6);\nvar aFunction = __webpack_require__(8);\nvar anInstance = __webpack_require__(40);\nvar forOf = __webpack_require__(42);\nvar speciesConstructor = __webpack_require__(31);\nvar task = __webpack_require__(32).set;\nvar microtask = __webpack_require__(51)();\nvar newPromiseCapabilityModule = __webpack_require__(16);\nvar perform = __webpack_require__(27);\nvar promiseResolve = __webpack_require__(28);\nvar PROMISE = 'Promise';\nvar TypeError = global.TypeError;\nvar process = global.process;\nvar $Promise = global[PROMISE];\nvar isNode = classof(process) == 'process';\nvar empty = function () { /* empty */ };\nvar Internal, newGenericPromiseCapability, OwnPromiseCapability, Wrapper;\nvar newPromiseCapability = newGenericPromiseCapability = newPromiseCapabilityModule.f;\n\nvar USE_NATIVE = !!function () {\n  try {\n    // correct subclassing with @@species support\n    var promise = $Promise.resolve(1);\n    var FakePromise = (promise.constructor = {})[__webpack_require__(1)('species')] = function (exec) {\n      exec(empty, empty);\n    };\n    // unhandled rejections tracking support, NodeJS Promise without it fails @@species test\n    return (isNode || typeof PromiseRejectionEvent == 'function') && promise.then(empty) instanceof FakePromise;\n  } catch (e) { /* empty */ }\n}();\n\n// helpers\nvar isThenable = function (it) {\n  var then;\n  return isObject(it) && typeof (then = it.then) == 'function' ? then : false;\n};\nvar notify = function (promise, isReject) {\n  if (promise._n) return;\n  promise._n = true;\n  var chain = promise._c;\n  microtask(function () {\n    var value = promise._v;\n    var ok = promise._s == 1;\n    var i = 0;\n    var run = function (reaction) {\n      var handler = ok ? reaction.ok : reaction.fail;\n      var resolve = reaction.resolve;\n      var reject = reaction.reject;\n      var domain = reaction.domain;\n      var result, then;\n      try {\n        if (handler) {\n          if (!ok) {\n            if (promise._h == 2) onHandleUnhandled(promise);\n            promise._h = 1;\n          }\n          if (handler === true) result = value;\n          else {\n            if (domain) domain.enter();\n            result = handler(value);\n            if (domain) domain.exit();\n          }\n          if (result === reaction.promise) {\n            reject(TypeError('Promise-chain cycle'));\n          } else if (then = isThenable(result)) {\n            then.call(result, resolve, reject);\n          } else resolve(result);\n        } else reject(value);\n      } catch (e) {\n        reject(e);\n      }\n    };\n    while (chain.length > i) run(chain[i++]); // variable length - can't use forEach\n    promise._c = [];\n    promise._n = false;\n    if (isReject && !promise._h) onUnhandled(promise);\n  });\n};\nvar onUnhandled = function (promise) {\n  task.call(global, function () {\n    var value = promise._v;\n    var unhandled = isUnhandled(promise);\n    var result, handler, console;\n    if (unhandled) {\n      result = perform(function () {\n        if (isNode) {\n          process.emit('unhandledRejection', value, promise);\n        } else if (handler = global.onunhandledrejection) {\n          handler({ promise: promise, reason: value });\n        } else if ((console = global.console) && console.error) {\n          console.error('Unhandled promise rejection', value);\n        }\n      });\n      // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should\n      promise._h = isNode || isUnhandled(promise) ? 2 : 1;\n    } promise._a = undefined;\n    if (unhandled && result.e) throw result.v;\n  });\n};\nvar isUnhandled = function (promise) {\n  return promise._h !== 1 && (promise._a || promise._c).length === 0;\n};\nvar onHandleUnhandled = function (promise) {\n  task.call(global, function () {\n    var handler;\n    if (isNode) {\n      process.emit('rejectionHandled', promise);\n    } else if (handler = global.onrejectionhandled) {\n      handler({ promise: promise, reason: promise._v });\n    }\n  });\n};\nvar $reject = function (value) {\n  var promise = this;\n  if (promise._d) return;\n  promise._d = true;\n  promise = promise._w || promise; // unwrap\n  promise._v = value;\n  promise._s = 2;\n  if (!promise._a) promise._a = promise._c.slice();\n  notify(promise, true);\n};\nvar $resolve = function (value) {\n  var promise = this;\n  var then;\n  if (promise._d) return;\n  promise._d = true;\n  promise = promise._w || promise; // unwrap\n  try {\n    if (promise === value) throw TypeError(\"Promise can't be resolved itself\");\n    if (then = isThenable(value)) {\n      microtask(function () {\n        var wrapper = { _w: promise, _d: false }; // wrap\n        try {\n          then.call(value, ctx($resolve, wrapper, 1), ctx($reject, wrapper, 1));\n        } catch (e) {\n          $reject.call(wrapper, e);\n        }\n      });\n    } else {\n      promise._v = value;\n      promise._s = 1;\n      notify(promise, false);\n    }\n  } catch (e) {\n    $reject.call({ _w: promise, _d: false }, e); // wrap\n  }\n};\n\n// constructor polyfill\nif (!USE_NATIVE) {\n  // 25.4.3.1 Promise(executor)\n  $Promise = function Promise(executor) {\n    anInstance(this, $Promise, PROMISE, '_h');\n    aFunction(executor);\n    Internal.call(this);\n    try {\n      executor(ctx($resolve, this, 1), ctx($reject, this, 1));\n    } catch (err) {\n      $reject.call(this, err);\n    }\n  };\n  // eslint-disable-next-line no-unused-vars\n  Internal = function Promise(executor) {\n    this._c = [];             // <- awaiting reactions\n    this._a = undefined;      // <- checked in isUnhandled reactions\n    this._s = 0;              // <- state\n    this._d = false;          // <- done\n    this._v = undefined;      // <- value\n    this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled\n    this._n = false;          // <- notify\n  };\n  Internal.prototype = __webpack_require__(57)($Promise.prototype, {\n    // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)\n    then: function then(onFulfilled, onRejected) {\n      var reaction = newPromiseCapability(speciesConstructor(this, $Promise));\n      reaction.ok = typeof onFulfilled == 'function' ? onFulfilled : true;\n      reaction.fail = typeof onRejected == 'function' && onRejected;\n      reaction.domain = isNode ? process.domain : undefined;\n      this._c.push(reaction);\n      if (this._a) this._a.push(reaction);\n      if (this._s) notify(this, false);\n      return reaction.promise;\n    },\n    // 25.4.5.1 Promise.prototype.catch(onRejected)\n    'catch': function (onRejected) {\n      return this.then(undefined, onRejected);\n    }\n  });\n  OwnPromiseCapability = function () {\n    var promise = new Internal();\n    this.promise = promise;\n    this.resolve = ctx($resolve, promise, 1);\n    this.reject = ctx($reject, promise, 1);\n  };\n  newPromiseCapabilityModule.f = newPromiseCapability = function (C) {\n    return C === $Promise || C === Wrapper\n      ? new OwnPromiseCapability(C)\n      : newGenericPromiseCapability(C);\n  };\n}\n\n$export($export.G + $export.W + $export.F * !USE_NATIVE, { Promise: $Promise });\n__webpack_require__(17)($Promise, PROMISE);\n__webpack_require__(59)(PROMISE);\nWrapper = __webpack_require__(3)[PROMISE];\n\n// statics\n$export($export.S + $export.F * !USE_NATIVE, PROMISE, {\n  // 25.4.4.5 Promise.reject(r)\n  reject: function reject(r) {\n    var capability = newPromiseCapability(this);\n    var $$reject = capability.reject;\n    $$reject(r);\n    return capability.promise;\n  }\n});\n$export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {\n  // 25.4.4.6 Promise.resolve(x)\n  resolve: function resolve(x) {\n    return promiseResolve(LIBRARY && this === Wrapper ? $Promise : this, x);\n  }\n});\n$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(49)(function (iter) {\n  $Promise.all(iter)['catch'](empty);\n})), PROMISE, {\n  // 25.4.4.1 Promise.all(iterable)\n  all: function all(iterable) {\n    var C = this;\n    var capability = newPromiseCapability(C);\n    var resolve = capability.resolve;\n    var reject = capability.reject;\n    var result = perform(function () {\n      var values = [];\n      var index = 0;\n      var remaining = 1;\n      forOf(iterable, false, function (promise) {\n        var $index = index++;\n        var alreadyCalled = false;\n        values.push(undefined);\n        remaining++;\n        C.resolve(promise).then(function (value) {\n          if (alreadyCalled) return;\n          alreadyCalled = true;\n          values[$index] = value;\n          --remaining || resolve(values);\n        }, reject);\n      });\n      --remaining || resolve(values);\n    });\n    if (result.e) reject(result.v);\n    return capability.promise;\n  },\n  // 25.4.4.4 Promise.race(iterable)\n  race: function race(iterable) {\n    var C = this;\n    var capability = newPromiseCapability(C);\n    var reject = capability.reject;\n    var result = perform(function () {\n      forOf(iterable, false, function (promise) {\n        C.resolve(promise).then(capability.resolve, reject);\n      });\n    });\n    if (result.e) reject(result.v);\n    return capability.promise;\n  }\n});\n\n\n/***/ }),\n/* 68 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar $at = __webpack_require__(60)(true);\n\n// 21.1.3.27 String.prototype[@@iterator]()\n__webpack_require__(25)(String, 'String', function (iterated) {\n  this._t = String(iterated); // target\n  this._i = 0;                // next index\n// 21.1.5.2.1 %StringIteratorPrototype%.next()\n}, function () {\n  var O = this._t;\n  var index = this._i;\n  var point;\n  if (index >= O.length) return { value: undefined, done: true };\n  point = $at(O, index);\n  this._i += point.length;\n  return { value: point, done: false };\n});\n\n\n/***/ }),\n/* 69 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n// https://github.com/tc39/proposal-promise-finally\n\nvar $export = __webpack_require__(11);\nvar core = __webpack_require__(3);\nvar global = __webpack_require__(0);\nvar speciesConstructor = __webpack_require__(31);\nvar promiseResolve = __webpack_require__(28);\n\n$export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {\n  var C = speciesConstructor(this, core.Promise || global.Promise);\n  var isFunction = typeof onFinally == 'function';\n  return this.then(\n    isFunction ? function (x) {\n      return promiseResolve(C, onFinally()).then(function () { return x; });\n    } : onFinally,\n    isFunction ? function (e) {\n      return promiseResolve(C, onFinally()).then(function () { throw e; });\n    } : onFinally\n  );\n} });\n\n\n/***/ }),\n/* 70 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\n// https://github.com/tc39/proposal-promise-try\nvar $export = __webpack_require__(11);\nvar newPromiseCapability = __webpack_require__(16);\nvar perform = __webpack_require__(27);\n\n$export($export.S, 'Promise', { 'try': function (callbackfn) {\n  var promiseCapability = newPromiseCapability.f(this);\n  var result = perform(callbackfn);\n  (result.e ? promiseCapability.reject : promiseCapability.resolve)(result.v);\n  return promiseCapability.promise;\n} });\n\n\n/***/ }),\n/* 71 */\n/***/ (function(module, exports, __webpack_require__) {\n\n__webpack_require__(65);\nvar global = __webpack_require__(0);\nvar hide = __webpack_require__(4);\nvar Iterators = __webpack_require__(7);\nvar TO_STRING_TAG = __webpack_require__(1)('toStringTag');\n\nvar DOMIterables = ('CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,' +\n  'DOMTokenList,DataTransferItemList,FileList,HTMLAllCollection,HTMLCollection,HTMLFormElement,HTMLSelectElement,' +\n  'MediaList,MimeTypeArray,NamedNodeMap,NodeList,PaintRequestList,Plugin,PluginArray,SVGLengthList,SVGNumberList,' +\n  'SVGPathSegList,SVGPointList,SVGStringList,SVGTransformList,SourceBufferList,StyleSheetList,TextTrackCueList,' +\n  'TextTrackList,TouchList').split(',');\n\nfor (var i = 0; i < DOMIterables.length; i++) {\n  var NAME = DOMIterables[i];\n  var Collection = global[NAME];\n  var proto = Collection && Collection.prototype;\n  if (proto && !proto[TO_STRING_TAG]) hide(proto, TO_STRING_TAG, NAME);\n  Iterators[NAME] = Iterators.Array;\n}\n\n\n/***/ })\n/******/ ]);\n//# sourceMappingURL=b5f08cf6f4f87cadc5ce.worker.js.map", null);
+  return __webpack_require__(116)("/******/ (function(modules) { // webpackBootstrap\n/******/ \t// The module cache\n/******/ \tvar installedModules = {};\n/******/\n/******/ \t// The require function\n/******/ \tfunction __webpack_require__(moduleId) {\n/******/\n/******/ \t\t// Check if module is in cache\n/******/ \t\tif(installedModules[moduleId]) {\n/******/ \t\t\treturn installedModules[moduleId].exports;\n/******/ \t\t}\n/******/ \t\t// Create a new module (and put it into the cache)\n/******/ \t\tvar module = installedModules[moduleId] = {\n/******/ \t\t\ti: moduleId,\n/******/ \t\t\tl: false,\n/******/ \t\t\texports: {}\n/******/ \t\t};\n/******/\n/******/ \t\t// Execute the module function\n/******/ \t\tmodules[moduleId].call(module.exports, module, module.exports, __webpack_require__);\n/******/\n/******/ \t\t// Flag the module as loaded\n/******/ \t\tmodule.l = true;\n/******/\n/******/ \t\t// Return the exports of the module\n/******/ \t\treturn module.exports;\n/******/ \t}\n/******/\n/******/\n/******/ \t// expose the modules object (__webpack_modules__)\n/******/ \t__webpack_require__.m = modules;\n/******/\n/******/ \t// expose the module cache\n/******/ \t__webpack_require__.c = installedModules;\n/******/\n/******/ \t// identity function for calling harmony imports with the correct context\n/******/ \t__webpack_require__.i = function(value) { return value; };\n/******/\n/******/ \t// define getter function for harmony exports\n/******/ \t__webpack_require__.d = function(exports, name, getter) {\n/******/ \t\tif(!__webpack_require__.o(exports, name)) {\n/******/ \t\t\tObject.defineProperty(exports, name, {\n/******/ \t\t\t\tconfigurable: false,\n/******/ \t\t\t\tenumerable: true,\n/******/ \t\t\t\tget: getter\n/******/ \t\t\t});\n/******/ \t\t}\n/******/ \t};\n/******/\n/******/ \t// getDefaultExport function for compatibility with non-harmony modules\n/******/ \t__webpack_require__.n = function(module) {\n/******/ \t\tvar getter = module && module.__esModule ?\n/******/ \t\t\tfunction getDefault() { return module['default']; } :\n/******/ \t\t\tfunction getModuleExports() { return module; };\n/******/ \t\t__webpack_require__.d(getter, 'a', getter);\n/******/ \t\treturn getter;\n/******/ \t};\n/******/\n/******/ \t// Object.prototype.hasOwnProperty.call\n/******/ \t__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };\n/******/\n/******/ \t// __webpack_public_path__\n/******/ \t__webpack_require__.p = \"\";\n/******/\n/******/ \t// Load entry module and return exports\n/******/ \treturn __webpack_require__(__webpack_require__.s = 37);\n/******/ })\n/************************************************************************/\n/******/ ([\n/* 0 */\n/***/ (function(module, exports) {\n\n// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028\nvar global = module.exports = typeof window != 'undefined' && window.Math == Math\n  ? window : typeof self != 'undefined' && self.Math == Math ? self\n  // eslint-disable-next-line no-new-func\n  : Function('return this')();\nif (typeof __g == 'number') __g = global; // eslint-disable-line no-undef\n\n\n/***/ }),\n/* 1 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar store = __webpack_require__(30)('wks');\nvar uid = __webpack_require__(34);\nvar Symbol = __webpack_require__(0).Symbol;\nvar USE_SYMBOL = typeof Symbol == 'function';\n\nvar $exports = module.exports = function (name) {\n  return store[name] || (store[name] =\n    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));\n};\n\n$exports.store = store;\n\n\n/***/ }),\n/* 2 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar isObject = __webpack_require__(6);\nmodule.exports = function (it) {\n  if (!isObject(it)) throw TypeError(it + ' is not an object!');\n  return it;\n};\n\n\n/***/ }),\n/* 3 */\n/***/ (function(module, exports) {\n\nvar core = module.exports = { version: '2.5.7' };\nif (typeof __e == 'number') __e = core; // eslint-disable-line no-undef\n\n\n/***/ }),\n/* 4 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar dP = __webpack_require__(13);\nvar createDesc = __webpack_require__(29);\nmodule.exports = __webpack_require__(5) ? function (object, key, value) {\n  return dP.f(object, key, createDesc(1, value));\n} : function (object, key, value) {\n  object[key] = value;\n  return object;\n};\n\n\n/***/ }),\n/* 5 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// Thank's IE8 for his funny defineProperty\nmodule.exports = !__webpack_require__(24)(function () {\n  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;\n});\n\n\n/***/ }),\n/* 6 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (it) {\n  return typeof it === 'object' ? it !== null : typeof it === 'function';\n};\n\n\n/***/ }),\n/* 7 */\n/***/ (function(module, exports) {\n\nmodule.exports = {};\n\n\n/***/ }),\n/* 8 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (it) {\n  if (typeof it != 'function') throw TypeError(it + ' is not a function!');\n  return it;\n};\n\n\n/***/ }),\n/* 9 */\n/***/ (function(module, exports) {\n\nvar toString = {}.toString;\n\nmodule.exports = function (it) {\n  return toString.call(it).slice(8, -1);\n};\n\n\n/***/ }),\n/* 10 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// optional / simple context binding\nvar aFunction = __webpack_require__(8);\nmodule.exports = function (fn, that, length) {\n  aFunction(fn);\n  if (that === undefined) return fn;\n  switch (length) {\n    case 1: return function (a) {\n      return fn.call(that, a);\n    };\n    case 2: return function (a, b) {\n      return fn.call(that, a, b);\n    };\n    case 3: return function (a, b, c) {\n      return fn.call(that, a, b, c);\n    };\n  }\n  return function (/* ...args */) {\n    return fn.apply(that, arguments);\n  };\n};\n\n\n/***/ }),\n/* 11 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar global = __webpack_require__(0);\nvar core = __webpack_require__(3);\nvar ctx = __webpack_require__(10);\nvar hide = __webpack_require__(4);\nvar has = __webpack_require__(12);\nvar PROTOTYPE = 'prototype';\n\nvar $export = function (type, name, source) {\n  var IS_FORCED = type & $export.F;\n  var IS_GLOBAL = type & $export.G;\n  var IS_STATIC = type & $export.S;\n  var IS_PROTO = type & $export.P;\n  var IS_BIND = type & $export.B;\n  var IS_WRAP = type & $export.W;\n  var exports = IS_GLOBAL ? core : core[name] || (core[name] = {});\n  var expProto = exports[PROTOTYPE];\n  var target = IS_GLOBAL ? global : IS_STATIC ? global[name] : (global[name] || {})[PROTOTYPE];\n  var key, own, out;\n  if (IS_GLOBAL) source = name;\n  for (key in source) {\n    // contains in native\n    own = !IS_FORCED && target && target[key] !== undefined;\n    if (own && has(exports, key)) continue;\n    // export native or passed\n    out = own ? target[key] : source[key];\n    // prevent global pollution for namespaces\n    exports[key] = IS_GLOBAL && typeof target[key] != 'function' ? source[key]\n    // bind timers to global for call from export context\n    : IS_BIND && own ? ctx(out, global)\n    // wrap global constructors for prevent change them in library\n    : IS_WRAP && target[key] == out ? (function (C) {\n      var F = function (a, b, c) {\n        if (this instanceof C) {\n          switch (arguments.length) {\n            case 0: return new C();\n            case 1: return new C(a);\n            case 2: return new C(a, b);\n          } return new C(a, b, c);\n        } return C.apply(this, arguments);\n      };\n      F[PROTOTYPE] = C[PROTOTYPE];\n      return F;\n    // make static versions for prototype methods\n    })(out) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;\n    // export proto methods to core.%CONSTRUCTOR%.methods.%NAME%\n    if (IS_PROTO) {\n      (exports.virtual || (exports.virtual = {}))[key] = out;\n      // export proto methods to core.%CONSTRUCTOR%.prototype.%NAME%\n      if (type & $export.R && expProto && !expProto[key]) hide(expProto, key, out);\n    }\n  }\n};\n// type bitmap\n$export.F = 1;   // forced\n$export.G = 2;   // global\n$export.S = 4;   // static\n$export.P = 8;   // proto\n$export.B = 16;  // bind\n$export.W = 32;  // wrap\n$export.U = 64;  // safe\n$export.R = 128; // real proto method for `library`\nmodule.exports = $export;\n\n\n/***/ }),\n/* 12 */\n/***/ (function(module, exports) {\n\nvar hasOwnProperty = {}.hasOwnProperty;\nmodule.exports = function (it, key) {\n  return hasOwnProperty.call(it, key);\n};\n\n\n/***/ }),\n/* 13 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar anObject = __webpack_require__(2);\nvar IE8_DOM_DEFINE = __webpack_require__(43);\nvar toPrimitive = __webpack_require__(63);\nvar dP = Object.defineProperty;\n\nexports.f = __webpack_require__(5) ? Object.defineProperty : function defineProperty(O, P, Attributes) {\n  anObject(O);\n  P = toPrimitive(P, true);\n  anObject(Attributes);\n  if (IE8_DOM_DEFINE) try {\n    return dP(O, P, Attributes);\n  } catch (e) { /* empty */ }\n  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');\n  if ('value' in Attributes) O[P] = Attributes.value;\n  return O;\n};\n\n\n/***/ }),\n/* 14 */\n/***/ (function(module, exports) {\n\n// 7.2.1 RequireObjectCoercible(argument)\nmodule.exports = function (it) {\n  if (it == undefined) throw TypeError(\"Can't call method on  \" + it);\n  return it;\n};\n\n\n/***/ }),\n/* 15 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar isObject = __webpack_require__(6);\nvar document = __webpack_require__(0).document;\n// typeof document.createElement is 'object' in old IE\nvar is = isObject(document) && isObject(document.createElement);\nmodule.exports = function (it) {\n  return is ? document.createElement(it) : {};\n};\n\n\n/***/ }),\n/* 16 */\n/***/ (function(module, exports) {\n\nmodule.exports = true;\n\n\n/***/ }),\n/* 17 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\n// 25.4.1.5 NewPromiseCapability(C)\nvar aFunction = __webpack_require__(8);\n\nfunction PromiseCapability(C) {\n  var resolve, reject;\n  this.promise = new C(function ($$resolve, $$reject) {\n    if (resolve !== undefined || reject !== undefined) throw TypeError('Bad Promise constructor');\n    resolve = $$resolve;\n    reject = $$reject;\n  });\n  this.resolve = aFunction(resolve);\n  this.reject = aFunction(reject);\n}\n\nmodule.exports.f = function (C) {\n  return new PromiseCapability(C);\n};\n\n\n/***/ }),\n/* 18 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar def = __webpack_require__(13).f;\nvar has = __webpack_require__(12);\nvar TAG = __webpack_require__(1)('toStringTag');\n\nmodule.exports = function (it, tag, stat) {\n  if (it && !has(it = stat ? it : it.prototype, TAG)) def(it, TAG, { configurable: true, value: tag });\n};\n\n\n/***/ }),\n/* 19 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar shared = __webpack_require__(30)('keys');\nvar uid = __webpack_require__(34);\nmodule.exports = function (key) {\n  return shared[key] || (shared[key] = uid(key));\n};\n\n\n/***/ }),\n/* 20 */\n/***/ (function(module, exports) {\n\n// 7.1.4 ToInteger\nvar ceil = Math.ceil;\nvar floor = Math.floor;\nmodule.exports = function (it) {\n  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);\n};\n\n\n/***/ }),\n/* 21 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// to indexed object, toObject with fallback for non-array-like ES3 strings\nvar IObject = __webpack_require__(45);\nvar defined = __webpack_require__(14);\nmodule.exports = function (it) {\n  return IObject(defined(it));\n};\n\n\n/***/ }),\n/* 22 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// getting tag from 19.1.3.6 Object.prototype.toString()\nvar cof = __webpack_require__(9);\nvar TAG = __webpack_require__(1)('toStringTag');\n// ES3 wrong here\nvar ARG = cof(function () { return arguments; }()) == 'Arguments';\n\n// fallback for IE11 Script Access Denied error\nvar tryGet = function (it, key) {\n  try {\n    return it[key];\n  } catch (e) { /* empty */ }\n};\n\nmodule.exports = function (it) {\n  var O, T, B;\n  return it === undefined ? 'Undefined' : it === null ? 'Null'\n    // @@toStringTag case\n    : typeof (T = tryGet(O = Object(it), TAG)) == 'string' ? T\n    // builtinTag case\n    : ARG ? cof(O)\n    // ES3 arguments fallback\n    : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;\n};\n\n\n/***/ }),\n/* 23 */\n/***/ (function(module, exports) {\n\n// IE 8- don't enum bug keys\nmodule.exports = (\n  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'\n).split(',');\n\n\n/***/ }),\n/* 24 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (exec) {\n  try {\n    return !!exec();\n  } catch (e) {\n    return true;\n  }\n};\n\n\n/***/ }),\n/* 25 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar document = __webpack_require__(0).document;\nmodule.exports = document && document.documentElement;\n\n\n/***/ }),\n/* 26 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar LIBRARY = __webpack_require__(16);\nvar $export = __webpack_require__(11);\nvar redefine = __webpack_require__(58);\nvar hide = __webpack_require__(4);\nvar Iterators = __webpack_require__(7);\nvar $iterCreate = __webpack_require__(48);\nvar setToStringTag = __webpack_require__(18);\nvar getPrototypeOf = __webpack_require__(54);\nvar ITERATOR = __webpack_require__(1)('iterator');\nvar BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`\nvar FF_ITERATOR = '@@iterator';\nvar KEYS = 'keys';\nvar VALUES = 'values';\n\nvar returnThis = function () { return this; };\n\nmodule.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED) {\n  $iterCreate(Constructor, NAME, next);\n  var getMethod = function (kind) {\n    if (!BUGGY && kind in proto) return proto[kind];\n    switch (kind) {\n      case KEYS: return function keys() { return new Constructor(this, kind); };\n      case VALUES: return function values() { return new Constructor(this, kind); };\n    } return function entries() { return new Constructor(this, kind); };\n  };\n  var TAG = NAME + ' Iterator';\n  var DEF_VALUES = DEFAULT == VALUES;\n  var VALUES_BUG = false;\n  var proto = Base.prototype;\n  var $native = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT];\n  var $default = $native || getMethod(DEFAULT);\n  var $entries = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined;\n  var $anyNative = NAME == 'Array' ? proto.entries || $native : $native;\n  var methods, key, IteratorPrototype;\n  // Fix native\n  if ($anyNative) {\n    IteratorPrototype = getPrototypeOf($anyNative.call(new Base()));\n    if (IteratorPrototype !== Object.prototype && IteratorPrototype.next) {\n      // Set @@toStringTag to native iterators\n      setToStringTag(IteratorPrototype, TAG, true);\n      // fix for some old engines\n      if (!LIBRARY && typeof IteratorPrototype[ITERATOR] != 'function') hide(IteratorPrototype, ITERATOR, returnThis);\n    }\n  }\n  // fix Array#{values, @@iterator}.name in V8 / FF\n  if (DEF_VALUES && $native && $native.name !== VALUES) {\n    VALUES_BUG = true;\n    $default = function values() { return $native.call(this); };\n  }\n  // Define iterator\n  if ((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])) {\n    hide(proto, ITERATOR, $default);\n  }\n  // Plug for library\n  Iterators[NAME] = $default;\n  Iterators[TAG] = returnThis;\n  if (DEFAULT) {\n    methods = {\n      values: DEF_VALUES ? $default : getMethod(VALUES),\n      keys: IS_SET ? $default : getMethod(KEYS),\n      entries: $entries\n    };\n    if (FORCED) for (key in methods) {\n      if (!(key in proto)) redefine(proto, key, methods[key]);\n    } else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);\n  }\n  return methods;\n};\n\n\n/***/ }),\n/* 27 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (exec) {\n  try {\n    return { e: false, v: exec() };\n  } catch (e) {\n    return { e: true, v: e };\n  }\n};\n\n\n/***/ }),\n/* 28 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar anObject = __webpack_require__(2);\nvar isObject = __webpack_require__(6);\nvar newPromiseCapability = __webpack_require__(17);\n\nmodule.exports = function (C, x) {\n  anObject(C);\n  if (isObject(x) && x.constructor === C) return x;\n  var promiseCapability = newPromiseCapability.f(C);\n  var resolve = promiseCapability.resolve;\n  resolve(x);\n  return promiseCapability.promise;\n};\n\n\n/***/ }),\n/* 29 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (bitmap, value) {\n  return {\n    enumerable: !(bitmap & 1),\n    configurable: !(bitmap & 2),\n    writable: !(bitmap & 4),\n    value: value\n  };\n};\n\n\n/***/ }),\n/* 30 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar core = __webpack_require__(3);\nvar global = __webpack_require__(0);\nvar SHARED = '__core-js_shared__';\nvar store = global[SHARED] || (global[SHARED] = {});\n\n(module.exports = function (key, value) {\n  return store[key] || (store[key] = value !== undefined ? value : {});\n})('versions', []).push({\n  version: core.version,\n  mode: __webpack_require__(16) ? 'pure' : 'global',\n  copyright: '© 2018 Denis Pushkarev (zloirock.ru)'\n});\n\n\n/***/ }),\n/* 31 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 7.3.20 SpeciesConstructor(O, defaultConstructor)\nvar anObject = __webpack_require__(2);\nvar aFunction = __webpack_require__(8);\nvar SPECIES = __webpack_require__(1)('species');\nmodule.exports = function (O, D) {\n  var C = anObject(O).constructor;\n  var S;\n  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);\n};\n\n\n/***/ }),\n/* 32 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar ctx = __webpack_require__(10);\nvar invoke = __webpack_require__(44);\nvar html = __webpack_require__(25);\nvar cel = __webpack_require__(15);\nvar global = __webpack_require__(0);\nvar process = global.process;\nvar setTask = global.setImmediate;\nvar clearTask = global.clearImmediate;\nvar MessageChannel = global.MessageChannel;\nvar Dispatch = global.Dispatch;\nvar counter = 0;\nvar queue = {};\nvar ONREADYSTATECHANGE = 'onreadystatechange';\nvar defer, channel, port;\nvar run = function () {\n  var id = +this;\n  // eslint-disable-next-line no-prototype-builtins\n  if (queue.hasOwnProperty(id)) {\n    var fn = queue[id];\n    delete queue[id];\n    fn();\n  }\n};\nvar listener = function (event) {\n  run.call(event.data);\n};\n// Node.js 0.9+ & IE10+ has setImmediate, otherwise:\nif (!setTask || !clearTask) {\n  setTask = function setImmediate(fn) {\n    var args = [];\n    var i = 1;\n    while (arguments.length > i) args.push(arguments[i++]);\n    queue[++counter] = function () {\n      // eslint-disable-next-line no-new-func\n      invoke(typeof fn == 'function' ? fn : Function(fn), args);\n    };\n    defer(counter);\n    return counter;\n  };\n  clearTask = function clearImmediate(id) {\n    delete queue[id];\n  };\n  // Node.js 0.8-\n  if (__webpack_require__(9)(process) == 'process') {\n    defer = function (id) {\n      process.nextTick(ctx(run, id, 1));\n    };\n  // Sphere (JS game engine) Dispatch API\n  } else if (Dispatch && Dispatch.now) {\n    defer = function (id) {\n      Dispatch.now(ctx(run, id, 1));\n    };\n  // Browsers with MessageChannel, includes WebWorkers\n  } else if (MessageChannel) {\n    channel = new MessageChannel();\n    port = channel.port2;\n    channel.port1.onmessage = listener;\n    defer = ctx(port.postMessage, port, 1);\n  // Browsers with postMessage, skip WebWorkers\n  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'\n  } else if (global.addEventListener && typeof postMessage == 'function' && !global.importScripts) {\n    defer = function (id) {\n      global.postMessage(id + '', '*');\n    };\n    global.addEventListener('message', listener, false);\n  // IE8-\n  } else if (ONREADYSTATECHANGE in cel('script')) {\n    defer = function (id) {\n      html.appendChild(cel('script'))[ONREADYSTATECHANGE] = function () {\n        html.removeChild(this);\n        run.call(id);\n      };\n    };\n  // Rest old browsers\n  } else {\n    defer = function (id) {\n      setTimeout(ctx(run, id, 1), 0);\n    };\n  }\n}\nmodule.exports = {\n  set: setTask,\n  clear: clearTask\n};\n\n\n/***/ }),\n/* 33 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 7.1.15 ToLength\nvar toInteger = __webpack_require__(20);\nvar min = Math.min;\nmodule.exports = function (it) {\n  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991\n};\n\n\n/***/ }),\n/* 34 */\n/***/ (function(module, exports) {\n\nvar id = 0;\nvar px = Math.random();\nmodule.exports = function (key) {\n  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));\n};\n\n\n/***/ }),\n/* 35 */\n/***/ (function(module, exports, __webpack_require__) {\n\nmodule.exports = { \"default\": __webpack_require__(38), __esModule: true };\n\n/***/ }),\n/* 36 */\n/***/ (function(module, exports, __webpack_require__) {\n\n(function (factory) {\n    if (true) {\n        // Node/CommonJS\n        module.exports = factory();\n    } else if (typeof define === 'function' && define.amd) {\n        // AMD\n        define(factory);\n    } else {\n        // Browser globals (with support for web workers)\n        var glob;\n\n        try {\n            glob = window;\n        } catch (e) {\n            glob = self;\n        }\n\n        glob.SparkMD5 = factory();\n    }\n}(function (undefined) {\n\n    'use strict';\n\n    /*\n     * Fastest md5 implementation around (JKM md5).\n     * Credits: Joseph Myers\n     *\n     * @see http://www.myersdaily.org/joseph/javascript/md5-text.html\n     * @see http://jsperf.com/md5-shootout/7\n     */\n\n    /* this function is much faster,\n      so if possible we use it. Some IEs\n      are the only ones I know of that\n      need the idiotic second function,\n      generated by an if clause.  */\n    var add32 = function (a, b) {\n        return (a + b) & 0xFFFFFFFF;\n    },\n        hex_chr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];\n\n\n    function cmn(q, a, b, x, s, t) {\n        a = add32(add32(a, q), add32(x, t));\n        return add32((a << s) | (a >>> (32 - s)), b);\n    }\n\n    function md5cycle(x, k) {\n        var a = x[0],\n            b = x[1],\n            c = x[2],\n            d = x[3];\n\n        a += (b & c | ~b & d) + k[0] - 680876936 | 0;\n        a  = (a << 7 | a >>> 25) + b | 0;\n        d += (a & b | ~a & c) + k[1] - 389564586 | 0;\n        d  = (d << 12 | d >>> 20) + a | 0;\n        c += (d & a | ~d & b) + k[2] + 606105819 | 0;\n        c  = (c << 17 | c >>> 15) + d | 0;\n        b += (c & d | ~c & a) + k[3] - 1044525330 | 0;\n        b  = (b << 22 | b >>> 10) + c | 0;\n        a += (b & c | ~b & d) + k[4] - 176418897 | 0;\n        a  = (a << 7 | a >>> 25) + b | 0;\n        d += (a & b | ~a & c) + k[5] + 1200080426 | 0;\n        d  = (d << 12 | d >>> 20) + a | 0;\n        c += (d & a | ~d & b) + k[6] - 1473231341 | 0;\n        c  = (c << 17 | c >>> 15) + d | 0;\n        b += (c & d | ~c & a) + k[7] - 45705983 | 0;\n        b  = (b << 22 | b >>> 10) + c | 0;\n        a += (b & c | ~b & d) + k[8] + 1770035416 | 0;\n        a  = (a << 7 | a >>> 25) + b | 0;\n        d += (a & b | ~a & c) + k[9] - 1958414417 | 0;\n        d  = (d << 12 | d >>> 20) + a | 0;\n        c += (d & a | ~d & b) + k[10] - 42063 | 0;\n        c  = (c << 17 | c >>> 15) + d | 0;\n        b += (c & d | ~c & a) + k[11] - 1990404162 | 0;\n        b  = (b << 22 | b >>> 10) + c | 0;\n        a += (b & c | ~b & d) + k[12] + 1804603682 | 0;\n        a  = (a << 7 | a >>> 25) + b | 0;\n        d += (a & b | ~a & c) + k[13] - 40341101 | 0;\n        d  = (d << 12 | d >>> 20) + a | 0;\n        c += (d & a | ~d & b) + k[14] - 1502002290 | 0;\n        c  = (c << 17 | c >>> 15) + d | 0;\n        b += (c & d | ~c & a) + k[15] + 1236535329 | 0;\n        b  = (b << 22 | b >>> 10) + c | 0;\n\n        a += (b & d | c & ~d) + k[1] - 165796510 | 0;\n        a  = (a << 5 | a >>> 27) + b | 0;\n        d += (a & c | b & ~c) + k[6] - 1069501632 | 0;\n        d  = (d << 9 | d >>> 23) + a | 0;\n        c += (d & b | a & ~b) + k[11] + 643717713 | 0;\n        c  = (c << 14 | c >>> 18) + d | 0;\n        b += (c & a | d & ~a) + k[0] - 373897302 | 0;\n        b  = (b << 20 | b >>> 12) + c | 0;\n        a += (b & d | c & ~d) + k[5] - 701558691 | 0;\n        a  = (a << 5 | a >>> 27) + b | 0;\n        d += (a & c | b & ~c) + k[10] + 38016083 | 0;\n        d  = (d << 9 | d >>> 23) + a | 0;\n        c += (d & b | a & ~b) + k[15] - 660478335 | 0;\n        c  = (c << 14 | c >>> 18) + d | 0;\n        b += (c & a | d & ~a) + k[4] - 405537848 | 0;\n        b  = (b << 20 | b >>> 12) + c | 0;\n        a += (b & d | c & ~d) + k[9] + 568446438 | 0;\n        a  = (a << 5 | a >>> 27) + b | 0;\n        d += (a & c | b & ~c) + k[14] - 1019803690 | 0;\n        d  = (d << 9 | d >>> 23) + a | 0;\n        c += (d & b | a & ~b) + k[3] - 187363961 | 0;\n        c  = (c << 14 | c >>> 18) + d | 0;\n        b += (c & a | d & ~a) + k[8] + 1163531501 | 0;\n        b  = (b << 20 | b >>> 12) + c | 0;\n        a += (b & d | c & ~d) + k[13] - 1444681467 | 0;\n        a  = (a << 5 | a >>> 27) + b | 0;\n        d += (a & c | b & ~c) + k[2] - 51403784 | 0;\n        d  = (d << 9 | d >>> 23) + a | 0;\n        c += (d & b | a & ~b) + k[7] + 1735328473 | 0;\n        c  = (c << 14 | c >>> 18) + d | 0;\n        b += (c & a | d & ~a) + k[12] - 1926607734 | 0;\n        b  = (b << 20 | b >>> 12) + c | 0;\n\n        a += (b ^ c ^ d) + k[5] - 378558 | 0;\n        a  = (a << 4 | a >>> 28) + b | 0;\n        d += (a ^ b ^ c) + k[8] - 2022574463 | 0;\n        d  = (d << 11 | d >>> 21) + a | 0;\n        c += (d ^ a ^ b) + k[11] + 1839030562 | 0;\n        c  = (c << 16 | c >>> 16) + d | 0;\n        b += (c ^ d ^ a) + k[14] - 35309556 | 0;\n        b  = (b << 23 | b >>> 9) + c | 0;\n        a += (b ^ c ^ d) + k[1] - 1530992060 | 0;\n        a  = (a << 4 | a >>> 28) + b | 0;\n        d += (a ^ b ^ c) + k[4] + 1272893353 | 0;\n        d  = (d << 11 | d >>> 21) + a | 0;\n        c += (d ^ a ^ b) + k[7] - 155497632 | 0;\n        c  = (c << 16 | c >>> 16) + d | 0;\n        b += (c ^ d ^ a) + k[10] - 1094730640 | 0;\n        b  = (b << 23 | b >>> 9) + c | 0;\n        a += (b ^ c ^ d) + k[13] + 681279174 | 0;\n        a  = (a << 4 | a >>> 28) + b | 0;\n        d += (a ^ b ^ c) + k[0] - 358537222 | 0;\n        d  = (d << 11 | d >>> 21) + a | 0;\n        c += (d ^ a ^ b) + k[3] - 722521979 | 0;\n        c  = (c << 16 | c >>> 16) + d | 0;\n        b += (c ^ d ^ a) + k[6] + 76029189 | 0;\n        b  = (b << 23 | b >>> 9) + c | 0;\n        a += (b ^ c ^ d) + k[9] - 640364487 | 0;\n        a  = (a << 4 | a >>> 28) + b | 0;\n        d += (a ^ b ^ c) + k[12] - 421815835 | 0;\n        d  = (d << 11 | d >>> 21) + a | 0;\n        c += (d ^ a ^ b) + k[15] + 530742520 | 0;\n        c  = (c << 16 | c >>> 16) + d | 0;\n        b += (c ^ d ^ a) + k[2] - 995338651 | 0;\n        b  = (b << 23 | b >>> 9) + c | 0;\n\n        a += (c ^ (b | ~d)) + k[0] - 198630844 | 0;\n        a  = (a << 6 | a >>> 26) + b | 0;\n        d += (b ^ (a | ~c)) + k[7] + 1126891415 | 0;\n        d  = (d << 10 | d >>> 22) + a | 0;\n        c += (a ^ (d | ~b)) + k[14] - 1416354905 | 0;\n        c  = (c << 15 | c >>> 17) + d | 0;\n        b += (d ^ (c | ~a)) + k[5] - 57434055 | 0;\n        b  = (b << 21 |b >>> 11) + c | 0;\n        a += (c ^ (b | ~d)) + k[12] + 1700485571 | 0;\n        a  = (a << 6 | a >>> 26) + b | 0;\n        d += (b ^ (a | ~c)) + k[3] - 1894986606 | 0;\n        d  = (d << 10 | d >>> 22) + a | 0;\n        c += (a ^ (d | ~b)) + k[10] - 1051523 | 0;\n        c  = (c << 15 | c >>> 17) + d | 0;\n        b += (d ^ (c | ~a)) + k[1] - 2054922799 | 0;\n        b  = (b << 21 |b >>> 11) + c | 0;\n        a += (c ^ (b | ~d)) + k[8] + 1873313359 | 0;\n        a  = (a << 6 | a >>> 26) + b | 0;\n        d += (b ^ (a | ~c)) + k[15] - 30611744 | 0;\n        d  = (d << 10 | d >>> 22) + a | 0;\n        c += (a ^ (d | ~b)) + k[6] - 1560198380 | 0;\n        c  = (c << 15 | c >>> 17) + d | 0;\n        b += (d ^ (c | ~a)) + k[13] + 1309151649 | 0;\n        b  = (b << 21 |b >>> 11) + c | 0;\n        a += (c ^ (b | ~d)) + k[4] - 145523070 | 0;\n        a  = (a << 6 | a >>> 26) + b | 0;\n        d += (b ^ (a | ~c)) + k[11] - 1120210379 | 0;\n        d  = (d << 10 | d >>> 22) + a | 0;\n        c += (a ^ (d | ~b)) + k[2] + 718787259 | 0;\n        c  = (c << 15 | c >>> 17) + d | 0;\n        b += (d ^ (c | ~a)) + k[9] - 343485551 | 0;\n        b  = (b << 21 | b >>> 11) + c | 0;\n\n        x[0] = a + x[0] | 0;\n        x[1] = b + x[1] | 0;\n        x[2] = c + x[2] | 0;\n        x[3] = d + x[3] | 0;\n    }\n\n    function md5blk(s) {\n        var md5blks = [],\n            i; /* Andy King said do it this way. */\n\n        for (i = 0; i < 64; i += 4) {\n            md5blks[i >> 2] = s.charCodeAt(i) + (s.charCodeAt(i + 1) << 8) + (s.charCodeAt(i + 2) << 16) + (s.charCodeAt(i + 3) << 24);\n        }\n        return md5blks;\n    }\n\n    function md5blk_array(a) {\n        var md5blks = [],\n            i; /* Andy King said do it this way. */\n\n        for (i = 0; i < 64; i += 4) {\n            md5blks[i >> 2] = a[i] + (a[i + 1] << 8) + (a[i + 2] << 16) + (a[i + 3] << 24);\n        }\n        return md5blks;\n    }\n\n    function md51(s) {\n        var n = s.length,\n            state = [1732584193, -271733879, -1732584194, 271733878],\n            i,\n            length,\n            tail,\n            tmp,\n            lo,\n            hi;\n\n        for (i = 64; i <= n; i += 64) {\n            md5cycle(state, md5blk(s.substring(i - 64, i)));\n        }\n        s = s.substring(i - 64);\n        length = s.length;\n        tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];\n        for (i = 0; i < length; i += 1) {\n            tail[i >> 2] |= s.charCodeAt(i) << ((i % 4) << 3);\n        }\n        tail[i >> 2] |= 0x80 << ((i % 4) << 3);\n        if (i > 55) {\n            md5cycle(state, tail);\n            for (i = 0; i < 16; i += 1) {\n                tail[i] = 0;\n            }\n        }\n\n        // Beware that the final length might not fit in 32 bits so we take care of that\n        tmp = n * 8;\n        tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);\n        lo = parseInt(tmp[2], 16);\n        hi = parseInt(tmp[1], 16) || 0;\n\n        tail[14] = lo;\n        tail[15] = hi;\n\n        md5cycle(state, tail);\n        return state;\n    }\n\n    function md51_array(a) {\n        var n = a.length,\n            state = [1732584193, -271733879, -1732584194, 271733878],\n            i,\n            length,\n            tail,\n            tmp,\n            lo,\n            hi;\n\n        for (i = 64; i <= n; i += 64) {\n            md5cycle(state, md5blk_array(a.subarray(i - 64, i)));\n        }\n\n        // Not sure if it is a bug, however IE10 will always produce a sub array of length 1\n        // containing the last element of the parent array if the sub array specified starts\n        // beyond the length of the parent array - weird.\n        // https://connect.microsoft.com/IE/feedback/details/771452/typed-array-subarray-issue\n        a = (i - 64) < n ? a.subarray(i - 64) : new Uint8Array(0);\n\n        length = a.length;\n        tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];\n        for (i = 0; i < length; i += 1) {\n            tail[i >> 2] |= a[i] << ((i % 4) << 3);\n        }\n\n        tail[i >> 2] |= 0x80 << ((i % 4) << 3);\n        if (i > 55) {\n            md5cycle(state, tail);\n            for (i = 0; i < 16; i += 1) {\n                tail[i] = 0;\n            }\n        }\n\n        // Beware that the final length might not fit in 32 bits so we take care of that\n        tmp = n * 8;\n        tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);\n        lo = parseInt(tmp[2], 16);\n        hi = parseInt(tmp[1], 16) || 0;\n\n        tail[14] = lo;\n        tail[15] = hi;\n\n        md5cycle(state, tail);\n\n        return state;\n    }\n\n    function rhex(n) {\n        var s = '',\n            j;\n        for (j = 0; j < 4; j += 1) {\n            s += hex_chr[(n >> (j * 8 + 4)) & 0x0F] + hex_chr[(n >> (j * 8)) & 0x0F];\n        }\n        return s;\n    }\n\n    function hex(x) {\n        var i;\n        for (i = 0; i < x.length; i += 1) {\n            x[i] = rhex(x[i]);\n        }\n        return x.join('');\n    }\n\n    // In some cases the fast add32 function cannot be used..\n    if (hex(md51('hello')) !== '5d41402abc4b2a76b9719d911017c592') {\n        add32 = function (x, y) {\n            var lsw = (x & 0xFFFF) + (y & 0xFFFF),\n                msw = (x >> 16) + (y >> 16) + (lsw >> 16);\n            return (msw << 16) | (lsw & 0xFFFF);\n        };\n    }\n\n    // ---------------------------------------------------\n\n    /**\n     * ArrayBuffer slice polyfill.\n     *\n     * @see https://github.com/ttaubert/node-arraybuffer-slice\n     */\n\n    if (typeof ArrayBuffer !== 'undefined' && !ArrayBuffer.prototype.slice) {\n        (function () {\n            function clamp(val, length) {\n                val = (val | 0) || 0;\n\n                if (val < 0) {\n                    return Math.max(val + length, 0);\n                }\n\n                return Math.min(val, length);\n            }\n\n            ArrayBuffer.prototype.slice = function (from, to) {\n                var length = this.byteLength,\n                    begin = clamp(from, length),\n                    end = length,\n                    num,\n                    target,\n                    targetArray,\n                    sourceArray;\n\n                if (to !== undefined) {\n                    end = clamp(to, length);\n                }\n\n                if (begin > end) {\n                    return new ArrayBuffer(0);\n                }\n\n                num = end - begin;\n                target = new ArrayBuffer(num);\n                targetArray = new Uint8Array(target);\n\n                sourceArray = new Uint8Array(this, begin, num);\n                targetArray.set(sourceArray);\n\n                return target;\n            };\n        })();\n    }\n\n    // ---------------------------------------------------\n\n    /**\n     * Helpers.\n     */\n\n    function toUtf8(str) {\n        if (/[\\u0080-\\uFFFF]/.test(str)) {\n            str = unescape(encodeURIComponent(str));\n        }\n\n        return str;\n    }\n\n    function utf8Str2ArrayBuffer(str, returnUInt8Array) {\n        var length = str.length,\n           buff = new ArrayBuffer(length),\n           arr = new Uint8Array(buff),\n           i;\n\n        for (i = 0; i < length; i += 1) {\n            arr[i] = str.charCodeAt(i);\n        }\n\n        return returnUInt8Array ? arr : buff;\n    }\n\n    function arrayBuffer2Utf8Str(buff) {\n        return String.fromCharCode.apply(null, new Uint8Array(buff));\n    }\n\n    function concatenateArrayBuffers(first, second, returnUInt8Array) {\n        var result = new Uint8Array(first.byteLength + second.byteLength);\n\n        result.set(new Uint8Array(first));\n        result.set(new Uint8Array(second), first.byteLength);\n\n        return returnUInt8Array ? result : result.buffer;\n    }\n\n    function hexToBinaryString(hex) {\n        var bytes = [],\n            length = hex.length,\n            x;\n\n        for (x = 0; x < length - 1; x += 2) {\n            bytes.push(parseInt(hex.substr(x, 2), 16));\n        }\n\n        return String.fromCharCode.apply(String, bytes);\n    }\n\n    // ---------------------------------------------------\n\n    /**\n     * SparkMD5 OOP implementation.\n     *\n     * Use this class to perform an incremental md5, otherwise use the\n     * static methods instead.\n     */\n\n    function SparkMD5() {\n        // call reset to init the instance\n        this.reset();\n    }\n\n    /**\n     * Appends a string.\n     * A conversion will be applied if an utf8 string is detected.\n     *\n     * @param {String} str The string to be appended\n     *\n     * @return {SparkMD5} The instance itself\n     */\n    SparkMD5.prototype.append = function (str) {\n        // Converts the string to utf8 bytes if necessary\n        // Then append as binary\n        this.appendBinary(toUtf8(str));\n\n        return this;\n    };\n\n    /**\n     * Appends a binary string.\n     *\n     * @param {String} contents The binary string to be appended\n     *\n     * @return {SparkMD5} The instance itself\n     */\n    SparkMD5.prototype.appendBinary = function (contents) {\n        this._buff += contents;\n        this._length += contents.length;\n\n        var length = this._buff.length,\n            i;\n\n        for (i = 64; i <= length; i += 64) {\n            md5cycle(this._hash, md5blk(this._buff.substring(i - 64, i)));\n        }\n\n        this._buff = this._buff.substring(i - 64);\n\n        return this;\n    };\n\n    /**\n     * Finishes the incremental computation, reseting the internal state and\n     * returning the result.\n     *\n     * @param {Boolean} raw True to get the raw string, false to get the hex string\n     *\n     * @return {String} The result\n     */\n    SparkMD5.prototype.end = function (raw) {\n        var buff = this._buff,\n            length = buff.length,\n            i,\n            tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n            ret;\n\n        for (i = 0; i < length; i += 1) {\n            tail[i >> 2] |= buff.charCodeAt(i) << ((i % 4) << 3);\n        }\n\n        this._finish(tail, length);\n        ret = hex(this._hash);\n\n        if (raw) {\n            ret = hexToBinaryString(ret);\n        }\n\n        this.reset();\n\n        return ret;\n    };\n\n    /**\n     * Resets the internal state of the computation.\n     *\n     * @return {SparkMD5} The instance itself\n     */\n    SparkMD5.prototype.reset = function () {\n        this._buff = '';\n        this._length = 0;\n        this._hash = [1732584193, -271733879, -1732584194, 271733878];\n\n        return this;\n    };\n\n    /**\n     * Gets the internal state of the computation.\n     *\n     * @return {Object} The state\n     */\n    SparkMD5.prototype.getState = function () {\n        return {\n            buff: this._buff,\n            length: this._length,\n            hash: this._hash\n        };\n    };\n\n    /**\n     * Gets the internal state of the computation.\n     *\n     * @param {Object} state The state\n     *\n     * @return {SparkMD5} The instance itself\n     */\n    SparkMD5.prototype.setState = function (state) {\n        this._buff = state.buff;\n        this._length = state.length;\n        this._hash = state.hash;\n\n        return this;\n    };\n\n    /**\n     * Releases memory used by the incremental buffer and other additional\n     * resources. If you plan to use the instance again, use reset instead.\n     */\n    SparkMD5.prototype.destroy = function () {\n        delete this._hash;\n        delete this._buff;\n        delete this._length;\n    };\n\n    /**\n     * Finish the final calculation based on the tail.\n     *\n     * @param {Array}  tail   The tail (will be modified)\n     * @param {Number} length The length of the remaining buffer\n     */\n    SparkMD5.prototype._finish = function (tail, length) {\n        var i = length,\n            tmp,\n            lo,\n            hi;\n\n        tail[i >> 2] |= 0x80 << ((i % 4) << 3);\n        if (i > 55) {\n            md5cycle(this._hash, tail);\n            for (i = 0; i < 16; i += 1) {\n                tail[i] = 0;\n            }\n        }\n\n        // Do the final computation based on the tail and length\n        // Beware that the final length may not fit in 32 bits so we take care of that\n        tmp = this._length * 8;\n        tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);\n        lo = parseInt(tmp[2], 16);\n        hi = parseInt(tmp[1], 16) || 0;\n\n        tail[14] = lo;\n        tail[15] = hi;\n        md5cycle(this._hash, tail);\n    };\n\n    /**\n     * Performs the md5 hash on a string.\n     * A conversion will be applied if utf8 string is detected.\n     *\n     * @param {String}  str The string\n     * @param {Boolean} raw True to get the raw string, false to get the hex string\n     *\n     * @return {String} The result\n     */\n    SparkMD5.hash = function (str, raw) {\n        // Converts the string to utf8 bytes if necessary\n        // Then compute it using the binary function\n        return SparkMD5.hashBinary(toUtf8(str), raw);\n    };\n\n    /**\n     * Performs the md5 hash on a binary string.\n     *\n     * @param {String}  content The binary string\n     * @param {Boolean} raw     True to get the raw string, false to get the hex string\n     *\n     * @return {String} The result\n     */\n    SparkMD5.hashBinary = function (content, raw) {\n        var hash = md51(content),\n            ret = hex(hash);\n\n        return raw ? hexToBinaryString(ret) : ret;\n    };\n\n    // ---------------------------------------------------\n\n    /**\n     * SparkMD5 OOP implementation for array buffers.\n     *\n     * Use this class to perform an incremental md5 ONLY for array buffers.\n     */\n    SparkMD5.ArrayBuffer = function () {\n        // call reset to init the instance\n        this.reset();\n    };\n\n    /**\n     * Appends an array buffer.\n     *\n     * @param {ArrayBuffer} arr The array to be appended\n     *\n     * @return {SparkMD5.ArrayBuffer} The instance itself\n     */\n    SparkMD5.ArrayBuffer.prototype.append = function (arr) {\n        var buff = concatenateArrayBuffers(this._buff.buffer, arr, true),\n            length = buff.length,\n            i;\n\n        this._length += arr.byteLength;\n\n        for (i = 64; i <= length; i += 64) {\n            md5cycle(this._hash, md5blk_array(buff.subarray(i - 64, i)));\n        }\n\n        this._buff = (i - 64) < length ? new Uint8Array(buff.buffer.slice(i - 64)) : new Uint8Array(0);\n\n        return this;\n    };\n\n    /**\n     * Finishes the incremental computation, reseting the internal state and\n     * returning the result.\n     *\n     * @param {Boolean} raw True to get the raw string, false to get the hex string\n     *\n     * @return {String} The result\n     */\n    SparkMD5.ArrayBuffer.prototype.end = function (raw) {\n        var buff = this._buff,\n            length = buff.length,\n            tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\n            i,\n            ret;\n\n        for (i = 0; i < length; i += 1) {\n            tail[i >> 2] |= buff[i] << ((i % 4) << 3);\n        }\n\n        this._finish(tail, length);\n        ret = hex(this._hash);\n\n        if (raw) {\n            ret = hexToBinaryString(ret);\n        }\n\n        this.reset();\n\n        return ret;\n    };\n\n    /**\n     * Resets the internal state of the computation.\n     *\n     * @return {SparkMD5.ArrayBuffer} The instance itself\n     */\n    SparkMD5.ArrayBuffer.prototype.reset = function () {\n        this._buff = new Uint8Array(0);\n        this._length = 0;\n        this._hash = [1732584193, -271733879, -1732584194, 271733878];\n\n        return this;\n    };\n\n    /**\n     * Gets the internal state of the computation.\n     *\n     * @return {Object} The state\n     */\n    SparkMD5.ArrayBuffer.prototype.getState = function () {\n        var state = SparkMD5.prototype.getState.call(this);\n\n        // Convert buffer to a string\n        state.buff = arrayBuffer2Utf8Str(state.buff);\n\n        return state;\n    };\n\n    /**\n     * Gets the internal state of the computation.\n     *\n     * @param {Object} state The state\n     *\n     * @return {SparkMD5.ArrayBuffer} The instance itself\n     */\n    SparkMD5.ArrayBuffer.prototype.setState = function (state) {\n        // Convert string to buffer\n        state.buff = utf8Str2ArrayBuffer(state.buff, true);\n\n        return SparkMD5.prototype.setState.call(this, state);\n    };\n\n    SparkMD5.ArrayBuffer.prototype.destroy = SparkMD5.prototype.destroy;\n\n    SparkMD5.ArrayBuffer.prototype._finish = SparkMD5.prototype._finish;\n\n    /**\n     * Performs the md5 hash on an array buffer.\n     *\n     * @param {ArrayBuffer} arr The array buffer\n     * @param {Boolean}     raw True to get the raw string, false to get the hex one\n     *\n     * @return {String} The result\n     */\n    SparkMD5.ArrayBuffer.hash = function (arr, raw) {\n        var hash = md51_array(new Uint8Array(arr)),\n            ret = hex(hash);\n\n        return raw ? hexToBinaryString(ret) : ret;\n    };\n\n    return SparkMD5;\n}));\n\n\n/***/ }),\n/* 37 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\n// self.importScripts('./spark-md5');\n\nvar _promise = __webpack_require__(35);\n\nvar _promise2 = _interopRequireDefault(_promise);\n\nvar _sparkMd = __webpack_require__(36);\n\nvar _sparkMd2 = _interopRequireDefault(_sparkMd);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\n// for webpack\n\n// TODO 占用大量CPU限速\n// TODO 计算完成后worker销毁\nvar calcMd5 = function calcMd5(file) {\n    return new _promise2.default(function (resolve, reject) {\n        var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;\n        var spark = new _sparkMd2.default.ArrayBuffer();\n        var fileReader = new FileReader();\n\n        var currentChunk = 0;\n        var chunkSize = 1 * 1024 * 1024; // 1MB\n        var chunks = Math.ceil(file.size / chunkSize);\n\n        fileReader.onload = function (e) {\n            // console.log('read chunk nr', currentChunk + 1, 'of', chunks);\n            spark.append(e.target.result); // Append array buffer\n\n            // 计算百分比\n            var start = currentChunk * chunkSize;\n            var end = start + chunkSize >= file.size ? file.size : start + chunkSize;\n            var percent = parseInt(end / file.size * 100) + '%';\n            // self.postMessage({percent});\n\n            currentChunk++;\n            if (currentChunk < chunks) {\n                loadNext();\n            } else {\n                var md5Res = spark.end();\n                // console.log('finished loading');\n                // console.info('computed hash', md5Res);  // Compute hash\n                resolve(md5Res);\n            }\n        };\n\n        fileReader.onerror = function () {\n            console.warn('oops, something went wrong.');\n        };\n\n        function loadNext() {\n            var start = currentChunk * chunkSize;\n            var end = start + chunkSize >= file.size ? file.size : start + chunkSize;\n            fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));\n        }\n        loadNext();\n    });\n};\n\nself.addEventListener('message', function (message) {\n    var file = message.data;\n    calcMd5(file).then(function (md5Res) {\n        self.postMessage(md5Res);\n    });\n});\n\n/***/ }),\n/* 38 */\n/***/ (function(module, exports, __webpack_require__) {\n\n__webpack_require__(67);\n__webpack_require__(69);\n__webpack_require__(72);\n__webpack_require__(68);\n__webpack_require__(70);\n__webpack_require__(71);\nmodule.exports = __webpack_require__(3).Promise;\n\n\n/***/ }),\n/* 39 */\n/***/ (function(module, exports) {\n\nmodule.exports = function () { /* empty */ };\n\n\n/***/ }),\n/* 40 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (it, Constructor, name, forbiddenField) {\n  if (!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)) {\n    throw TypeError(name + ': incorrect invocation!');\n  } return it;\n};\n\n\n/***/ }),\n/* 41 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// false -> Array#indexOf\n// true  -> Array#includes\nvar toIObject = __webpack_require__(21);\nvar toLength = __webpack_require__(33);\nvar toAbsoluteIndex = __webpack_require__(61);\nmodule.exports = function (IS_INCLUDES) {\n  return function ($this, el, fromIndex) {\n    var O = toIObject($this);\n    var length = toLength(O.length);\n    var index = toAbsoluteIndex(fromIndex, length);\n    var value;\n    // Array#includes uses SameValueZero equality algorithm\n    // eslint-disable-next-line no-self-compare\n    if (IS_INCLUDES && el != el) while (length > index) {\n      value = O[index++];\n      // eslint-disable-next-line no-self-compare\n      if (value != value) return true;\n    // Array#indexOf ignores holes, Array#includes - not\n    } else for (;length > index; index++) if (IS_INCLUDES || index in O) {\n      if (O[index] === el) return IS_INCLUDES || index || 0;\n    } return !IS_INCLUDES && -1;\n  };\n};\n\n\n/***/ }),\n/* 42 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar ctx = __webpack_require__(10);\nvar call = __webpack_require__(47);\nvar isArrayIter = __webpack_require__(46);\nvar anObject = __webpack_require__(2);\nvar toLength = __webpack_require__(33);\nvar getIterFn = __webpack_require__(65);\nvar BREAK = {};\nvar RETURN = {};\nvar exports = module.exports = function (iterable, entries, fn, that, ITERATOR) {\n  var iterFn = ITERATOR ? function () { return iterable; } : getIterFn(iterable);\n  var f = ctx(fn, that, entries ? 2 : 1);\n  var index = 0;\n  var length, step, iterator, result;\n  if (typeof iterFn != 'function') throw TypeError(iterable + ' is not iterable!');\n  // fast case for arrays with default iterator\n  if (isArrayIter(iterFn)) for (length = toLength(iterable.length); length > index; index++) {\n    result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);\n    if (result === BREAK || result === RETURN) return result;\n  } else for (iterator = iterFn.call(iterable); !(step = iterator.next()).done;) {\n    result = call(iterator, f, step.value, entries);\n    if (result === BREAK || result === RETURN) return result;\n  }\n};\nexports.BREAK = BREAK;\nexports.RETURN = RETURN;\n\n\n/***/ }),\n/* 43 */\n/***/ (function(module, exports, __webpack_require__) {\n\nmodule.exports = !__webpack_require__(5) && !__webpack_require__(24)(function () {\n  return Object.defineProperty(__webpack_require__(15)('div'), 'a', { get: function () { return 7; } }).a != 7;\n});\n\n\n/***/ }),\n/* 44 */\n/***/ (function(module, exports) {\n\n// fast apply, http://jsperf.lnkit.com/fast-apply/5\nmodule.exports = function (fn, args, that) {\n  var un = that === undefined;\n  switch (args.length) {\n    case 0: return un ? fn()\n                      : fn.call(that);\n    case 1: return un ? fn(args[0])\n                      : fn.call(that, args[0]);\n    case 2: return un ? fn(args[0], args[1])\n                      : fn.call(that, args[0], args[1]);\n    case 3: return un ? fn(args[0], args[1], args[2])\n                      : fn.call(that, args[0], args[1], args[2]);\n    case 4: return un ? fn(args[0], args[1], args[2], args[3])\n                      : fn.call(that, args[0], args[1], args[2], args[3]);\n  } return fn.apply(that, args);\n};\n\n\n/***/ }),\n/* 45 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// fallback for non-array-like ES3 and non-enumerable old V8 strings\nvar cof = __webpack_require__(9);\n// eslint-disable-next-line no-prototype-builtins\nmodule.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {\n  return cof(it) == 'String' ? it.split('') : Object(it);\n};\n\n\n/***/ }),\n/* 46 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// check on default Array iterator\nvar Iterators = __webpack_require__(7);\nvar ITERATOR = __webpack_require__(1)('iterator');\nvar ArrayProto = Array.prototype;\n\nmodule.exports = function (it) {\n  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);\n};\n\n\n/***/ }),\n/* 47 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// call something on iterator step with safe closing on error\nvar anObject = __webpack_require__(2);\nmodule.exports = function (iterator, fn, value, entries) {\n  try {\n    return entries ? fn(anObject(value)[0], value[1]) : fn(value);\n  // 7.4.6 IteratorClose(iterator, completion)\n  } catch (e) {\n    var ret = iterator['return'];\n    if (ret !== undefined) anObject(ret.call(iterator));\n    throw e;\n  }\n};\n\n\n/***/ }),\n/* 48 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar create = __webpack_require__(52);\nvar descriptor = __webpack_require__(29);\nvar setToStringTag = __webpack_require__(18);\nvar IteratorPrototype = {};\n\n// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()\n__webpack_require__(4)(IteratorPrototype, __webpack_require__(1)('iterator'), function () { return this; });\n\nmodule.exports = function (Constructor, NAME, next) {\n  Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });\n  setToStringTag(Constructor, NAME + ' Iterator');\n};\n\n\n/***/ }),\n/* 49 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar ITERATOR = __webpack_require__(1)('iterator');\nvar SAFE_CLOSING = false;\n\ntry {\n  var riter = [7][ITERATOR]();\n  riter['return'] = function () { SAFE_CLOSING = true; };\n  // eslint-disable-next-line no-throw-literal\n  Array.from(riter, function () { throw 2; });\n} catch (e) { /* empty */ }\n\nmodule.exports = function (exec, skipClosing) {\n  if (!skipClosing && !SAFE_CLOSING) return false;\n  var safe = false;\n  try {\n    var arr = [7];\n    var iter = arr[ITERATOR]();\n    iter.next = function () { return { done: safe = true }; };\n    arr[ITERATOR] = function () { return iter; };\n    exec(arr);\n  } catch (e) { /* empty */ }\n  return safe;\n};\n\n\n/***/ }),\n/* 50 */\n/***/ (function(module, exports) {\n\nmodule.exports = function (done, value) {\n  return { value: value, done: !!done };\n};\n\n\n/***/ }),\n/* 51 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar global = __webpack_require__(0);\nvar macrotask = __webpack_require__(32).set;\nvar Observer = global.MutationObserver || global.WebKitMutationObserver;\nvar process = global.process;\nvar Promise = global.Promise;\nvar isNode = __webpack_require__(9)(process) == 'process';\n\nmodule.exports = function () {\n  var head, last, notify;\n\n  var flush = function () {\n    var parent, fn;\n    if (isNode && (parent = process.domain)) parent.exit();\n    while (head) {\n      fn = head.fn;\n      head = head.next;\n      try {\n        fn();\n      } catch (e) {\n        if (head) notify();\n        else last = undefined;\n        throw e;\n      }\n    } last = undefined;\n    if (parent) parent.enter();\n  };\n\n  // Node.js\n  if (isNode) {\n    notify = function () {\n      process.nextTick(flush);\n    };\n  // browsers with MutationObserver, except iOS Safari - https://github.com/zloirock/core-js/issues/339\n  } else if (Observer && !(global.navigator && global.navigator.standalone)) {\n    var toggle = true;\n    var node = document.createTextNode('');\n    new Observer(flush).observe(node, { characterData: true }); // eslint-disable-line no-new\n    notify = function () {\n      node.data = toggle = !toggle;\n    };\n  // environments with maybe non-completely correct, but existent Promise\n  } else if (Promise && Promise.resolve) {\n    // Promise.resolve without an argument throws an error in LG WebOS 2\n    var promise = Promise.resolve(undefined);\n    notify = function () {\n      promise.then(flush);\n    };\n  // for other environments - macrotask based on:\n  // - setImmediate\n  // - MessageChannel\n  // - window.postMessag\n  // - onreadystatechange\n  // - setTimeout\n  } else {\n    notify = function () {\n      // strange IE + webpack dev server bug - use .call(global)\n      macrotask.call(global, flush);\n    };\n  }\n\n  return function (fn) {\n    var task = { fn: fn, next: undefined };\n    if (last) last.next = task;\n    if (!head) {\n      head = task;\n      notify();\n    } last = task;\n  };\n};\n\n\n/***/ }),\n/* 52 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])\nvar anObject = __webpack_require__(2);\nvar dPs = __webpack_require__(53);\nvar enumBugKeys = __webpack_require__(23);\nvar IE_PROTO = __webpack_require__(19)('IE_PROTO');\nvar Empty = function () { /* empty */ };\nvar PROTOTYPE = 'prototype';\n\n// Create object with fake `null` prototype: use iframe Object with cleared prototype\nvar createDict = function () {\n  // Thrash, waste and sodomy: IE GC bug\n  var iframe = __webpack_require__(15)('iframe');\n  var i = enumBugKeys.length;\n  var lt = '<';\n  var gt = '>';\n  var iframeDocument;\n  iframe.style.display = 'none';\n  __webpack_require__(25).appendChild(iframe);\n  iframe.src = 'javascript:'; // eslint-disable-line no-script-url\n  // createDict = iframe.contentWindow.Object;\n  // html.removeChild(iframe);\n  iframeDocument = iframe.contentWindow.document;\n  iframeDocument.open();\n  iframeDocument.write(lt + 'script' + gt + 'document.F=Object' + lt + '/script' + gt);\n  iframeDocument.close();\n  createDict = iframeDocument.F;\n  while (i--) delete createDict[PROTOTYPE][enumBugKeys[i]];\n  return createDict();\n};\n\nmodule.exports = Object.create || function create(O, Properties) {\n  var result;\n  if (O !== null) {\n    Empty[PROTOTYPE] = anObject(O);\n    result = new Empty();\n    Empty[PROTOTYPE] = null;\n    // add \"__proto__\" for Object.getPrototypeOf polyfill\n    result[IE_PROTO] = O;\n  } else result = createDict();\n  return Properties === undefined ? result : dPs(result, Properties);\n};\n\n\n/***/ }),\n/* 53 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar dP = __webpack_require__(13);\nvar anObject = __webpack_require__(2);\nvar getKeys = __webpack_require__(56);\n\nmodule.exports = __webpack_require__(5) ? Object.defineProperties : function defineProperties(O, Properties) {\n  anObject(O);\n  var keys = getKeys(Properties);\n  var length = keys.length;\n  var i = 0;\n  var P;\n  while (length > i) dP.f(O, P = keys[i++], Properties[P]);\n  return O;\n};\n\n\n/***/ }),\n/* 54 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)\nvar has = __webpack_require__(12);\nvar toObject = __webpack_require__(62);\nvar IE_PROTO = __webpack_require__(19)('IE_PROTO');\nvar ObjectProto = Object.prototype;\n\nmodule.exports = Object.getPrototypeOf || function (O) {\n  O = toObject(O);\n  if (has(O, IE_PROTO)) return O[IE_PROTO];\n  if (typeof O.constructor == 'function' && O instanceof O.constructor) {\n    return O.constructor.prototype;\n  } return O instanceof Object ? ObjectProto : null;\n};\n\n\n/***/ }),\n/* 55 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar has = __webpack_require__(12);\nvar toIObject = __webpack_require__(21);\nvar arrayIndexOf = __webpack_require__(41)(false);\nvar IE_PROTO = __webpack_require__(19)('IE_PROTO');\n\nmodule.exports = function (object, names) {\n  var O = toIObject(object);\n  var i = 0;\n  var result = [];\n  var key;\n  for (key in O) if (key != IE_PROTO) has(O, key) && result.push(key);\n  // Don't enum bug & hidden keys\n  while (names.length > i) if (has(O, key = names[i++])) {\n    ~arrayIndexOf(result, key) || result.push(key);\n  }\n  return result;\n};\n\n\n/***/ }),\n/* 56 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 19.1.2.14 / 15.2.3.14 Object.keys(O)\nvar $keys = __webpack_require__(55);\nvar enumBugKeys = __webpack_require__(23);\n\nmodule.exports = Object.keys || function keys(O) {\n  return $keys(O, enumBugKeys);\n};\n\n\n/***/ }),\n/* 57 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar hide = __webpack_require__(4);\nmodule.exports = function (target, src, safe) {\n  for (var key in src) {\n    if (safe && target[key]) target[key] = src[key];\n    else hide(target, key, src[key]);\n  } return target;\n};\n\n\n/***/ }),\n/* 58 */\n/***/ (function(module, exports, __webpack_require__) {\n\nmodule.exports = __webpack_require__(4);\n\n\n/***/ }),\n/* 59 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar global = __webpack_require__(0);\nvar core = __webpack_require__(3);\nvar dP = __webpack_require__(13);\nvar DESCRIPTORS = __webpack_require__(5);\nvar SPECIES = __webpack_require__(1)('species');\n\nmodule.exports = function (KEY) {\n  var C = typeof core[KEY] == 'function' ? core[KEY] : global[KEY];\n  if (DESCRIPTORS && C && !C[SPECIES]) dP.f(C, SPECIES, {\n    configurable: true,\n    get: function () { return this; }\n  });\n};\n\n\n/***/ }),\n/* 60 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar toInteger = __webpack_require__(20);\nvar defined = __webpack_require__(14);\n// true  -> String#at\n// false -> String#codePointAt\nmodule.exports = function (TO_STRING) {\n  return function (that, pos) {\n    var s = String(defined(that));\n    var i = toInteger(pos);\n    var l = s.length;\n    var a, b;\n    if (i < 0 || i >= l) return TO_STRING ? '' : undefined;\n    a = s.charCodeAt(i);\n    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff\n      ? TO_STRING ? s.charAt(i) : a\n      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;\n  };\n};\n\n\n/***/ }),\n/* 61 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar toInteger = __webpack_require__(20);\nvar max = Math.max;\nvar min = Math.min;\nmodule.exports = function (index, length) {\n  index = toInteger(index);\n  return index < 0 ? max(index + length, 0) : min(index, length);\n};\n\n\n/***/ }),\n/* 62 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 7.1.13 ToObject(argument)\nvar defined = __webpack_require__(14);\nmodule.exports = function (it) {\n  return Object(defined(it));\n};\n\n\n/***/ }),\n/* 63 */\n/***/ (function(module, exports, __webpack_require__) {\n\n// 7.1.1 ToPrimitive(input [, PreferredType])\nvar isObject = __webpack_require__(6);\n// instead of the ES6 spec version, we didn't implement @@toPrimitive case\n// and the second argument - flag - preferred type is a string\nmodule.exports = function (it, S) {\n  if (!isObject(it)) return it;\n  var fn, val;\n  if (S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;\n  if (typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it))) return val;\n  if (!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it))) return val;\n  throw TypeError(\"Can't convert object to primitive value\");\n};\n\n\n/***/ }),\n/* 64 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar global = __webpack_require__(0);\nvar navigator = global.navigator;\n\nmodule.exports = navigator && navigator.userAgent || '';\n\n\n/***/ }),\n/* 65 */\n/***/ (function(module, exports, __webpack_require__) {\n\nvar classof = __webpack_require__(22);\nvar ITERATOR = __webpack_require__(1)('iterator');\nvar Iterators = __webpack_require__(7);\nmodule.exports = __webpack_require__(3).getIteratorMethod = function (it) {\n  if (it != undefined) return it[ITERATOR]\n    || it['@@iterator']\n    || Iterators[classof(it)];\n};\n\n\n/***/ }),\n/* 66 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar addToUnscopables = __webpack_require__(39);\nvar step = __webpack_require__(50);\nvar Iterators = __webpack_require__(7);\nvar toIObject = __webpack_require__(21);\n\n// 22.1.3.4 Array.prototype.entries()\n// 22.1.3.13 Array.prototype.keys()\n// 22.1.3.29 Array.prototype.values()\n// 22.1.3.30 Array.prototype[@@iterator]()\nmodule.exports = __webpack_require__(26)(Array, 'Array', function (iterated, kind) {\n  this._t = toIObject(iterated); // target\n  this._i = 0;                   // next index\n  this._k = kind;                // kind\n// 22.1.5.2.1 %ArrayIteratorPrototype%.next()\n}, function () {\n  var O = this._t;\n  var kind = this._k;\n  var index = this._i++;\n  if (!O || index >= O.length) {\n    this._t = undefined;\n    return step(1);\n  }\n  if (kind == 'keys') return step(0, index);\n  if (kind == 'values') return step(0, O[index]);\n  return step(0, [index, O[index]]);\n}, 'values');\n\n// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)\nIterators.Arguments = Iterators.Array;\n\naddToUnscopables('keys');\naddToUnscopables('values');\naddToUnscopables('entries');\n\n\n/***/ }),\n/* 67 */\n/***/ (function(module, exports) {\n\n\n\n/***/ }),\n/* 68 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar LIBRARY = __webpack_require__(16);\nvar global = __webpack_require__(0);\nvar ctx = __webpack_require__(10);\nvar classof = __webpack_require__(22);\nvar $export = __webpack_require__(11);\nvar isObject = __webpack_require__(6);\nvar aFunction = __webpack_require__(8);\nvar anInstance = __webpack_require__(40);\nvar forOf = __webpack_require__(42);\nvar speciesConstructor = __webpack_require__(31);\nvar task = __webpack_require__(32).set;\nvar microtask = __webpack_require__(51)();\nvar newPromiseCapabilityModule = __webpack_require__(17);\nvar perform = __webpack_require__(27);\nvar userAgent = __webpack_require__(64);\nvar promiseResolve = __webpack_require__(28);\nvar PROMISE = 'Promise';\nvar TypeError = global.TypeError;\nvar process = global.process;\nvar versions = process && process.versions;\nvar v8 = versions && versions.v8 || '';\nvar $Promise = global[PROMISE];\nvar isNode = classof(process) == 'process';\nvar empty = function () { /* empty */ };\nvar Internal, newGenericPromiseCapability, OwnPromiseCapability, Wrapper;\nvar newPromiseCapability = newGenericPromiseCapability = newPromiseCapabilityModule.f;\n\nvar USE_NATIVE = !!function () {\n  try {\n    // correct subclassing with @@species support\n    var promise = $Promise.resolve(1);\n    var FakePromise = (promise.constructor = {})[__webpack_require__(1)('species')] = function (exec) {\n      exec(empty, empty);\n    };\n    // unhandled rejections tracking support, NodeJS Promise without it fails @@species test\n    return (isNode || typeof PromiseRejectionEvent == 'function')\n      && promise.then(empty) instanceof FakePromise\n      // v8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables\n      // https://bugs.chromium.org/p/chromium/issues/detail?id=830565\n      // we can't detect it synchronously, so just check versions\n      && v8.indexOf('6.6') !== 0\n      && userAgent.indexOf('Chrome/66') === -1;\n  } catch (e) { /* empty */ }\n}();\n\n// helpers\nvar isThenable = function (it) {\n  var then;\n  return isObject(it) && typeof (then = it.then) == 'function' ? then : false;\n};\nvar notify = function (promise, isReject) {\n  if (promise._n) return;\n  promise._n = true;\n  var chain = promise._c;\n  microtask(function () {\n    var value = promise._v;\n    var ok = promise._s == 1;\n    var i = 0;\n    var run = function (reaction) {\n      var handler = ok ? reaction.ok : reaction.fail;\n      var resolve = reaction.resolve;\n      var reject = reaction.reject;\n      var domain = reaction.domain;\n      var result, then, exited;\n      try {\n        if (handler) {\n          if (!ok) {\n            if (promise._h == 2) onHandleUnhandled(promise);\n            promise._h = 1;\n          }\n          if (handler === true) result = value;\n          else {\n            if (domain) domain.enter();\n            result = handler(value); // may throw\n            if (domain) {\n              domain.exit();\n              exited = true;\n            }\n          }\n          if (result === reaction.promise) {\n            reject(TypeError('Promise-chain cycle'));\n          } else if (then = isThenable(result)) {\n            then.call(result, resolve, reject);\n          } else resolve(result);\n        } else reject(value);\n      } catch (e) {\n        if (domain && !exited) domain.exit();\n        reject(e);\n      }\n    };\n    while (chain.length > i) run(chain[i++]); // variable length - can't use forEach\n    promise._c = [];\n    promise._n = false;\n    if (isReject && !promise._h) onUnhandled(promise);\n  });\n};\nvar onUnhandled = function (promise) {\n  task.call(global, function () {\n    var value = promise._v;\n    var unhandled = isUnhandled(promise);\n    var result, handler, console;\n    if (unhandled) {\n      result = perform(function () {\n        if (isNode) {\n          process.emit('unhandledRejection', value, promise);\n        } else if (handler = global.onunhandledrejection) {\n          handler({ promise: promise, reason: value });\n        } else if ((console = global.console) && console.error) {\n          console.error('Unhandled promise rejection', value);\n        }\n      });\n      // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should\n      promise._h = isNode || isUnhandled(promise) ? 2 : 1;\n    } promise._a = undefined;\n    if (unhandled && result.e) throw result.v;\n  });\n};\nvar isUnhandled = function (promise) {\n  return promise._h !== 1 && (promise._a || promise._c).length === 0;\n};\nvar onHandleUnhandled = function (promise) {\n  task.call(global, function () {\n    var handler;\n    if (isNode) {\n      process.emit('rejectionHandled', promise);\n    } else if (handler = global.onrejectionhandled) {\n      handler({ promise: promise, reason: promise._v });\n    }\n  });\n};\nvar $reject = function (value) {\n  var promise = this;\n  if (promise._d) return;\n  promise._d = true;\n  promise = promise._w || promise; // unwrap\n  promise._v = value;\n  promise._s = 2;\n  if (!promise._a) promise._a = promise._c.slice();\n  notify(promise, true);\n};\nvar $resolve = function (value) {\n  var promise = this;\n  var then;\n  if (promise._d) return;\n  promise._d = true;\n  promise = promise._w || promise; // unwrap\n  try {\n    if (promise === value) throw TypeError(\"Promise can't be resolved itself\");\n    if (then = isThenable(value)) {\n      microtask(function () {\n        var wrapper = { _w: promise, _d: false }; // wrap\n        try {\n          then.call(value, ctx($resolve, wrapper, 1), ctx($reject, wrapper, 1));\n        } catch (e) {\n          $reject.call(wrapper, e);\n        }\n      });\n    } else {\n      promise._v = value;\n      promise._s = 1;\n      notify(promise, false);\n    }\n  } catch (e) {\n    $reject.call({ _w: promise, _d: false }, e); // wrap\n  }\n};\n\n// constructor polyfill\nif (!USE_NATIVE) {\n  // 25.4.3.1 Promise(executor)\n  $Promise = function Promise(executor) {\n    anInstance(this, $Promise, PROMISE, '_h');\n    aFunction(executor);\n    Internal.call(this);\n    try {\n      executor(ctx($resolve, this, 1), ctx($reject, this, 1));\n    } catch (err) {\n      $reject.call(this, err);\n    }\n  };\n  // eslint-disable-next-line no-unused-vars\n  Internal = function Promise(executor) {\n    this._c = [];             // <- awaiting reactions\n    this._a = undefined;      // <- checked in isUnhandled reactions\n    this._s = 0;              // <- state\n    this._d = false;          // <- done\n    this._v = undefined;      // <- value\n    this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled\n    this._n = false;          // <- notify\n  };\n  Internal.prototype = __webpack_require__(57)($Promise.prototype, {\n    // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)\n    then: function then(onFulfilled, onRejected) {\n      var reaction = newPromiseCapability(speciesConstructor(this, $Promise));\n      reaction.ok = typeof onFulfilled == 'function' ? onFulfilled : true;\n      reaction.fail = typeof onRejected == 'function' && onRejected;\n      reaction.domain = isNode ? process.domain : undefined;\n      this._c.push(reaction);\n      if (this._a) this._a.push(reaction);\n      if (this._s) notify(this, false);\n      return reaction.promise;\n    },\n    // 25.4.5.1 Promise.prototype.catch(onRejected)\n    'catch': function (onRejected) {\n      return this.then(undefined, onRejected);\n    }\n  });\n  OwnPromiseCapability = function () {\n    var promise = new Internal();\n    this.promise = promise;\n    this.resolve = ctx($resolve, promise, 1);\n    this.reject = ctx($reject, promise, 1);\n  };\n  newPromiseCapabilityModule.f = newPromiseCapability = function (C) {\n    return C === $Promise || C === Wrapper\n      ? new OwnPromiseCapability(C)\n      : newGenericPromiseCapability(C);\n  };\n}\n\n$export($export.G + $export.W + $export.F * !USE_NATIVE, { Promise: $Promise });\n__webpack_require__(18)($Promise, PROMISE);\n__webpack_require__(59)(PROMISE);\nWrapper = __webpack_require__(3)[PROMISE];\n\n// statics\n$export($export.S + $export.F * !USE_NATIVE, PROMISE, {\n  // 25.4.4.5 Promise.reject(r)\n  reject: function reject(r) {\n    var capability = newPromiseCapability(this);\n    var $$reject = capability.reject;\n    $$reject(r);\n    return capability.promise;\n  }\n});\n$export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {\n  // 25.4.4.6 Promise.resolve(x)\n  resolve: function resolve(x) {\n    return promiseResolve(LIBRARY && this === Wrapper ? $Promise : this, x);\n  }\n});\n$export($export.S + $export.F * !(USE_NATIVE && __webpack_require__(49)(function (iter) {\n  $Promise.all(iter)['catch'](empty);\n})), PROMISE, {\n  // 25.4.4.1 Promise.all(iterable)\n  all: function all(iterable) {\n    var C = this;\n    var capability = newPromiseCapability(C);\n    var resolve = capability.resolve;\n    var reject = capability.reject;\n    var result = perform(function () {\n      var values = [];\n      var index = 0;\n      var remaining = 1;\n      forOf(iterable, false, function (promise) {\n        var $index = index++;\n        var alreadyCalled = false;\n        values.push(undefined);\n        remaining++;\n        C.resolve(promise).then(function (value) {\n          if (alreadyCalled) return;\n          alreadyCalled = true;\n          values[$index] = value;\n          --remaining || resolve(values);\n        }, reject);\n      });\n      --remaining || resolve(values);\n    });\n    if (result.e) reject(result.v);\n    return capability.promise;\n  },\n  // 25.4.4.4 Promise.race(iterable)\n  race: function race(iterable) {\n    var C = this;\n    var capability = newPromiseCapability(C);\n    var reject = capability.reject;\n    var result = perform(function () {\n      forOf(iterable, false, function (promise) {\n        C.resolve(promise).then(capability.resolve, reject);\n      });\n    });\n    if (result.e) reject(result.v);\n    return capability.promise;\n  }\n});\n\n\n/***/ }),\n/* 69 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\nvar $at = __webpack_require__(60)(true);\n\n// 21.1.3.27 String.prototype[@@iterator]()\n__webpack_require__(26)(String, 'String', function (iterated) {\n  this._t = String(iterated); // target\n  this._i = 0;                // next index\n// 21.1.5.2.1 %StringIteratorPrototype%.next()\n}, function () {\n  var O = this._t;\n  var index = this._i;\n  var point;\n  if (index >= O.length) return { value: undefined, done: true };\n  point = $at(O, index);\n  this._i += point.length;\n  return { value: point, done: false };\n});\n\n\n/***/ }),\n/* 70 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n// https://github.com/tc39/proposal-promise-finally\n\nvar $export = __webpack_require__(11);\nvar core = __webpack_require__(3);\nvar global = __webpack_require__(0);\nvar speciesConstructor = __webpack_require__(31);\nvar promiseResolve = __webpack_require__(28);\n\n$export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {\n  var C = speciesConstructor(this, core.Promise || global.Promise);\n  var isFunction = typeof onFinally == 'function';\n  return this.then(\n    isFunction ? function (x) {\n      return promiseResolve(C, onFinally()).then(function () { return x; });\n    } : onFinally,\n    isFunction ? function (e) {\n      return promiseResolve(C, onFinally()).then(function () { throw e; });\n    } : onFinally\n  );\n} });\n\n\n/***/ }),\n/* 71 */\n/***/ (function(module, exports, __webpack_require__) {\n\n\"use strict\";\n\n// https://github.com/tc39/proposal-promise-try\nvar $export = __webpack_require__(11);\nvar newPromiseCapability = __webpack_require__(17);\nvar perform = __webpack_require__(27);\n\n$export($export.S, 'Promise', { 'try': function (callbackfn) {\n  var promiseCapability = newPromiseCapability.f(this);\n  var result = perform(callbackfn);\n  (result.e ? promiseCapability.reject : promiseCapability.resolve)(result.v);\n  return promiseCapability.promise;\n} });\n\n\n/***/ }),\n/* 72 */\n/***/ (function(module, exports, __webpack_require__) {\n\n__webpack_require__(66);\nvar global = __webpack_require__(0);\nvar hide = __webpack_require__(4);\nvar Iterators = __webpack_require__(7);\nvar TO_STRING_TAG = __webpack_require__(1)('toStringTag');\n\nvar DOMIterables = ('CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,' +\n  'DOMTokenList,DataTransferItemList,FileList,HTMLAllCollection,HTMLCollection,HTMLFormElement,HTMLSelectElement,' +\n  'MediaList,MimeTypeArray,NamedNodeMap,NodeList,PaintRequestList,Plugin,PluginArray,SVGLengthList,SVGNumberList,' +\n  'SVGPathSegList,SVGPointList,SVGStringList,SVGTransformList,SourceBufferList,StyleSheetList,TextTrackCueList,' +\n  'TextTrackList,TouchList').split(',');\n\nfor (var i = 0; i < DOMIterables.length; i++) {\n  var NAME = DOMIterables[i];\n  var Collection = global[NAME];\n  var proto = Collection && Collection.prototype;\n  if (proto && !proto[TO_STRING_TAG]) hide(proto, TO_STRING_TAG, NAME);\n  Iterators[NAME] = Iterators.Array;\n}\n\n\n/***/ })\n/******/ ]);\n//# sourceMappingURL=6a7d1a9e98b114001043.worker.js.map", null);
 };
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7114,7 +7197,7 @@ module.exports = function (content, url) {
 };
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(61);
