@@ -1,6 +1,6 @@
 {
   "name": "power-uploader",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "power-uploader is powerfull",
   "main": "./dist/power-uploader.js",
   "scripts": {
