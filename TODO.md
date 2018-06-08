@@ -4,3 +4,4 @@
 4. image/*问题
 5. MD5限速
 6. 仅支持单文件bug修复
+7. electron 中计算MD5
