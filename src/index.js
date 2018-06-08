@@ -416,23 +416,29 @@ export class Uploader {
                 file.statusText = WUFile.Status.PROGRESS;
                 await this.eventEmitter.emit('uploadStart', {file: file, shardCount: shardCount, config: config}); // 导出wuFile对象
                 if (this.config.md5Calc && file.size > this.config.md5LimitSize) {
-                    this.calcMd5(file.source).then(async (value) => {
-                        file.md5 = value;
-                        // emit 的事件 处理完成后会回来，回来后一定是当前文件的
-                        let md5HandlerRes = await this.eventEmitter.emit('fileMd5Finished', {file: file, md5: value});
-                        if (md5HandlerRes.indexOf(CONSTANTS.MD5_HAS) !== -1) {
-                            this.interruptFile(file.id, 'initiative_finished');
-                            // file.statusText = FileStatus.COMPLETE;
-                            console.log(file.name, value, 'emit fileMd5Finished');
-                        }
-                    }).catch((err) => {
-                        this.LOG.ERROR({
-                            lifecycle: 'checkFileUploadStart',
-                            fileName: file.name,
-                            fileStatus: file.statusText,
-                            msg: 'md5 事件错误'
+
+                    if(file.source instanceof Blob){
+                        this.calcMd5(file.source).then(async (value) => {
+                            file.md5 = value;
+                            // emit 的事件 处理完成后会回来，回来后一定是当前文件的
+                            let md5HandlerRes = await this.eventEmitter.emit('fileMd5Finished', {file: file, md5: value});
+                            if (md5HandlerRes.indexOf(CONSTANTS.MD5_HAS) !== -1) {
+                                this.interruptFile(file.id, 'initiative_finished');
+                                // file.statusText = FileStatus.COMPLETE;
+                                console.log(file.name, value, 'emit fileMd5Finished');
+                            }
+                        }).catch((err) => {
+                            this.LOG.ERROR({
+                                lifecycle: 'checkFileUploadStart',
+                                fileName: file.name,
+                                fileStatus: file.statusText,
+                                msg: 'md5 事件错误'
+                            });
                         });
-                    });
+                    }else{
+                        // TODO 处理FakeBrowserFile的情况
+                        // electron 渲染进程中
+                    }
                 }
             } else {
                 this.LOG.ERROR({

@@ -2606,46 +2606,52 @@ var Uploader = exports.Uploader = function () {
                             case 10:
                                 // 导出wuFile对象
                                 if (this.config.md5Calc && file.size > this.config.md5LimitSize) {
-                                    this.calcMd5(file.source).then(function () {
-                                        var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(value) {
-                                            var md5HandlerRes;
-                                            return _regenerator2.default.wrap(function _callee7$(_context7) {
-                                                while (1) {
-                                                    switch (_context7.prev = _context7.next) {
-                                                        case 0:
-                                                            file.md5 = value;
-                                                            // emit 的事件 处理完成后会回来，回来后一定是当前文件的
-                                                            _context7.next = 3;
-                                                            return _this4.eventEmitter.emit('fileMd5Finished', { file: file, md5: value });
 
-                                                        case 3:
-                                                            md5HandlerRes = _context7.sent;
+                                    if (file.source instanceof Blob) {
+                                        this.calcMd5(file.source).then(function () {
+                                            var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(value) {
+                                                var md5HandlerRes;
+                                                return _regenerator2.default.wrap(function _callee7$(_context7) {
+                                                    while (1) {
+                                                        switch (_context7.prev = _context7.next) {
+                                                            case 0:
+                                                                file.md5 = value;
+                                                                // emit 的事件 处理完成后会回来，回来后一定是当前文件的
+                                                                _context7.next = 3;
+                                                                return _this4.eventEmitter.emit('fileMd5Finished', { file: file, md5: value });
 
-                                                            if (md5HandlerRes.indexOf(CONSTANTS.MD5_HAS) !== -1) {
-                                                                _this4.interruptFile(file.id, 'initiative_finished');
-                                                                // file.statusText = FileStatus.COMPLETE;
-                                                                console.log(file.name, value, 'emit fileMd5Finished');
-                                                            }
+                                                            case 3:
+                                                                md5HandlerRes = _context7.sent;
 
-                                                        case 5:
-                                                        case 'end':
-                                                            return _context7.stop();
+                                                                if (md5HandlerRes.indexOf(CONSTANTS.MD5_HAS) !== -1) {
+                                                                    _this4.interruptFile(file.id, 'initiative_finished');
+                                                                    // file.statusText = FileStatus.COMPLETE;
+                                                                    console.log(file.name, value, 'emit fileMd5Finished');
+                                                                }
+
+                                                            case 5:
+                                                            case 'end':
+                                                                return _context7.stop();
+                                                        }
                                                     }
-                                                }
-                                            }, _callee7, _this4);
-                                        }));
+                                                }, _callee7, _this4);
+                                            }));
 
-                                        return function (_x12) {
-                                            return _ref8.apply(this, arguments);
-                                        };
-                                    }()).catch(function (err) {
-                                        _this4.LOG.ERROR({
-                                            lifecycle: 'checkFileUploadStart',
-                                            fileName: file.name,
-                                            fileStatus: file.statusText,
-                                            msg: 'md5 事件错误'
+                                            return function (_x12) {
+                                                return _ref8.apply(this, arguments);
+                                            };
+                                        }()).catch(function (err) {
+                                            _this4.LOG.ERROR({
+                                                lifecycle: 'checkFileUploadStart',
+                                                fileName: file.name,
+                                                fileStatus: file.statusText,
+                                                msg: 'md5 事件错误'
+                                            });
                                         });
-                                    });
+                                    } else {
+                                        // TODO 处理FakeBrowserFile的情况
+                                        // electron 渲染进程中
+                                    }
                                 }
                                 _context8.next = 14;
                                 break;
